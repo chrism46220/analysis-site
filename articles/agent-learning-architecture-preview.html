@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Learning Architecture</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a2e;
+    --accent: #4361ee;
+    --accent-light: #eef1ff;
+    --border: #ddd;
+    --code-bg: #f4f4f8;
+    --code-fg: #333;
+    --heading: #16213e;
+    --subtle: #666;
+    --success: #2ecc71;
+    --warn: #f39c12;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    color: var(--fg);
+    background: var(--bg);
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--heading);
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  h1 { font-size: 2rem; border-bottom: 3px solid var(--accent); padding-bottom: 0.3em; margin-top: 0; }
+  h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2em; }
+  h3 { font-size: 1.2rem; }
+  p { margin: 0 0 1em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  blockquote {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    border-radius: 0 6px 6px 0;
+  }
+  blockquote p { margin: 0.3em 0; }
+  code {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1em 1.2em;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 1em 0;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+    border-radius: 0;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2em 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+  }
+  th, td {
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--border);
+    text-align: left;
+    font-size: 0.95em;
+  }
+  th {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  tr:nth-child(even) { background: var(--accent-light); }
+  ul, ol { padding-left: 1.5em; margin: 0.5em 0 1em; }
+  li { margin: 0.3em 0; }
+  strong { color: var(--heading); }
+  .tag {
+    display: inline-block;
+    padding: 0.1em 0.5em;
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-right: 0.3em;
+  }
+  .tag-success { background: #d4edda; color: #155724; }
+  .tag-warn { background: #fff3cd; color: #856404; }
+  .tag-info { background: #d1ecf1; color: #0c5460; }
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Agent Learning Architecture</h1>
+<blockquote>
+  A practical design for how Talkie, Plato, and downstream agents
+  can improve over time through structured experience capture,
+  retrieval, and configuration evolution.
+</blockquote>
+
+<h2>1. Design Principles</h2>
+
+<h3>1.1 Learning = stored experience + retrievable patterns</h3>
+<p>LLM-based agents cannot update model weights. Learning means:</p>
+<ul>
+  <li><strong>Remembering</strong> what worked (and didn't) in past sessions</li>
+  <li><strong>Reusing</strong> successful patterns without reinventing them</li>
+  <li><strong>Adapting</strong> configuration and prompts based on outcomes</li>
+  <li><strong>Detecting</strong> repeated failure modes and routing around them</li>
+</ul>
+
+<h3>1.2 Specific &gt; general</h3>
+<p>Agents learn fastest on <strong>repeated, bounded tasks</strong>:</p>
+<ul>
+  <li>Deployment workflows</li>
+  <li>Code review patterns</li>
+  <li>Troubleshooting scripts</li>
+  <li>Report generation templates</li>
+  <li>Error recovery sequences</li>
+</ul>
+<p>General improvement ("write better code") is aspirational and depends on accumulating many specific learnings.</p>
+
+<h3>1.3 No fine-tuning in this stack</h3>
+<p>Fine-tuning API-based models is not practical here. All learning is <strong>configuration-layer</strong> and <strong>retrieval-layer</strong> — not weight-layer.</p>
+
+<h2>2. Data Model</h2>
+
+<h3>2.1 Experience Record</h3>
+<p>Each stored experience is an atomic record:</p>
+<pre><code>{
+  id:            uuid
+  agent:         "talkie" | "plato" | "manny" | "q"
+  task_type:     string (e.g. "deploy", "code_review", "troubleshoot")
+  task_hash:     sha256(normalize(input))
+  context:      {
+    routing:     "talkie-&gt;plato-&gt;manny-&gt;q"
+    model:       "deepseek/deepseek-reasoner"
+    duration_ms: number
+    outcome:     "success" | "failure" | "partial"
+  }
+  patterns:     {
+    key_commands:  string[]
+    key_decisions: string[]
+    error_signals: string[]
+  }
+  outcome_note:  free-text summary
+  user_feedback: null | "good" | "bad" | "fix: ..."
+  tags:          string[]
+  created_at:    iso8601
+}</code></pre>
+
+<h3>2.2 Playbook</h3>
+<p>A playbook is a versioned, reusable workflow extracted from one or more experience records:</p>
+<pre><code>{
+  id:            uuid
+  name:          "deploy-frontend-v2"
+  description:   "Build, test, and deploy the React frontend"
+  triggers:      string[]
+  steps:         CommandStep[]
+  checkpoints:   {step: number, expected: string}[]
+  derived_from:  experience_id[]
+  version:       semver
+  success_rate:  float
+  tags:          string[]
+  created_at:    iso8601
+}</code></pre>
+
+<h3>2.3 Preference Profile</h3>
+<p>Learned user preferences, updated on explicit feedback:</p>
+<pre><code>{
+  user_id:      "default"
+  style: {
+    verbosity:  "concise" | "normal" | "detailed"
+    tone:       "neutral" | "warm" | "formal"
+    format:     "markdown" | "plain" | "structured"
+  }
+  routing: {
+    prefer_fast:    boolean
+    prefer_safe:    boolean
+  }
+  learned_patterns: {
+    "request_type": "preferred_agent_route"
+  }
+  feedback_history: {
+    accepted:   number
+    rejected:   number
+    corrections: string[]
+  }
+  updated_at:  iso8601
+}</code></pre>
+
+<h3>2.4 Error Pattern Registry</h3>
+<p>Learned failure modes and their mitigations:</p>
+<pre><code>{
+  id:            uuid
+  error_signal:  "TimeoutError: npm install"
+  match_pattern: "npm install.*ETIMEOUT|npm install.*network"
+  context:       "node deployment"
+  mitigation:    "Add --prefer-offline flag and retry with 3s backoff"
+  hit_count:     number
+  last_seen:     iso8601
+  resolved:      boolean
+}</code></pre>
+
+<h2>3. Storage Strategy</h2>
+<p>All learning data lives in the workspace, using existing OpenClaw primitives. No external database.</p>
+
+<h3>3.1 Directory Layout</h3>
+<pre><code>/home/chris/.openclaw/workspace-talkie/learning/
+├── experiences/
+│   ├── 2026-05-16-deploy-frontend.json
+│   ├── 2026-05-17-code-review-pr42.json
+│   └── ...
+├── playbooks/
+│   ├── deploy-frontend-v1.json
+│   ├── deploy-frontend-v2.json
+│   ├── code-review-basic.json
+│   └── ...
+├── preferences.json
+├── error-patterns.json
+├── reflection-log.json
+└── index.json</code></pre>
+
+<h3>3.2 Index Schema</h3>
+<p>The index maps task hashes and trigger patterns to experience IDs for fast retrieval without scanning all files:</p>
+<pre><code>{
+  "by_task_hash": {
+    "a1b2c3...": "experiences/2026-05-16-deploy-frontend.json"
+  },
+  "by_trigger": {
+    "deploy":     ["playbooks/deploy-frontend-v2.json"],
+    "code-review": ["playbooks/code-review-basic.json"],
+    "npm install": ["error-patterns.json#entry-3"]
+  },
+  "by_tag": {
+    "frontend": ["playbooks/deploy-frontend-v2.json"],
+    "network": ["error-patterns.json#entry-3"]
+  }
+}</code></pre>
+
+<h3>3.3 Compiled Wiki Integration</h3>
+<p>The compiled wiki (<code>corpus=wiki</code>) is the right retrieval mechanism for learning data that needs to be semantically searchable.</p>
+<p>On each learning write, auto-append a summary entry to a wiki markdown file:</p>
+<pre><code># Learning Wiki  (auto-compiled)
+
+## 2026-05-16
+- Deploy frontend: used `npm ci` — 30s faster
+- Error pattern: npm registry timeout — mitigation: --prefer-offline + retry
+- User prefers: post-deploy summary in plain text, not markdown
+</code></pre>
+
+<h2>4. Retrieval Strategy</h2>
+
+<h3>4.1 When to retrieve</h3>
+<table>
+  <tr><th>Trigger</th><th>What to fetch</th><th>Agent</th></tr>
+  <tr><td>Task routing decision</td><td>Preference profile, recent similar experiences</td><td>Talkie</td></tr>
+  <tr><td>Execution begins</td><td>Relevant playbooks, error patterns</td><td>Plato</td></tr>
+  <tr><td>Command fails</td><td>Error pattern registry for signal match</td><td>Plato/Manny</td></tr>
+  <tr><td>Task completes</td><td>Nothing (write happens after)</td><td>—</td></tr>
+  <tr><td>Feedback received</td><td>Preference profile (for update)</td><td>Plato</td></tr>
+</table>
+
+<h3>4.2 How to rank</h3>
+<ol>
+  <li><strong>Exact task-hash match</strong> → highest priority</li>
+  <li><strong>Trigger-pattern match</strong> → high priority</li>
+  <li><strong>Semantic similarity</strong> via <code>memory_search(corpus=wiki)</code></li>
+  <li><strong>Recency</strong> → tiebreaker</li>
+</ol>
+
+<h3>4.3 Retrieval packet</h3>
+<p>When Plato spawns for a task, its subagent context includes:</p>
+<pre><code>LEARNING_CONTEXT:
+  matching_experiences:  [experience records with same task type]
+  matching_playbooks:    [playbooks whose triggers match]
+  relevant_errors:       [error patterns matching context]
+  preference_profile:    {verbosity, tone, format}</code></pre>
+
+<h2>5. Update Strategy</h2>
+
+<h3>5.1 Experience write (post-task)</h3>
+<p><strong>Writer:</strong> Plato (after task completes and Q verifies)</p>
+<p><strong>When:</strong> Task completes (success/failure), nontrivial, repeatable type.</p>
+<p><strong>Gate:</strong> Q verifies accuracy before write.</p>
+
+<h3>5.2 Playbook extraction (periodic / on-threshold)</h3>
+<p><strong>Writer:</strong> Plato, during scheduled reflection task.</p>
+<p><strong>When:</strong> 3+ experiences of same task_type exist.</p>
+
+<h3>5.3 Preference update (on feedback)</h3>
+<p><strong>Trigger:</strong> User says "too verbose", "wrong tone", "do this differently".</p>
+
+<h3>5.4 Error pattern extraction (on failure)</h3>
+<p><strong>Process:</strong> Identify error signal, check for existing match, add or increment.</p>
+
+<h3>5.5 Configuration evolution (human-in-the-loop)</h3>
+<pre><code>{
+  "target": "AGENTS.md",
+  "change": {
+    "section": "Routing Rules",
+    "old": "deploy → always escalate to manny",
+    "new": "deploy → check learning/playbooks/deploy-*.json first"
+  },
+  "rationale": "3 deploy tasks had same npm error; playbook has fix",
+  "evidence": ["experiences/2026-05-16-deploy.json", "error-patterns.json#3"]
+}</code></pre>
+<p>Config changes are drafted by Plato but never applied without user approval.</p>
+
+<h2>6. Reflection Engine</h2>
+<p>A cron-scheduled task (weekly or on-demand) that analyzes experiences, extracts playbooks, and proposes improvements.</p>
+
+<pre><code>{
+  "schedule": "0 8 * * 1",      // Monday 8am
+  "agent": "plato",
+  "task": {
+    "type": "reflect",
+    "params": {
+      "scope": "7d",
+      "output": "learning/reflection-log.json"
+    }
+  }
+}</code></pre>
+
+<h3>Reflection output example</h3>
+<pre><code>{
+  "run": "2026-05-18T08:00:00Z",
+  "period": "2026-05-11..2026-05-18",
+  "stats": {
+    "total_experiences": 14,
+    "success_rate": 0.79,
+    "avg_duration_ms": 45000
+  },
+  "improvements": [
+    {
+      "task_type": "deploy",
+      "success_rate_before": 0.60,
+      "success_rate_after": 0.86,
+      "attribute_to": "npm install retry playbook"
+    }
+  ],
+  "extraction_candidates": [
+    { "task_type": "code-review", "num_experiences": 4, "recommendation": "extract playbook" }
+  ],
+  "config_proposals": []
+}</code></pre>
+
+<h2>7. Integration with Agent Stack</h2>
+
+<h3>7.1 Talkie integration</h3>
+<p>Talkie's AGENTS.md gains one new routing rule: check <code>preferences.json</code> before escalating, and pass user feedback back to Plato.</p>
+
+<h3>7.2 Plato integration</h3>
+<p>Plato's AGENTS.md gains pre-task retrieval, post-task write, and periodic reflection instructions.</p>
+
+<h3>7.3 Manny integration</h3>
+<p>Manny emits structured error information in output packets; it does not read or write learning data directly.</p>
+
+<h3>7.4 Q integration</h3>
+<p>Q verifies experience records, playbooks, and error patterns for accuracy before writes are committed.</p>
+
+<h2>8. Worked Example</h2>
+
+<h3>Frontend deployment fails with npm timeout</h3>
+
+<p><strong>With learning:</strong></p>
+<ol>
+  <li>Talkie routes to Plato with preference profile</li>
+  <li>Plato checks index → finds playbook + error pattern</li>
+  <li>Plato prepends mitigation to subagent context</li>
+  <li>Manny runs deploy — npm hits timeout</li>
+  <li>Manny applies mitigation → succeeds</li>
+  <li>Plato writes experience record, updates error hit count</li>
+  <li>Q verifies the record</li>
+  <li>Talkie reports success with applied mitigation</li>
+</ol>
+
+<p><strong>Without learning (current behavior):</strong></p>
+<ol>
+  <li>Plato figures out deploy from scratch</li>
+  <li>npm times out — tries random fix</li>
+  <li>Eventually succeeds or fails</li>
+  <li>No record kept for next time</li>
+</ol>
+
+<h2>9. Pragmatic Roadmap</h2>
+
+<table>
+  <tr><th>Phase</th><th>What</th><th>Risk</th></tr>
+  <tr>
+    <td><span class="tag tag-info">1: Capture</span><br>Week 1-2</td>
+    <td>Create learning/ dir, add post-task write, Q gate</td>
+    <td>Storage growth; prune &gt;90d</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-info">2: Retrieve</span><br>Week 3-4</td>
+    <td>Pre-task retrieval, wiki search, preference wiring</td>
+    <td>Context pollution; start with exact match</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-success">3: Extract</span><br>Week 5-6</td>
+    <td>Playbook extraction, reflection cron, config proposals</td>
+    <td>Playbook rot; version + track success rate</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-warn">4: Adapt</span><br>Week 7+</td>
+    <td>Auto-apply mitigations, user approval for config changes</td>
+    <td>Over-automation; human-in-the-loop required</td>
+  </tr>
+</table>
+
+<h2>10. What NOT To Do</h2>
+<table>
+  <tr><th>Approach</th><th>Reason to avoid</th></tr>
+  <tr><td>Fine-tune a model on task history</td><td>Cost, latency, impractical with API models</td></tr>
+  <tr><td>Store raw conversation logs</td><td>Noise &gt;&gt; signal, no structure</td></tr>
+  <tr><td>Let every agent write to learning data</td><td>Race conditions, no Q gate</td></tr>
+  <tr><td>Auto-apply configuration changes</td><td>Must preserve human-in-the-loop</td></tr>
+  <tr><td>Semantic search without indexing</td><td>Slow, unreliable ranking</td></tr>
+</table>
+
+<h2>11. Anti-pattern Detection</h2>
+<ul>
+  <li><strong>Playbook rot</strong>: success rate drops below 0.5 → flag for review</li>
+  <li><strong>Feedback oscillation</strong>: user alternates between extremes → pause updates</li>
+  <li><strong>Error spam</strong>: same error 10+ times without mitigation → alert user</li>
+  <li><strong>Experience explosion</strong>: 50+ trivial records → auto-prune (limit: 20/type)</li>
+</ul>
+
+<h2>12. Success Metrics</h2>
+<table>
+  <tr><th>Metric</th><th>Target</th></tr>
+  <tr><td>Task success rate</td><td>+10% after 4 weeks</td></tr>
+  <tr><td>Retry reduction</td><td>-30% per-task command retries</td></tr>
+  <tr><td>User corrections</td><td>-50% same-type corrections</td></tr>
+  <tr><td>Time-to-task-complete</td><td>-20% for repeated tasks</td></tr>
+  <tr><td>Playbook hit rate</td><td>&gt;60% of repeat tasks use a playbook</td></tr>
+</table>
+
+<h2>13. Edge Cases &amp; Open Questions</h2>
+<ul>
+  <li><strong>Corrupted index?</strong> Regenerate by scanning all experiences.</li>
+  <li><strong>Bad experience record?</strong> Q gate + reflection outlier detection.</li>
+  <li><strong>Latency?</strong> ~200-500ms for pre-task retrieval; ~100ms for post-task write.</li>
+  <li><strong>No learning data?</strong> Graceful degradation — skip retrieval, execute normally.</li>
+</ul>
+
+<h2>14. Summary</h2>
+<table>
+  <tr><th>Component</th><th>What it does</th><th>Who owns it</th></tr>
+  <tr><td>Experience records</td><td>Stores what happened per task</td><td>Plato writes, Q verifies</td></tr>
+  <tr><td>Playbooks</td><td>Reusable workflows from experience</td><td>Plato extracts</td></tr>
+  <tr><td>Preference profile</td><td>User style/routing preferences</td><td>Talkie reads, Plato updates</td></tr>
+  <tr><td>Error pattern registry</td><td>Known failure modes + mitigations</td><td>Plato maintains</td></tr>
+  <tr><td>Index</td><td>Fast lookup across learning data</td><td>Plato maintains</td></tr>
+  <tr><td>Learning wiki</td><td>Semantic-searchable summaries</td><td>Plato updates</td></tr>
+  <tr><td>Reflection engine</td><td>Periodic analysis + improvement</td><td>Cron → Plato</td></tr>
+  <tr><td>Config proposals</td><td>Agent-rule changes with evidence</td><td>Plato drafts, user approves</td></tr>
+</table>
+
+<hr>
+
+<h2>Appendix A: File Templates</h2>
+
+<h3>Experience record</h3>
+<pre><code>{
+  "id": "exp-a1b2c3d4",
+  "agent": "plato",
+  "task_type": "deploy",
+  "task_hash": "sha256://...",
+  "input_summary": "Deploy frontend to staging",
+  "context": {
+    "routing": "talkie-&gt;plato-&gt;manny-&gt;q",
+    "model": "deepseek/deepseek-reasoner",
+    "duration_ms": 48200,
+    "outcome": "success"
+  },
+  "patterns": {
+    "key_commands": ["npm ci", "npm run build", "scp dist/ user@host:/var/www"],
+    "key_decisions": ["used --prefer-offline", "retried once on timeout"],
+    "error_signals": ["ETIMEOUT npm install"]
+  },
+  "outcome_note": "Deploy succeeded after one npm retry with --prefer-offline flag.",
+  "user_feedback": null,
+  "tags": ["frontend", "deploy", "npm"],
+  "created_at": "2026-05-16T12:30:00Z"
+}</code></pre>
+
+<h3>Error pattern entry</h3>
+<pre><code>{
+  "id": "err-3",
+  "error_signal": "npm install ETIMEOUT / npm install network timeout",
+  "match_pattern": "npm (install|ci).*ETIMEOUT|npm (install|ci).*network.*timeout",
+  "context": "node package installation",
+  "mitigation": "Add --prefer-offline flag. If still fails, retry after 3s. If 3 retries fail, switch to yarn.",
+  "hit_count": 7,
+  "last_seen": "2026-05-16T12:30:00Z",
+  "resolved": false
+}</code></pre>
+
+<h3>Learning wiki entry</h3>
+<pre><code>## 2026-05-16
+
+- **Deploy frontend** (exp-a1b2c3d4, success)
+  - Used playbook: deploy-frontend-v2
+  - Applied npm timeout mitigation — avoided failure
+  - Duration: 48s</code></pre>
+
+<h2>Appendix B: Modified Agent Files</h2>
+
+<h3>Talkie AGENTS.md additions</h3>
+<pre><code>## Learning Rule
+
+Before escalating to Plato:
+- Read `learning/preferences.json` to check routing preferences
+- If preferences.routing.prefer_fast is true, set URGENCY: high
+- Attach preference data to handoff packet
+
+After Plato returns:
+- If user provides explicit feedback like "too verbose" or
+  "that's wrong", include {user_feedback: "..."} in return packet
+  so Plato can record it</code></pre>
+
+<h3>Plato AGENTS.md additions</h3>
+<pre><code>## Learning Behavior
+
+### Before planning a task:
+1. Read `learning/index.json` for matching experiences/playbooks
+2. If match found, read the relevant files
+3. Prepend findings as RELEVANT_LEARNINGS
+4. Check `learning/error-patterns.json` for context-relevant errors
+
+### After task completion:
+1. Write experience record to `learning/experiences/`
+2. Update `learning/index.json`
+3. Append summary to learning wiki
+4. If task failed, check/update `learning/error-patterns.json`
+
+### Reflection schedule:
+- Weekly reflection writes to `learning/reflection-log.json`
+- Proposes playbooks and config changes (never auto-applied)</code></pre>
+
+</body>
+</html>

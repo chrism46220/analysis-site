@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Learning MVP — Implementation Output</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a2e;
+    --border: #d0d0d0;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --code-bg: #f1f5f9;
+    --success: #16a34a;
+    --warn: #d97706;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    color: var(--fg);
+    background: var(--bg);
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  h1 { font-size: 1.8rem; border-bottom: 3px solid var(--accent); padding-bottom: 0.3em; margin-top: 0; }
+  h2 { font-size: 1.4rem; margin-top: 2em; border-bottom: 1px solid var(--border); padding-bottom: 0.2em; }
+  p { margin: 0 0 1em; }
+  code {
+    font-family: "SF Mono", "Fira Code", "Roboto Mono", monospace;
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1em 1.2em;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 1em 0;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25em 0;
+    font-size: 0.92rem;
+  }
+  thead { background: #1e293b; color: #fff; }
+  th {
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  .tag-new { background: #dcfce7; color: #166534; border-radius: 10px; padding: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+  .tag-mod { background: #dbeafe; color: #1e40af; border-radius: 10px; padding: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+  .tag-dev { background: #fef3c7; color: #92400e; border-radius: 10px; padding: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+  ul { padding-left: 1.5em; margin: 0.5em 0 1em; }
+  li { margin: 0.3em 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+</style>
+</head>
+<body>
+
+<h1>Agent Learning MVP — Implementation Output</h1>
+<p>Built 2026-05-17 from <code>~/share/learning-mvp-plan.html</code>. All files live in Plato's workspace:</p>
+<p><code>/home/chris/.openclaw/workspace-plato/</code></p>
+
+<h2>New Files</h2>
+
+<table>
+  <thead>
+    <tr><th>File</th><th>Type</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>learning/experiences/2026-05-17-planning-test-001.json</code></td>
+      <td><span class="tag-new">New</span></td>
+      <td>Test experience record — first data in the pipeline</td>
+    </tr>
+    <tr>
+      <td><code>learning/index.json</code></td>
+      <td><span class="tag-new">New</span></td>
+      <td>Fast lookup by task_type, task_hash, tag. Seeded + populated with test record.</td>
+    </tr>
+    <tr>
+      <td><code>learning/error-patterns.json</code></td>
+      <td><span class="tag-new">New</span></td>
+      <td>Recurring error signals with mitigations. Starts as empty array.</td>
+    </tr>
+    <tr>
+      <td><code>learning/preferences.json</code></td>
+      <td><span class="tag-new">New</span></td>
+      <td>Default style/routing preferences. Updated on user feedback.</td>
+    </tr>
+    <tr>
+      <td><code>learning/learning-wiki.md</code></td>
+      <td><span class="tag-new">New</span></td>
+      <td>Human-readable summary wiki. Seeded + test entry appended.</td>
+    </tr>
+    <tr>
+      <td><code>memory/learning-wiki.md</code></td>
+      <td><span class="tag-dev">Symlink</span></td>
+      <td>Points to <code>../learning/learning-wiki.md</code> for auto-indexing by MemoryIndexManager</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Modified Files</h2>
+
+<table>
+  <thead>
+    <tr><th>File</th><th>Type</th><th>Changes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>AGENTS.md</code> (Plato)</td>
+      <td><span class="tag-mod">Modified</span></td>
+      <td>Added <code>## Learning Behavior</code> section — pre-task retrieval, post-task experience write, error pattern capture, maintenance</td>
+    </tr>
+    <tr>
+      <td><code>AGENTS.md</code> (Q)</td>
+      <td><span class="tag-mod">Modified</span></td>
+      <td>Added <code>## Learning Record Verification</code> section — field checks, outcome_note validation, error signal review, verdict table</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Deviation from Plan</h2>
+
+<table>
+  <thead>
+    <tr><th>Planned</th><th>Actual</th><th>Reason</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Register learning-wiki.md in <code>openclaw.json</code></td>
+      <td>Symlink at <code>memory/learning-wiki.md</code> → <code>../learning/learning-wiki.md</code></td>
+      <td>No wiki config infrastructure exists in openclaw.json. MemoryIndexManager already indexes <code>memory/**/*.md</code>, so a symlink achieves the same result with zero config changes.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Total</h2>
+
+<ul>
+  <li><strong>6 new files</strong> (5 created, 1 symlink)</li>
+  <li><strong>2 files modified</strong> (Plato AGENTS.md, Q AGENTS.md)</li>
+  <li><strong>0 config changes</strong> needed</li>
+  <li><strong>1 test record</strong> in the pipeline</li>
+</ul>
+
+</body>
+</html>

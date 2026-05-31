@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Learning Architecture — Analysis</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="top-nav"><a href="../index.html">← Back to Home</a></nav>
+<main class="article">
+<h1>Agent Learning Architecture</h1>
+
+<div class="content">
+<h1>Agent Learning Architecture</h1>
+<blockquote>
+<p>A practical design for how Talkie, Plato, and downstream agents
+can improve over time through structured experience capture,
+retrieval, and configuration evolution.</p>
+</blockquote>
+<hr>
+<h2>1. Design Principles</h2>
+<h3>1.1 Learning = stored experience + retrievable patterns</h3>
+<p>LLM-based agents cannot update model weights. Learning means:</p>
+<ul>
+<li><strong>Remembering</strong> what worked (and didn't) in past sessions</li>
+<li><strong>Reusing</strong> successful patterns without reinventing them</li>
+<li><strong>Adapting</strong> configuration and prompts based on outcomes</li>
+<li><strong>Detecting</strong> repeated failure modes and routing around them</li>
+</ul>
+<h3>1.2 Specific &gt; general</h3>
+<p>Agents learn fastest on <strong>repeated, bounded tasks</strong>:</p>
+<ul>
+<li>Deployment workflows</li>
+<li>Code review patterns</li>
+<li>Troubleshooting scripts</li>
+<li>Report generation templates</li>
+<li>Error recovery sequences</li>
+</ul>
+<p>General improvement ("write better code") is aspirational and
+depends on accumulating many specific learnings.</p>
+<h3>1.3 No fine-tuning in this stack</h3>
+<p>Fine-tuning API-based models is not practical here. All learning
+is <strong>configuration-layer</strong> and <strong>retrieval-layer</strong> — not weight-layer.</p>
+<hr>
+<h2>2. Data Model</h2>
+<h3>2.1 Experience Record</h3>
+<p>Each stored experience is an atomic record:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">id</span><span class="p">:</span><span class="w">            </span><span class="n">uuid</span>
+<span class="w">  </span><span class="n">agent</span><span class="p">:</span><span class="w">         </span><span class="s2">&quot;talkie&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;plato&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;manny&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;q&quot;</span>
+<span class="w">  </span><span class="n">task_type</span><span class="p">:</span><span class="w">     </span><span class="n">string</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="w"> </span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;code_review&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;troubleshoot&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">task_hash</span><span class="p">:</span><span class="w">     </span><span class="n">sha256</span><span class="p">(</span><span class="n">normalize</span><span class="p">(</span><span class="n">input</span><span class="p">))</span><span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">dedup</span><span class="w"> </span><span class="n">near</span><span class="o">-</span><span class="n">identical</span><span class="w"> </span><span class="n">tasks</span>
+<span class="w">  </span><span class="n">context</span><span class="p">:</span><span class="w">      </span><span class="p">{</span>
+<span class="w">    </span><span class="n">routing</span><span class="p">:</span><span class="w">     </span><span class="s2">&quot;talkie-&gt;plato-&gt;manny-&gt;q&quot;</span>
+<span class="w">    </span><span class="n">model</span><span class="p">:</span><span class="w">       </span><span class="s2">&quot;deepseek/deepseek-reasoner&quot;</span>
+<span class="w">    </span><span class="n">duration_ms</span><span class="p">:</span><span class="w"> </span><span class="n">number</span>
+<span class="w">    </span><span class="n">outcome</span><span class="p">:</span><span class="w">     </span><span class="s2">&quot;success&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;failure&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;partial&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">patterns</span><span class="p">:</span><span class="w">     </span><span class="p">{</span>
+<span class="w">    </span><span class="n">key_commands</span><span class="p">:</span><span class="w">  </span><span class="n">string</span><span class="p">[]</span>
+<span class="w">    </span><span class="n">key_decisions</span><span class="p">:</span><span class="w"> </span><span class="n">string</span><span class="p">[]</span>
+<span class="w">    </span><span class="n">error_signals</span><span class="p">:</span><span class="w"> </span><span class="n">string</span><span class="p">[]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">outcome_note</span><span class="p">:</span><span class="w">  </span><span class="n">free</span><span class="o">-</span><span class="n">text</span><span class="w"> </span><span class="n">summary</span>
+<span class="w">  </span><span class="n">user_feedback</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;good&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;bad&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;fix: ...&quot;</span>
+<span class="w">  </span><span class="n">tags</span><span class="p">:</span><span class="w">          </span><span class="n">string</span><span class="p">[]</span>
+<span class="w">  </span><span class="n">created_at</span><span class="p">:</span><span class="w">    </span><span class="n">iso8601</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>2.2 Playbook</h3>
+<p>A playbook is a versioned, reusable workflow extracted from
+one or more experience records:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">id</span><span class="p">:</span><span class="w">            </span><span class="n">uuid</span>
+<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w">          </span><span class="s2">&quot;deploy-frontend-v2&quot;</span>
+<span class="w">  </span><span class="n">description</span><span class="p">:</span><span class="w">   </span><span class="s2">&quot;Build, test, and deploy the React frontend&quot;</span>
+<span class="w">  </span><span class="n">triggers</span><span class="p">:</span><span class="w">      </span><span class="n">string</span><span class="p">[]</span><span class="w">         </span><span class="o">//</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="n">signals</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">playbook</span>
+<span class="w">  </span><span class="n">steps</span><span class="p">:</span><span class="w">         </span><span class="n">CommandStep</span><span class="p">[]</span><span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="n">ordered</span><span class="w"> </span><span class="n">execution</span><span class="w"> </span><span class="n">plan</span>
+<span class="w">  </span><span class="n">checkpoints</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="n">step</span><span class="p">:</span><span class="w"> </span><span class="n">number</span><span class="p">,</span><span class="w"> </span><span class="n">expected</span><span class="p">:</span><span class="w"> </span><span class="n">string</span><span class="p">}[]</span>
+<span class="w">  </span><span class="n">derived_from</span><span class="p">:</span><span class="w">  </span><span class="n">experience_id</span><span class="p">[]</span><span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">experiences</span><span class="w"> </span><span class="n">informed</span><span class="w"> </span><span class="n">it</span>
+<span class="w">  </span><span class="n">version</span><span class="p">:</span><span class="w">       </span><span class="n">semver</span>
+<span class="w">  </span><span class="n">success_rate</span><span class="p">:</span><span class="w">  </span><span class="nb nb-Type">float</span><span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">tracked</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">time</span>
+<span class="w">  </span><span class="n">tags</span><span class="p">:</span><span class="w">          </span><span class="n">string</span><span class="p">[]</span>
+<span class="w">  </span><span class="n">created_at</span><span class="p">:</span><span class="w">    </span><span class="n">iso8601</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>2.3 Preference Profile</h3>
+<p>Learned user preferences, updated on explicit feedback:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nx">user_id</span><span class="p">:</span><span class="w">      </span><span class="s">&quot;default&quot;</span>
+<span class="w">  </span><span class="nx">style</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">verbosity</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;concise&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;normal&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;detailed&quot;</span><span class="w">   </span><span class="c1">// default: normal</span>
+<span class="w">    </span><span class="nx">tone</span><span class="p">:</span><span class="w">       </span><span class="s">&quot;neutral&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;warm&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;formal&quot;</span><span class="w">        </span><span class="c1">// default: warm</span>
+<span class="w">    </span><span class="nx">format</span><span class="p">:</span><span class="w">     </span><span class="s">&quot;markdown&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;plain&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s">&quot;structured&quot;</span><span class="w">  </span><span class="c1">// default: markdown</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">routing</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">prefer_fast</span><span class="p">:</span><span class="w">    </span><span class="nx">boolean</span><span class="w">    </span><span class="c1">// prefer speed over thoroughness</span>
+<span class="w">    </span><span class="nx">prefer_safe</span><span class="p">:</span><span class="w">    </span><span class="nx">boolean</span><span class="w">    </span><span class="c1">// prefer double-checking over speed</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">learned_patterns</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;request_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;preferred_agent_route&quot;</span><span class="w">  </span><span class="c1">// e.g. &quot;deploy&quot; -&gt; &quot;manny&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">feedback_history</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">accepted</span><span class="p">:</span><span class="w">   </span><span class="nx">number</span>
+<span class="w">    </span><span class="nx">rejected</span><span class="p">:</span><span class="w">   </span><span class="nx">number</span>
+<span class="w">    </span><span class="nx">corrections</span><span class="p">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">updated_at</span><span class="p">:</span><span class="w">  </span><span class="nx">iso8601</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>2.4 Error Pattern Registry</h3>
+<p>Learned failure modes and their mitigations:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">id</span><span class="p">:</span><span class="w">            </span><span class="n">uuid</span>
+<span class="w">  </span><span class="n">error_signal</span><span class="p">:</span><span class="w">  </span><span class="s2">&quot;TimeoutError: npm install&quot;</span>
+<span class="w">  </span><span class="n">match_pattern</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npm install.*ETIMEOUT|npm install.*network&quot;</span>
+<span class="w">  </span><span class="n">context</span><span class="p">:</span><span class="w">       </span><span class="s2">&quot;node deployment&quot;</span>
+<span class="w">  </span><span class="n">mitigation</span><span class="p">:</span><span class="w">    </span><span class="s2">&quot;Add --prefer-offline flag and retry with 3s backoff&quot;</span>
+<span class="w">  </span><span class="n">hit_count</span><span class="p">:</span><span class="w">     </span><span class="n">number</span>
+<span class="w">  </span><span class="n">last_seen</span><span class="p">:</span><span class="w">     </span><span class="n">iso8601</span>
+<span class="w">  </span><span class="n">resolved</span><span class="p">:</span><span class="w">      </span><span class="n">boolean</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr>
+<h2>3. Storage Strategy</h2>
+<p>All learning data lives in the workspace, using existing OpenClaw
+primitives. No external database.</p>
+<h3>3.1 Directory Layout</h3>
+<div class="codehilite"><pre><span></span><code>/home/chris/.openclaw/workspace-talkie/learning/
+├── experiences/
+│   ├── 2026-05-16-deploy-frontend.json     // one file per meaningful event
+│   ├── 2026-05-17-code-review-pr42.json
+│   └── ...
+├── playbooks/
+│   ├── deploy-frontend-v1.json
+│   ├── deploy-frontend-v2.json
+│   ├── code-review-basic.json
+│   └── ...
+├── preferences.json                         // single file, small
+├── error-patterns.json                      // single file, grows slowly
+├── reflection-log.json                      // output of periodic reflection runs
+└── index.json                               // fast lookup index
+</code></pre></div>
+
+<h3>3.2 Index Schema</h3>
+<p>The index maps task hashes and trigger patterns to experience IDs
+for fast retrieval without scanning all files:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;by_task_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;a1b2c3...&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;experiences/2026-05-16-deploy-frontend.json&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;by_trigger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;deploy&quot;</span><span class="p">:</span><span class="w">     </span><span class="p">[</span><span class="s2">&quot;playbooks/deploy-frontend-v2.json&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;code-review&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;playbooks/code-review-basic.json&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;npm install&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;error-patterns.json#entry-3&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;by_tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;frontend&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;playbooks/deploy-frontend-v2.json&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;network&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;error-patterns.json#entry-3&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>3.3 Compiled Wiki Integration</h3>
+<p>The compiled wiki (<code>corpus=wiki</code>) is the right retrieval mechanism
+for learning data that needs to be semantically searchable.</p>
+<p>On each learning write, auto-append a summary entry to a wiki markdown
+file that the agent can query via <code>memory_search(corpus=wiki)</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">#</span><span class="w"> </span><span class="n">Learning</span><span class="w"> </span><span class="n">Wiki</span><span class="w">  </span><span class="p">(</span><span class="n">auto</span><span class="o">-</span><span class="n">compiled</span><span class="p">)</span>
+
+<span class="p">##</span><span class="w"> </span><span class="mh">2026</span><span class="o">-</span><span class="mh">05</span><span class="o">-</span><span class="mh">16</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Deploy</span><span class="w"> </span><span class="nl">frontend:</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="no">`npm</span><span class="w"> </span><span class="n">ci</span><span class="err">`</span><span class="w"> </span><span class="n">instead</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="no">`npm</span><span class="w"> </span><span class="n">install</span><span class="err">`</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="mh">30</span><span class="n">s</span><span class="w"> </span><span class="n">faster</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="nl">pattern:</span><span class="w"> </span><span class="n">npm</span><span class="w"> </span><span class="n">registry</span><span class="w"> </span><span class="n">timeout</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="nl">mitigation:</span><span class="w"> </span><span class="o">--</span><span class="n">prefer</span><span class="o">-</span><span class="n">offline</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">retry</span>
+<span class="o">-</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nl">prefers:</span><span class="w"> </span><span class="n">post</span><span class="o">-</span><span class="n">deploy</span><span class="w"> </span><span class="n">summary</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">plain</span><span class="w"> </span><span class="n">text</span><span class="p">,</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">markdown</span>
+
+<span class="p">##</span><span class="w"> </span><span class="mh">2026</span><span class="o">-</span><span class="mh">05</span><span class="o">-</span><span class="mh">17</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Code</span><span class="w"> </span><span class="n">review</span><span class="w"> </span><span class="n">PR</span><span class="p">#</span><span class="mh">42</span><span class="o">:</span><span class="w"> </span><span class="n">found</span><span class="w"> </span><span class="mh">2</span><span class="w"> </span><span class="n">unused</span><span class="w"> </span><span class="n">imports</span><span class="p">,</span><span class="w"> </span><span class="mh">1</span><span class="w"> </span><span class="n">missing</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="n">boundary</span>
+<span class="o">-</span><span class="w"> </span><span class="nl">Pattern:</span><span class="w"> </span><span class="k">always</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="n">imports</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="n">highest</span><span class="w"> </span><span class="n">ROI</span>
+</code></pre></div>
+
+<p>This makes learning data discoverable without structured queries.</p>
+<hr>
+<h2>4. Retrieval Strategy</h2>
+<h3>4.1 When to retrieve</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>What to fetch</th>
+<th>Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task routing decision</td>
+<td>Preference profile, recent similar experiences</td>
+<td>Talkie</td>
+</tr>
+<tr>
+<td>Execution begins</td>
+<td>Relevant playbooks, error patterns</td>
+<td>Plato</td>
+</tr>
+<tr>
+<td>Command fails</td>
+<td>Error pattern registry for signal match</td>
+<td>Plato/Manny</td>
+</tr>
+<tr>
+<td>Task completes</td>
+<td>Nothing (write happens after)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Feedback received</td>
+<td>Preference profile (for update)</td>
+<td>Plato</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 How to rank</h3>
+<ol>
+<li><strong>Exact task-hash match</strong> → highest priority (same task again)</li>
+<li><strong>Trigger-pattern match</strong> → high priority (same type of work)</li>
+<li><strong>Semantic similarity</strong> via <code>memory_search(..., corpus=wiki)</code></li>
+<li><strong>Recency</strong> → tiebreaker</li>
+</ol>
+<h3>4.3 Retrieval packet</h3>
+<p>When Plato spawns for a task, its subagent context includes:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">LEARNING_CONTEXT</span><span class="o">:</span>
+<span class="w">  </span><span class="n">matching_experiences</span><span class="o">:</span><span class="w">  </span><span class="o">[</span><span class="n">experience</span><span class="w"> </span><span class="n">records</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">task</span><span class="w"> </span><span class="n">type</span><span class="o">]</span>
+<span class="w">  </span><span class="n">matching_playbooks</span><span class="o">:</span><span class="w">    </span><span class="o">[</span><span class="n">playbooks</span><span class="w"> </span><span class="n">whose</span><span class="w"> </span><span class="n">triggers</span><span class="w"> </span><span class="n">match</span><span class="o">]</span>
+<span class="w">  </span><span class="n">relevant_errors</span><span class="o">:</span><span class="w">       </span><span class="o">[</span><span class="n">error</span><span class="w"> </span><span class="n">patterns</span><span class="w"> </span><span class="n">matching</span><span class="w"> </span><span class="n">context</span><span class="o">]</span>
+<span class="w">  </span><span class="n">preference_profile</span><span class="o">:</span><span class="w">    </span><span class="o">{</span><span class="n">verbosity</span><span class="o">,</span><span class="w"> </span><span class="n">tone</span><span class="o">,</span><span class="w"> </span><span class="n">format</span><span class="o">}</span>
+</code></pre></div>
+
+<p>This is prepended as context, not appended — so the LLM sees
+relevant past learnings before generating the plan.</p>
+<hr>
+<h2>5. Update Strategy</h2>
+<h3>5.1 Experience write (post-task)</h3>
+<p><strong>Writer</strong>: Plato (after task completes and Q verifies)</p>
+<p><strong>When</strong>:
+- Task completes (success or failure)
+- Task was nontrivial (skip trivial exchanges)
+- Task is a repeatable type (deploy, review, fix, troubleshoot)</p>
+<p><strong>What's written</strong>:
+- One experience record in <code>learning/experiences/</code>
+- One summary entry appended to the learning wiki
+- Index updated</p>
+<p><strong>Gate</strong>: Q verifies the experience record is accurate before write.</p>
+<h3>5.2 Playbook extraction (periodic / on-threshold)</h3>
+<p><strong>Writer</strong>: Plato, during a scheduled reflection task</p>
+<p><strong>When</strong>:
+- 3+ experiences of the same task_type exist
+- Or explicitly triggered by user</p>
+<p><strong>Process</strong>:
+1. Plato reads all experiences of a task_type
+2. Extracts common steps, decision points, error patterns
+3. Writes a playbook JSON file
+4. Updates index</p>
+<h3>5.3 Preference update (on feedback)</h3>
+<p><strong>Writer</strong>: Plato, when explicit feedback arrives</p>
+<p><strong>Trigger</strong>: User says "too verbose", "wrong tone", "do this differently"</p>
+<p><strong>Process</strong>:
+1. Extract the dimension being corrected
+2. Adjust the preference value by one step
+3. Log the correction in feedback_history
+4. Update <code>preferences.json</code></p>
+<h3>5.4 Error pattern extraction (on failure)</h3>
+<p><strong>Writer</strong>: Plato, when a task fails</p>
+<p><strong>Process</strong>:
+1. Identify the error signal from logs/outcome
+2. Check error-patterns.json for existing match
+3. If new: add entry with mitigation (if known) or mark unmitigated
+4. If existing: increment hit_count, update last_seen</p>
+<h3>5.5 Configuration evolution (human-in-the-loop)</h3>
+<p><strong>Writer</strong>: Plato drafts; human approves</p>
+<p><strong>When</strong>: Error rate for a task type exceeds threshold, or
+repeated corrections suggest a rule change.</p>
+<p><strong>Proposed change format</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AGENTS.md&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;change&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;section&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Routing Rules&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;old&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy → always escalate to manny&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;new&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy → check learning/playbooks/deploy-*.json first, then escalate&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;rationale&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3 deploy tasks had same npm error; playbook has fix&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;experiences/2026-05-16-deploy.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;error-patterns.json#3&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;proposed_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;plato-reflection-2026-05-18&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The change is NOT applied automatically. Plato writes it to
+<code>learning/proposed-config-changes/</code> and flags Talkie to inform
+the user on next interaction.</p>
+<hr>
+<h2>6. Reflection Engine</h2>
+<p>A cron-scheduled task (weekly or on-demand) that:</p>
+<ol>
+<li>Reads all experiences from the past N days</li>
+<li>Clusters by task_type and outcome</li>
+<li>Identifies:</li>
+<li>Most common failure mode</li>
+<li>Most improved workflow</li>
+<li>Patterns that should become playbooks</li>
+<li>User preference drift</li>
+<li>Writes a reflection summary to <code>learning/reflection-log.json</code></li>
+<li>Optionally proposes configuration changes</li>
+</ol>
+<h3>Reflection cron entry</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nx">openclaw</span><span class="p">.</span><span class="nx">json</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="nx">cron</span><span class="w"> </span><span class="nx">equivalent</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;schedule&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0 8 * * 1&quot;</span><span class="p">,</span><span class="w">      </span><span class="c1">// Monday 8am</span>
+<span class="w">  </span><span class="s">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;plato&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;reflect&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s">&quot;scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;7d&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;learning/reflection-log.json&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Reflection output example</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-05-18T08:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;period&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-05-11..2026-05-18&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;total_experiences&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;success_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.79</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;avg_duration_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45000</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;improvements&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;task_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;success_rate_before&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.60</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;success_rate_after&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.86</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attribute_to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npm install retry playbook&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;worsenings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;task_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;code-review&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;error_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.33</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;common_error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;misses pattern across multiple files&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;extraction_candidates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;task_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;code-review&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;num_experiences&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;recommendation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extract playbook: code-review-multi-file&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;config_proposals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr>
+<h2>7. Integration with Agent Stack</h2>
+<h3>7.1 Talkie integration</h3>
+<p>Talkie's AGENTS.md gains one new routing rule:</p>
+<div class="codehilite"><pre><span></span><code>##<span class="w"> </span><span class="nv">Learning</span><span class="w"> </span><span class="nv">Rule</span>
+
+<span class="nv">Before</span><span class="w"> </span><span class="nv">escalating</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">Plato</span>:
+<span class="o">-</span><span class="w"> </span><span class="nv">Check</span><span class="w"> </span>`<span class="nv">learning</span><span class="o">/</span><span class="nv">preferences</span>.<span class="nv">json</span>`<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">routing</span><span class="w"> </span><span class="nv">preferences</span>
+<span class="o">-</span><span class="w"> </span><span class="nv">Attach</span><span class="w"> </span><span class="nv">preference</span><span class="w"> </span><span class="nv">data</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">handoff</span><span class="w"> </span><span class="nv">packet</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">available</span>
+
+<span class="nv">After</span><span class="w"> </span><span class="nv">Plato</span><span class="w"> </span><span class="nv">returns</span>:
+<span class="o">-</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="nv">user</span><span class="w"> </span><span class="nv">provides</span><span class="w"> </span><span class="nv">explicit</span><span class="w"> </span><span class="nv">feedback</span>,<span class="w"> </span><span class="k">include</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="k">return</span>
+<span class="w">  </span><span class="nv">packet</span><span class="w"> </span><span class="nv">so</span><span class="w"> </span><span class="nv">Plato</span><span class="w"> </span><span class="nv">can</span><span class="w"> </span><span class="nv">record</span><span class="w"> </span><span class="nv">it</span>
+</code></pre></div>
+
+<p>Talkie does NOT read experience records or playbooks directly.
+That's Plato's job. Talkie only reads the tiny preferences file.</p>
+<h3>7.2 Plato integration</h3>
+<p>Plato's AGENTS.md gains:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">## Learning Behavior</span>
+
+<span class="n">Before</span><span class="w"> </span><span class="n">planning</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">task</span><span class="p">:</span>
+<span class="mf">1.</span><span class="w"> </span><span class="n">Check</span><span class="w"> </span><span class="err">`</span><span class="n">learning</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">json</span><span class="err">`</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">matching</span><span class="w"> </span><span class="n">experiences</span><span class="o">/</span><span class="n">playbooks</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">found</span><span class="p">,</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">relevant</span><span class="w"> </span><span class="n">files</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">Include</span><span class="w"> </span><span class="n">learnings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">prepended</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">plan</span>
+
+<span class="n">After</span><span class="w"> </span><span class="n">task</span><span class="w"> </span><span class="n">completion</span><span class="p">:</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">Write</span><span class="w"> </span><span class="n">experience</span><span class="w"> </span><span class="n">record</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="err">`</span><span class="n">learning</span><span class="o">/</span><span class="n">experiences</span><span class="o">/</span><span class="err">`</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">Update</span><span class="w"> </span><span class="err">`</span><span class="n">learning</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">json</span><span class="err">`</span>
+<span class="mf">6.</span><span class="w"> </span><span class="n">Append</span><span class="w"> </span><span class="n">summary</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">learning</span><span class="w"> </span><span class="n">wiki</span>
+<span class="mf">7.</span><span class="w"> </span><span class="n">Check</span><span class="w"> </span><span class="n">error</span><span class="o">-</span><span class="n">patterns</span><span class="o">.</span><span class="n">json</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="n">signals</span>
+
+<span class="n">During</span><span class="w"> </span><span class="n">idle</span><span class="o">/</span><span class="n">scheduled</span><span class="w"> </span><span class="n">time</span><span class="p">:</span>
+<span class="mf">8.</span><span class="w"> </span><span class="n">Run</span><span class="w"> </span><span class="n">reflection</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">extract</span><span class="w"> </span><span class="n">playbooks</span>
+<span class="mf">9.</span><span class="w"> </span><span class="n">Propose</span><span class="w"> </span><span class="n">configuration</span><span class="w"> </span><span class="n">changes</span>
+</code></pre></div>
+
+<h3>7.3 Manny integration</h3>
+<p>Manny does NOT read or write learning data directly.</p>
+<p>Manny DOES emit structured error information in its output
+packet (error type, error message, stack trace) that Plato
+can use for error pattern extraction.</p>
+<h3>7.4 Q integration</h3>
+<p>Q verifies:
+- Experience records are accurate and not hallucinated
+- Playbooks are derived from real experiences (not fabricated)
+- Error patterns match actual errors (not invented)</p>
+<p>Q's gate remains mandatory for all learning writes.</p>
+<hr>
+<h2>8. Worked Example</h2>
+<h3>Scenario: Frontend deployment fails with npm timeout</h3>
+<p><strong>Session flow:</strong></p>
+<ol>
+<li>User: "Deploy the frontend"</li>
+<li>Talkie: Routes to Plato with preference profile</li>
+<li>Plato: Checks <code>learning/index.json</code> → finds</li>
+<li><code>playbooks/deploy-frontend-v2.json</code> (success rate 0.86)</li>
+<li><code>error-patterns.json#3</code> (npm timeout → --prefer-offline + retry)</li>
+<li>Plato: Prepends to subagent context:
+   ```
+   RELEVANT_LEARNINGS:<ul>
+<li>Deploy playbook v2 exists: steps 1-5 in playbooks/deploy-frontend-v2.json</li>
+<li>Known issue: npm registry timeouts are common on this network</li>
+<li>Mitigation: use --prefer-offline, retry with 3s backoff, fall back to yarn
+   ```</li>
+</ul>
+</li>
+<li>Manny: Runs deploy — first npm install hits timeout</li>
+<li>Manny: Applies mitigation from context → succeeds</li>
+<li>Plato: Writes experience record (success, used playbook v2, applied error mitigation)</li>
+<li>Plato: Updates error-patterns.json (increment hit_count for npm timeout)</li>
+<li>Q: Verifies the experience record</li>
+<li>Talkie: "Deployed successfully. Applied npm timeout mitigation from past experience."</li>
+</ol>
+<h3>Without learning (current behavior):</h3>
+<ol>
+<li>User: "Deploy the frontend"</li>
+<li>Plato: Figures out the deploy process from scratch</li>
+<li>Manny: First npm install times out</li>
+<li>Plato: Tries random fix (maybe --registry, maybe retry, maybe different approach)</li>
+<li>Manny: Eventually succeeds or fails</li>
+<li>No record kept for next time</li>
+</ol>
+<hr>
+<h2>9. Pragmatic Roadmap</h2>
+<h3>Phase 1: Capture (week 1-2)</h3>
+<p>Goal: Start recording experiences without changing agent behavior.</p>
+<ul>
+<li>[x] Create <code>learning/</code> directory structure</li>
+<li>[x] Write first experience record manually (template)</li>
+<li>[ ] Add post-task experience write to Plato's instructions</li>
+<li>[ ] Add Q gate for experience records</li>
+<li>[ ] Start building the index</li>
+</ul>
+<p>No retrieval yet. No behavior change. Just data collection.</p>
+<p><strong>Risk</strong>: Storage grows. Mitigation: prune experiences older than
+90 days by default. Keep playbooks and error patterns forever.</p>
+<h3>Phase 2: Retrieve (week 3-4)</h3>
+<p>Goal: Start using captured experiences to improve task execution.</p>
+<ul>
+<li>[ ] Add pre-task retrieval to Plato's instructions</li>
+<li>[ ] Wire up <code>memory_search(corpus=wiki)</code> for learning wiki</li>
+<li>[ ] Create preference profile and wire Talkie routing</li>
+<li>[ ] Add error pattern matching on failure</li>
+</ul>
+<p><strong>Risk</strong>: Context pollution from irrelevant matches. Mitigation:
+start with exact task-hash match only, then expand to trigger
+patterns, then semantic. Measure false positive rate.</p>
+<h3>Phase 3: Extract (week 5-6)</h3>
+<p>Goal: Derive reusable playbooks from experience clusters.</p>
+<ul>
+<li>[ ] Enable manual playbook extraction (Plato command)</li>
+<li>[ ] Add reflection cron job (weekly)</li>
+<li>[ ] Write reflection-log.json on each run</li>
+<li>[ ] Propose configuration changes (draft only)</li>
+</ul>
+<p><strong>Risk</strong>: Playbooks go stale. Mitigation: version them, track
+success rate, deprecate unused or low-accuracy playbooks.</p>
+<h3>Phase 4: Adapt (week 7+)</h3>
+<p>Goal: Closed-loop improvement.</p>
+<ul>
+<li>[ ] Auto-apply error-pattern mitigations on hit_count threshold</li>
+<li>[ ] Route to playbook by trigger match (bypass raw execution)</li>
+<li>[ ] Surface learning stats to user on request</li>
+<li>[ ] Config change proposals with user approval flow</li>
+</ul>
+<p><strong>Risk</strong>: Over-automation leads to stale patterns. Mitigation:
+every config proposal includes evidence references; user must
+approve before any AGENTS.md change.</p>
+<hr>
+<h2>10. What NOT To Do</h2>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Reason to avoid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fine-tune a model on task history</td>
+<td>Cost, latency, impractical with API models</td>
+</tr>
+<tr>
+<td>Store raw conversation logs for learning</td>
+<td>Noise &gt;&gt; signal, storage bloat, no structure</td>
+</tr>
+<tr>
+<td>Let every agent write to learning data</td>
+<td>Race conditions, inconsistent format, no Q gate</td>
+</tr>
+<tr>
+<td>Auto-apply configuration changes</td>
+<td>Must preserve human-in-the-loop for agent rules</td>
+</tr>
+<tr>
+<td>Semantic search on raw experiences without indexing</td>
+<td>Slow, unreliable ranking, high cost</td>
+</tr>
+<tr>
+<td>Global learning across all users (multi-tenant)</td>
+<td>Not applicable — single-user system</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>11. Anti-pattern Detection</h2>
+<p>The reflection engine should also detect:</p>
+<ul>
+<li><strong>Playbook rot</strong>: a playbook's success rate drops below 0.5
+  → flag for review or deprecation</li>
+<li><strong>Feedback oscillation</strong>: user alternates between "too verbose"
+  and "too terse" → preference profile is unstable → pause updates</li>
+<li><strong>Error spam</strong>: same error pattern fires 10+ times without new
+  mitigation → flag as unmitigated, alert user</li>
+<li><strong>Experience explosion</strong>: 50+ experiences of the same trivial
+  task type → auto-prune or set a max-per-type limit (default: 20)</li>
+</ul>
+<hr>
+<h2>12. Success Metrics</h2>
+<p>After implementation, measure:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>How to measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task success rate</td>
+<td>+10% after 4 weeks</td>
+<td>Compare before/after in reflection stats</td>
+</tr>
+<tr>
+<td>Retry reduction</td>
+<td>-30% per-task command retries</td>
+<td>Track command failures per task</td>
+</tr>
+<tr>
+<td>User corrections</td>
+<td>-50% same-type corrections</td>
+<td>Track preference feedback frequency</td>
+</tr>
+<tr>
+<td>Time-to-task-complete</td>
+<td>-20% for repeated tasks</td>
+<td>Compare durations in experience records</td>
+</tr>
+<tr>
+<td>Playbook hit rate</td>
+<td>&gt;60% of repeat tasks use a playbook</td>
+<td>Track which tasks had playbook match</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>13. Edge Cases &amp; Open Questions</h2>
+<h3>What if the learning index gets corrupted?</h3>
+<p>Rebuild from <code>learning/experiences/*.json</code> by scanning all files
+and regenerating <code>index.json</code>. This is a Plato task.</p>
+<h3>What if an experience record is wrong?</h3>
+<p>Q's gate catches most errors. If a bad record passes Q, the
+reflection engine can detect it as an outlier (low success rate
+on follow-up, contradiction with other records) and flag it.</p>
+<h3>What about privacy?</h3>
+<p>Single-user system. No privacy concerns. All data stays on the
+machine in the workspace directory.</p>
+<h3>Does this add latency?</h3>
+<p>Pre-task retrieval adds ~200-500ms for file I/O and index lookup.
+This is negligible compared to LLM inference time (3-30s).</p>
+<p>Post-task write adds ~100ms for the file write. This is done
+asynchronously (fire and forget, not blocking the response).</p>
+<h3>What if no learning data exists for a task type?</h3>
+<p>Graceful degradation: skip the retrieval step, execute as
+normal, write the first experience record.</p>
+<hr>
+<h2>14. Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+<th>Who owns it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Experience records</td>
+<td>Stores what happened per task</td>
+<td>Plato writes, Q verifies</td>
+</tr>
+<tr>
+<td>Playbooks</td>
+<td>Reusable workflows from experience</td>
+<td>Plato extracts (manual or scheduled)</td>
+</tr>
+<tr>
+<td>Preference profile</td>
+<td>User style/routing preferences</td>
+<td>Talkie reads, Plato updates</td>
+</tr>
+<tr>
+<td>Error pattern registry</td>
+<td>Known failure modes + mitigations</td>
+<td>Plato maintains</td>
+</tr>
+<tr>
+<td>Index</td>
+<td>Fast lookup across learning data</td>
+<td>Plato maintains</td>
+</tr>
+<tr>
+<td>Learning wiki</td>
+<td>Semantic-searchable summaries</td>
+<td>Plato updates</td>
+</tr>
+<tr>
+<td>Reflection engine</td>
+<td>Periodic analysis + improvement proposals</td>
+<td>Cron → Plato</td>
+</tr>
+<tr>
+<td>Config proposals</td>
+<td>Agent-rule changes with evidence</td>
+<td>Plato drafts, user approves</td>
+</tr>
+</tbody>
+</table>
+<p>The design is <strong>additive</strong> — it layers on top of the existing
+stack without breaking current behavior. Each phase builds on
+the previous one, and nothing changes until Phase 2 retrieval
+is live.</p>
+<hr>
+<h2>Appendix A: File Templates</h2>
+<h3>Experience record (<code>experiences/YYYY-MM-DD-{slug}.json</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exp-a1b2c3d4&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;plato&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;task_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;task_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256://...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;input_summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deploy frontend to staging&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;routing&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;talkie-&gt;plato-&gt;manny-&gt;q&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deepseek/deepseek-reasoner&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;duration_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">48200</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;patterns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key_commands&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;npm ci&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;npm run build&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scp dist/ user@host:/var/www&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;key_decisions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;used --prefer-offline&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;retried once on timeout&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;error_signals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ETIMEOUT npm install&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;outcome_note&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deploy succeeded after one npm retry with --prefer-offline flag.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user_feedback&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;frontend&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;npm&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-05-16T12:30:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Error pattern entry</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;err-3&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_signal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npm install ETIMEOUT / npm install network timeout&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;match_pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npm (install|ci).*ETIMEOUT|npm (install|ci).*network.*timeout&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node package installation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mitigation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Add --prefer-offline flag. If still fails, retry after 3s. If 3 retries fail, switch to yarn.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;hit_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;last_seen&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-05-16T12:30:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resolved&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Learning wiki entry</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## 2026-05-16</span>
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**Deploy frontend**</span> (exp-a1b2c3d4, success)
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>Used playbook: deploy-frontend-v2
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>Applied npm timeout mitigation — avoided failure
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>Duration: 48s
+</code></pre></div>
+
+<hr>
+<h2>Appendix B: Modified Agent Files</h2>
+<h3>Talkie AGENTS.md (additions only)</h3>
+<p>Add after <code>## Delegation Rule — HARD</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="gu">##</span> Learning Rule
+
+Before escalating to Plato:
+<span class="k">-</span> Read <span class="sb">`learning/preferences.json`</span> to check routing preferences
+<span class="k">-</span> If preferences.routing.prefer_fast is true, set URGENCY: high
+<span class="k">-</span> Attach preference data to handoff packet
+
+After Plato returns:
+<span class="k">-</span> If user provides explicit feedback like &quot;too verbose&quot; or
+  &quot;that&#39;s wrong&quot;, include {user_feedback: &quot;...&quot;} in return packet
+  so Plato can record it
+</code></pre></div>
+
+<h3>Plato AGENTS.md (additions only)</h3>
+<p>Add a new section before <code>## Output format</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">##</span><span class="w"> </span><span class="nx">Learning</span><span class="w"> </span><span class="nx">Behavior</span>
+
+<span class="err">###</span><span class="w"> </span><span class="nx">Before</span><span class="w"> </span><span class="nx">planning</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">task</span><span class="p">:</span>
+<span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="nx">Read</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">index</span><span class="p">.</span><span class="nx">json</span><span class="err">`</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">matching</span><span class="w"> </span><span class="nx">experiences</span><span class="o">/</span><span class="nx">playbooks</span>
+<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nx">Match</span><span class="w"> </span><span class="nx">by</span><span class="w"> </span><span class="nx">task_type</span><span class="w"> </span><span class="nx">first</span><span class="p">,</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nx">by</span><span class="w"> </span><span class="nx">semantic</span><span class="w"> </span><span class="nx">similarity</span>
+<span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="nx">If</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="nx">found</span><span class="p">,</span><span class="w"> </span><span class="nx">read</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">relevant</span><span class="w"> </span><span class="nx">files</span><span class="w"> </span><span class="nx">from</span><span class="w"> </span><span class="nx">learning</span><span class="o">/</span>
+<span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="nx">Prepend</span><span class="w"> </span><span class="nx">findings</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">context</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nx">RELEVANT_LEARNINGS</span>
+<span class="mi">4</span><span class="p">.</span><span class="w"> </span><span class="nx">Check</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">error</span><span class="o">-</span><span class="nx">patterns</span><span class="p">.</span><span class="nx">json</span><span class="err">`</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">context</span><span class="o">-</span><span class="nx">relevant</span><span class="w"> </span><span class="nx">errors</span>
+
+<span class="err">###</span><span class="w"> </span><span class="nx">After</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="nx">completion</span><span class="p">:</span>
+<span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="nx">Write</span><span class="w"> </span><span class="nx">experience</span><span class="w"> </span><span class="nx">record</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">experiences</span><span class="o">/</span><span class="err">`</span>
+<span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="nx">Update</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">index</span><span class="p">.</span><span class="nx">json</span><span class="err">`</span>
+<span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="nx">Append</span><span class="w"> </span><span class="nx">summary</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">learning</span><span class="w"> </span><span class="nx">wiki</span>
+<span class="mi">4</span><span class="p">.</span><span class="w"> </span><span class="nx">If</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="nx">failed</span><span class="p">,</span><span class="w"> </span><span class="nx">check</span><span class="o">/</span><span class="nx">update</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">error</span><span class="o">-</span><span class="nx">patterns</span><span class="p">.</span><span class="nx">json</span><span class="err">`</span>
+
+<span class="err">###</span><span class="w"> </span><span class="nx">Reflection</span><span class="w"> </span><span class="nx">schedule</span><span class="p">:</span>
+<span class="o">-</span><span class="w"> </span><span class="nx">Weekly</span><span class="w"> </span><span class="nx">reflection</span><span class="w"> </span><span class="nx">writes</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">reflection</span><span class="o">-</span><span class="nx">log</span><span class="p">.</span><span class="nx">json</span><span class="err">`</span>
+<span class="o">-</span><span class="w"> </span><span class="nx">Proposes</span><span class="w"> </span><span class="nx">playbooks</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="nx">changes</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="err">`</span><span class="nx">learning</span><span class="o">/</span><span class="nx">proposed</span><span class="o">-</span><span class="nx">config</span><span class="o">-</span><span class="nx">changes</span><span class="o">/</span><span class="err">`</span>
+<span class="o">-</span><span class="w"> </span><span class="nx">Does</span><span class="w"> </span><span class="nx">NOT</span><span class="w"> </span><span class="nx">apply</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="nx">changes</span><span class="w"> </span><span class="nx">automatically</span>
+</code></pre></div>
+</div>
+<footer><a href="../index.html">← Back to Home</a></footer>
+</main>
+</body>
+</html>

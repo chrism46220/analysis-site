@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domain Restriction Design — OpenClaw Agent Stack</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --border: #d0d0d0;
+    --text: #1a1a1a;
+    --text-secondary: #555;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --code-bg: #f1f5f9;
+    --code-border: #e2e8f0;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+    --table-header: #1e293b;
+    --table-stripe: #f8fafc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    padding: 0;
+    margin: 0;
+  }
+
+  nav.toc {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  nav.toc .inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  nav.toc .title-badge {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-right: 0.75rem;
+    white-space: nowrap;
+  }
+
+  nav.toc a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.82rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  nav.toc a:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+
+  header .meta {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 650;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 1.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+  }
+
+  p { margin-bottom: 1rem; }
+
+  ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+
+  strong { font-weight: 600; }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--code-border);
+  }
+
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    tab-size: 2;
+  }
+
+  pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  blockquote {
+    border-left: 4px solid var(--accent);
+    padding: 0.6rem 1rem;
+    margin: 1rem 0;
+    background: var(--accent-light);
+    border-radius: 0 6px 6px 0;
+  }
+
+  blockquote p:last-child { margin-bottom: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+
+  thead { background: var(--table-header); color: #fff; }
+  th {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-low    { background: #fef3c7; color: #92400e; }
+  .tag-medium { background: #dbeafe; color: #1e40af; }
+  .tag-high   { background: #dcfce7; color: #166534; }
+
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding: 0.35rem 0 0.35rem 1.8rem;
+    position: relative;
+  }
+  .checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+  }
+  .checklist li.done::before {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .checklist li.done::after {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.6rem;
+    width: 0.5rem;
+    height: 0.3rem;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+  }
+
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .insight {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+
+  .insight strong { color: var(--green); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+  }
+
+  .card h4 { margin-top: 0; color: var(--text); }
+  .card p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+
+  @media (max-width: 600px) {
+    .container { padding: 1.25rem 1rem; }
+    header h1 { font-size: 1.5rem; }
+    nav.toc { padding: 0.6rem 1rem; }
+    nav.toc .inner { gap: 0.3rem; }
+    .flow-box { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="inner">
+    <span class="title-badge">Domain Restriction</span>
+    <a href="#core-problem">1. Problem</a>
+    <a href="#mechanisms">2. Mechanisms</a>
+    <a href="#architecture">3. Architecture</a>
+    <a href="#directory">4. Layout</a>
+    <a href="#manifest">5. Schema</a>
+    <a href="#examples">6. Examples</a>
+    <a href="#tradeoffs">7. Tradeoffs</a>
+    <a href="#edge-cases">8. Edge Cases</a>
+    <a href="#checklist">9. Checklist</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<header>
+  <h1>Domain Restriction Design</h1>
+  <p class="meta">Steering OpenClaw Agents Toward Specialized Knowledge &middot; Plato (Routing Layer) &middot; 2026-05-16</p>
+</header>
+
+<!-- ================================================================== -->
+<h2 id="core-problem">1. The Core Problem</h2>
+
+<p>LLMs train on the full human corpus. GPT-5.4, Claude 4, and their peers have latent knowledge of <em>everything</em> — chemistry, physics, literature, history, coding, medicine, law. When you wrap that model in an agent, the agent can talk about anything the underlying model knows.</p>
+
+<p>This is a <strong>feature</strong> until you need a <strong>specialist agent</strong>:</p>
+
+<ul>
+  <li>"I want an American History agent that talks only about American History."</li>
+  <li>"I want a legal research agent that stays inside its document corpus."</li>
+  <li>"I want a customer-support agent that doesn't hallucinate technical specs."</li>
+</ul>
+
+<p>The naive approach — "just put it in the system prompt" — is fragile. Adversarial prompts, ambiguous phrasing, or the model's own eagerness to be helpful can pull it out of character.</p>
+
+<div class="insight">
+  <strong>Key insight:</strong> You cannot erase knowledge from a dense transformer. You can only:<br><br>
+  1. <strong>Tell</strong> it not to use that knowledge (persona).<br>
+  2. <strong>Give</strong> it a better source to use instead (RAG).<br>
+  3. <strong>Prevent</strong> it from receiving the question at all (intent classification).<br>
+  4. <strong>Bias</strong> its token probabilities away from unwanted domains (logit manipulation).<br>
+  5. Actually <strong>remove</strong> the knowledge (fine-tuning — expensive).
+</div>
+
+<p>This document is about <strong>attention steering, context shaping, and knowledge retrieval gates</strong> — not retraining.</p>
+
+<!-- ================================================================== -->
+<h2 id="mechanisms">2. Practical Mechanisms (No Fine-Tuning)</h2>
+
+<h3>a) System Prompt / Persona Shaping</h3>
+
+<p><strong>How it works:</strong> The agent's system prompt describes its identity, expertise, and boundaries. The model develops a character and tries to stay consistent.</p>
+
+<pre><code>You are Dr. Eleanor Vance, professor of American History at Princeton.
+You specialize in US history from pre-Columbian times to the present.
+You do not discuss physics, chemistry, biology, or computer science.
+If asked about topics outside American History, say:
+  "That's outside my expertise. I specialize in American History."</code></pre>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Zero cost, immediate effect, easy to adjust, no latency overhead.</p></div>
+  <div class="card"><h4>Cons</h4><p><strong>Fragile.</strong> Adversarial prompting can break persona. No actual knowledge boundary. Inconsistent across model providers.</p></div>
+</div>
+
+<p><strong>Best for:</strong> Low-stakes domains where occasional drift is acceptable.</p>
+
+<h3>b) Retrieval-Augmented Domain Focus (RAG-with-blinders)</h3>
+
+<p><strong>How it works:</strong> Provide a curated knowledge base (markdown files, compiled wiki, vector database) as the <strong>only</strong> source the agent should use for domain answers. Instruct the agent to answer exclusively from provided sources or say "I don't know."</p>
+
+<div class="flow-box">User query
+    │
+    ▼
+memory_search(corpus=wiki, query=user_input)
+    │
+    ├─ top-k chunks found with score &ge; threshold
+    │   → Answer with citations from sources
+    │
+    └─ no relevant chunks found
+        → "I don't have information about that in my knowledge base."</div>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Actual knowledge boundary. Auditable (citations). Updateable without retraining. Works with API-based models.</p></div>
+  <div class="card"><h4>Cons</h4><p>Requires curation. Model may still hallucinate. Retrieval quality matters. Adds latency.</p></div>
+</div>
+
+<h3>c) Pre-flight Intent Classification</h3>
+
+<p><strong>How it works:</strong> Before the query reaches the domain agent, a classifier determines whether the query is in-scope. Out-of-scope queries are deflected or routed to a general agent.</p>
+
+<div class="flow-box">User query → Intent classifier
+  ├─ Score &ge; threshold → forward to domain agent
+  └─ Score &lt; threshold → deflect or route to general agent</div>
+
+<p>The classifier can be:</p>
+<ol>
+  <li><strong>The same LLM</strong> — cheap classification prompt.</li>
+  <li><strong>A smaller model</strong> — BERT/DistilBERT for near-zero latency.</li>
+  <li><strong>Hybrid</strong> — keyword patterns for fast path, LLM for ambiguity.</li>
+</ol>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Clean gate — domain agent never sees off-domain queries. Composable. Fast keyword path possible.</p></div>
+  <div class="card"><h4>Cons</h4><p>Adds latency. Classifier errors. Ambiguity is hard (e.g. "What's the date?").</p></div>
+</div>
+
+<h3>d) Constrained Decoding / Logit Biasing</h3>
+
+<p><strong>How it works:</strong> At inference time, reduce probability of out-of-domain tokens. Requires access to logit distribution — only local/open-weight models.</p>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Theoretically clean. No retrieval dependency.</p></div>
+  <div class="card"><h4>Cons</h4><p><strong>Not practical with API-based models.</strong> Extremely hard to define token boundaries. May degrade general capabilities.</p></div>
+</div>
+
+<p><strong>Verdict:</strong> Not viable for this stack (API-based). Mentioned for completeness.</p>
+
+<h3>e) Task-Specific Fine-Tuning</h3>
+
+<p><strong>How it works:</strong> Fine-tune a base model on domain-only data to reduce off-domain capability.</p>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Most thorough. Fast inference. Permanent.</p></div>
+  <div class="card"><h4>Cons</h4><p><strong>Expensive.</strong> Degrades general reasoning. Static — needs re-fine-tuning for new knowledge. May not be available for top API models.</p></div>
+</div>
+
+<p><strong>Verdict:</strong> Overkill for this stack. Mentioned for completeness.</p>
+
+<h3 id="hybrid">f) Hybrid: Persona + RAG + Intent Classifier <span class="tag tag-high">Recommended</span></h3>
+
+<p><strong>How it works:</strong> Combine a, b, and c into a pipeline where each layer reinforces the others.</p>
+
+<div class="flow-box">User → Intent Classifier (gate)
+  ├─ Out-of-scope → deflect
+  └─ In-scope → Domain Agent
+                  ├─ Persona prompt (layer 1)
+                  ├─ RAG retrieval (layer 2)
+                  ├─ Strict grounding instructions (layer 3)
+                  └─ "I don't know" fallback (layer 4)</div>
+
+<p>Each layer catches failures from the previous:</p>
+<ol>
+  <li><strong>Intent classifier</strong> gates out clearly wrong queries.</li>
+  <li><strong>Persona prompt</strong> prevents the agent from willingly answering off-domain.</li>
+  <li><strong>RAG corpus</strong> grounds answers in curated sources.</li>
+  <li><strong>"I don't know" fallback</strong> fires when the corpus lacks relevant info.</li>
+</ol>
+
+<div class="card-grid">
+  <div class="card"><h4>Pros</h4><p>Defense in depth. High domain purity. Practical with API models. Composable.</p></div>
+  <div class="card"><h4>Cons</h4><p>Medium complexity. Three moving parts. Latency from classifier + retrieval (~200-800ms).</p></div>
+</div>
+
+<!-- ================================================================== -->
+<h2 id="architecture">3. Concrete Architecture for This Stack</h2>
+
+<h3>Layer mapping</h3>
+
+<table>
+  <thead>
+    <tr><th>Layer</th><th>Component</th><th>Domain Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>User-facing</td><td>Talkie</td><td>Intent classification, routing</td></tr>
+    <tr><td>Routing</td><td>Plato</td><td>Domain config loading, subagent spawning</td></tr>
+    <tr><td>Execution</td><td>Manny</td><td>Knowledge compilation, index updates</td></tr>
+    <tr><td>Verification</td><td>Q</td><td>Domain compliance checks</td></tr>
+    <tr><td>Thinking/Answer</td><td>Specialist agents</td><td>Domain-constrained persona + RAG</td></tr>
+  </tbody>
+</table>
+
+<h3>Flow diagram</h3>
+
+<div class="flow-box">User message
+    │
+    ▼
+Talkie (intent classification pass)
+    │
+    ├─ Checks keyword patterns from manifest.json
+    ├─ If ambiguous → fast LLM classification call
+    │
+    ├─ Out-of-scope → deflect or route to general agent
+    └─ In-scope
+          │
+          ▼
+Plato (reads domain manifest)
+    │
+    ├─ Loads domain/AGENTS.md
+    ├─ Loads domain/SOUL.md
+    ├─ Loads domain/IDENTITY.md
+    ├─ Loads domain/KNOWLEDGE.md
+    ├─ Registers domain/wiki/ for memory_search
+    │
+    ▼
+Domain Specialist Agent
+    │
+    ├─ Persona: "You are Dr. Eleanor Vance..."
+    ├─ RAG: memory_search(corpus=wiki, query=user_message)
+    ├─ Answer from RAG results + persona
+    ├─ If no relevant RAG result → "I don't know"
+    │
+    ▼
+Q (verification)
+    │
+    ├─ Check: answer stays inside domain scope
+    ├─ Check: answer cites RAG sources (when applicable)
+    ├─ Check: "I don't know" used appropriately
+    │
+    ▼
+Talkie (presentation)</div>
+
+<h3>Talkie routing table</h3>
+
+<pre><code>{
+  "domains": {
+    "general": {
+      "is_default": true,
+      "priority": 0
+    },
+    "american-history": {
+      "manifest": "domains/american-history/manifest.json",
+      "priority": 10,
+      "patterns": [
+        "american history", "US history", "civil war",
+        "revolution", "founding fathers", "constitution",
+        "president", "1776", "declaration of independence"
+      ]
+    }
+  }
+}
+</code></pre>
+
+<h3>Domain agent spawning (pseudocode)</h3>
+
+<pre><code>def spawn_domain_agent(message, domain):
+    manifest = load_json(f"domains/{domain}/manifest.json")
+
+    config = {
+        "identity":        read_file(f"domains/{domain}/IDENTITY.md"),
+        "soul":            read_file(f"domains/{domain}/SOUL.md"),
+        "knowledge":       read_file(f"domains/{domain}/KNOWLEDGE.md"),
+        "persona_prompt":   manifest.get("persona_prompt", ""),
+        "wiki_corpus":     f"domains/{domain}/wiki/",
+        "deflect_message": manifest.get("deflect_message",
+                            "That's outside my expertise."),
+        "confidence_threshold": manifest.get("confidence_threshold", 0.7)
+    }
+
+    return DomainSpecialist(config)</code></pre>
+
+<h3>RAG pipeline</h3>
+
+<ol>
+  <li><strong>Ingestion:</strong> Markdown files in <code>domains/{name}/wiki/</code> chunked (~500-1000 tokens with overlap).</li>
+  <li><strong>Indexing:</strong> Chunks are embedded and stored in a vector index.</li>
+  <li><strong>Retrieval:</strong> At query time, top-k chunks via <code>memory_search(corpus=wiki, query=...)</code>.</li>
+  <li><strong>Grounding:</strong> Retrieved chunks injected with source citations.</li>
+  <li><strong>Confidence filter:</strong> If top chunk similarity &lt; threshold → "I don't know."</li>
+</ol>
+
+<!-- ================================================================== -->
+<h2 id="directory">4. Directory Layout</h2>
+
+<pre><code>~/openclaw/
+├── domains/
+│   ├── general/
+│   │   ├── AGENTS.md
+│   │   ├── SOUL.md
+│   │   ├── IDENTITY.md
+│   │   ├── KNOWLEDGE.md
+│   │   └── manifest.json
+│   │
+│   ├── american-history/
+│   │   ├── AGENTS.md          # Domain-specific agent instructions
+│   │   ├── SOUL.md            # Persona: "American History professor..."
+│   │   ├── IDENTITY.md        # "I am an American History specialist"
+│   │   ├── KNOWLEDGE.md       # Curated seed knowledge (hand-written)
+│   │   ├── wiki/
+│   │   │   ├── colonial-era.md
+│   │   │   ├── revolution.md
+│   │   │   ├── civil-war.md
+│   │   │   ├── reconstruction.md
+│   │   │   ├── 20th-century.md
+│   │   │   └── compiled-index.json
+│   │   └── manifest.json
+│   │
+│   ├── legal-research/
+│   │   └── ...
+│   │
+│   └── customer-support/
+│       └── ...
+│
+└── tools/
+    ├── domain-compile.js      # Compiles markdown wiki → vector index
+    ├── domain-validate.js     # Validates manifest + config files
+    ├── domain-list.js         # Lists all available domain agents
+    └── domain-test.js         # Tests intent classification accuracy</code></pre>
+
+<h3>Example: american-history/manifest.json</h3>
+
+<pre><code>{
+  "name": "american-history",
+  "version": "1.0",
+  "scope": "American history from pre-Columbian era through present day",
+  "out_of_scope": [
+    "Chemistry, physics, biology (except as relevant to historical events)",
+    "Computer science and programming",
+    "Foreign policy after 2025",
+    "Geographic trivia unrelated to US history"
+  ],
+  "routing_patterns": [
+    "american history", "US history", "civil war",
+    "revolutionary war", "american revolution",
+    "founding fathers", "constitution", "declaration of independence",
+    "president", "1776", "abraham lincoln", "cold war",
+    "civil rights", "slavery", "manifest destiny"
+  ],
+  "persona_prompt": "You are Dr. Eleanor Vance, professor of American History...",
+  "knowledge_sources": [
+    "wiki/colonial-era.md", "wiki/revolution.md", "wiki/civil-war.md"
+  ],
+  "wiki_corpus": "wiki/",
+  "confidence_threshold": 0.7,
+  "deflect_message": "That's outside my expertise. I specialize in American History.",
+  "fallback_message": "I don't have information about that in my knowledge base."
+}</code></pre>
+
+<h3>Example: american-history/SOUL.md</h3>
+
+<pre><code>Be concise, evidence-based, and precise with dates and names.
+You are a professor — authoritative but approachable.
+If you don't know, say so. Never fabricate.</code></pre>
+
+<h3>Example: american-history/AGENTS.md</h3>
+
+<pre><code># Domain Agent: American History
+
+## Constraints
+- Answer ONLY from the provided knowledge corpus (wiki/)
+- If no relevant information found: "I don't have information about that."
+- Never discuss topics outside American History
+- Always cite your source document and section
+
+## Verification
+- Every answer must be traceable to a wiki source
+- Claims without source citation are flagged by Q</code></pre>
+
+<!-- ================================================================== -->
+<h2 id="manifest">5. Domain Manifest Schema</h2>
+
+<pre><code>{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "name", "version", "scope",
+    "routing_patterns", "persona_prompt",
+    "confidence_threshold", "deflect_message"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique domain identifier (kebab-case)",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Human-readable domain description"
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Topics the agent should not discuss"
+    },
+    "routing_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Keyword phrases for intent routing"
+    },
+    "persona_prompt": {
+      "type": "string",
+      "description": "System prompt establishing character and boundaries"
+    },
+    "knowledge_sources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to knowledge base files"
+    },
+    "wiki_corpus": {
+      "type": "string",
+      "description": "Path to compiled wiki directory for RAG"
+    },
+    "confidence_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.7
+    },
+    "deflect_message": {
+      "type": "string",
+      "description": "Message for out-of-scope queries"
+    },
+    "fallback_message": {
+      "type": "string",
+      "description": "Message when RAG has no relevant results"
+    }
+  }
+}</code></pre>
+
+<!-- ================================================================== -->
+<h2 id="examples">6. Worked Examples</h2>
+
+<h3>Example 1: In-scope query</h3>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>User</td><td>"Tell me about the Louisiana Purchase."</td></tr>
+    <tr><td>Talkie</td><td>Keyword match (weak). LLM classifier: domain=american-history, confidence=0.88 → route</td></tr>
+    <tr><td>Domain Agent</td><td>Loads persona. RAG: memory_search → top result score 0.91 (above threshold)</td></tr>
+    <tr><td>Q</td><td>✓ Cites wiki source. ✓ Stays in scope. ✓ No off-domain content. <strong>PASS</strong></td></tr>
+  </tbody>
+</table>
+
+<p><strong>Answer:</strong> "In 1803, the United States under President Thomas Jefferson purchased approximately 828,000 square miles of territory from France for $15 million (<strong>$</strong>0.04 per acre). This single transaction doubled the size of the young nation. [Source: wiki/colonial-era.md → 'Louisiana Purchase']"</p>
+
+<h3>Example 2: Out-of-scope query</h3>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>User</td><td>"What's the formula for sulfuric acid?"</td></tr>
+    <tr><td>Talkie</td><td>No keyword match. LLM classifier: domain=general, confidence=0.96 → deflect</td></tr>
+    <tr><td>Deflection</td><td>"I'm Dr. Eleanor Vance, and I specialize in American History. The formula for sulfuric acid is outside my area of expertise. Please try a general agent or a chemistry specialist."</td></tr>
+  </tbody>
+</table>
+
+<h3>Example 3: Cross-domain query</h3>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>User</td><td>"How did the Industrial Revolution affect chemistry?"</td></tr>
+    <tr><td>Talkie</td><td>Ambiguous — "industrial revolution" ⇒ american-history, "chemistry" ⇒ general. Route to american-history with tiebreaker.</td></tr>
+    <tr><td>Domain Agent</td><td>"The Industrial Revolution (roughly 1760–1840) transformed American manufacturing... However, detailed chemical processes are outside my expertise. I can recommend a chemistry specialist for those details."</td></tr>
+  </tbody>
+</table>
+
+<h3>Example 4: No RAG result</h3>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>User</td><td>"What did Thomas Jefferson eat for breakfast on July 4, 1803?"</td></tr>
+    <tr><td>Talkie</td><td>Keyword match: "thomas jefferson", "1803" → american-history</td></tr>
+    <tr><td>Domain Agent</td><td>RAG: memory_search → score 0.12 &lt; threshold 0.7 → fallback</td></tr>
+    <tr><td>Answer</td><td>"I don't have information about that in my knowledge base. While I can tell you about the Louisiana Purchase in 1803, I don't have records of Thomas Jefferson's daily meals."</td></tr>
+  </tbody>
+</table>
+
+<!-- ================================================================== -->
+<h2 id="tradeoffs">7. Tradeoffs Analysis</h2>
+
+<table>
+  <thead>
+    <tr><th>Approach</th><th>Domain Purity</th><th>Latency</th><th>Maintenance</th><th>Fidelity</th><th>Auditability</th><th>Cost</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Persona only</td><td><span class="tag tag-low">Low</span></td><td><span class="tag tag-low">Minimal</span></td><td><span class="tag tag-low">None</span></td><td><span class="tag tag-low">Low</span></td><td>None</td><td>$</td></tr>
+    <tr><td>RAG only</td><td><span class="tag tag-high">High</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-high">High</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-high">High</span></td><td>$$</td></tr>
+    <tr><td>Intent classifier only</td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-low">Low</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-low">Low</span></td><td><span class="tag tag-medium">Medium</span></td><td>$</td></tr>
+    <tr><td><strong>Persona + RAG + Classifier</strong></td><td><span class="tag tag-high">High</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-high">High</span></td><td><span class="tag tag-high">High</span></td><td>$$</td></tr>
+    <tr><td>Constrained decoding</td><td><span class="tag tag-high">High</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-high">Very High</span></td><td><span class="tag tag-medium">Medium</span></td><td><span class="tag tag-medium">Medium</span></td><td>$$$</td></tr>
+    <tr><td>Fine-tuning</td><td><span class="tag tag-high">Highest</span></td><td><span class="tag tag-low">Minimal</span></td><td><span class="tag tag-high">Very High</span></td><td><span class="tag tag-high">Highest</span></td><td><span class="tag tag-low">Low</span></td><td>$$$$</td></tr>
+  </tbody>
+</table>
+
+<!-- ================================================================== -->
+<h2 id="edge-cases">8. Edge Cases</h2>
+
+<h3>Ambiguous queries</h3>
+
+<p><code>"What's the date?"</code> <code>"Tell me about the war."</code> <code>"Who was the first?"</code></p>
+<p><strong>Strategy:</strong> If intent classifier confidence &lt; threshold, route to <strong>general</strong> agent or ask clarifying question.</p>
+
+<h3>Cross-domain queries</h3>
+
+<p><code>"How did the discovery of DNA's structure affect civil rights legislation?"</code></p>
+<p><strong>Strategy:</strong> Allow cross-domain but have domain agent answer only its portion. Suggest consulting a specialist for the rest.</p>
+
+<h3>User insists on out-of-domain answer</h3>
+
+<p><strong>Strategy:</strong> Politely maintain boundary:</p>
+
+<pre><code>"I understand you'd like me to answer, but I'm configured as an
+American History specialist. I can't answer chemistry questions.
+Please ask a general agent or a chemistry specialist."</code></pre>
+
+<h3>Knowledge drift</h3>
+
+<p><strong>Strategy:</strong> Update wiki markdown files, recompile vector index with <code>domain-compile.js</code>. No retraining needed.</p>
+
+<h3>Competing domain matches</h3>
+
+<p><code>"Tell me about the constitutional issues in the Civil War."</code></p>
+<p><strong>Strategy:</strong> If top two scores within 0.1, either (a) ask the user, (b) route to higher-confidence domain, or (c) route to cross-domain agent.</p>
+
+<h3>Empty or non-informative queries</h3>
+
+<p><code>""</code> <code>"?"</code> <code>"Hello"</code> <code>"Thanks"</code></p>
+<p><strong>Strategy:</strong> Route to general agent — don't trigger domain routing.</p>
+
+<!-- ================================================================== -->
+<h2 id="checklist">9. Implementation Checklist</h2>
+
+<h3>Phase 1: Foundation</h3>
+<ul class="checklist">
+  <li>Create <code>domains/</code> directory structure under OpenClaw root</li>
+  <li>Write manifest JSON schema + validation tool (<code>domain-validate.js</code>)</li>
+  <li>Write <code>domain-compile.js</code>: markdown wiki → chunked, embedded vector index</li>
+  <li>Write <code>domain-list.js</code>: enumerate available domains from manifest files</li>
+</ul>
+
+<h3>Phase 2: Talkie Routing</h3>
+<ul class="checklist">
+  <li>Add routing table to Talkie config: domain patterns → domain agent IDs</li>
+  <li>Add keyword pattern matching in Talkie (case-insensitive, partial match)</li>
+  <li>Add LLM-based intent classification pass for ambiguous queries</li>
+  <li>Add fallback: unclassifiable → general agent or deflection</li>
+  <li>Tests: routing accuracy for each domain (min 90% precision)</li>
+</ul>
+
+<h3>Phase 3: Domain Agent Spawning</h3>
+<ul class="checklist">
+  <li>Add Plato path: read domain manifest → load domain config files</li>
+  <li>Add domain subagent constructor: persona + identity + soul + knowledge</li>
+  <li>Register domain wiki corpus for <code>memory_search(corpus=wiki)</code></li>
+  <li>Add RAG retrieval pipeline: query → embed → search → top-k chunks</li>
+  <li>Add confidence threshold filtering for RAG results</li>
+  <li>Add "I don't know" fallback when RAG confidence &lt; threshold</li>
+</ul>
+
+<h3>Phase 4: Q Verification</h3>
+<ul class="checklist">
+  <li>Add domain compliance check: answer stays inside scope</li>
+  <li>Add source citation verification for RAG-based answers</li>
+  <li>Add "I don't know" usage check</li>
+</ul>
+
+<h3>Phase 5: Domain Content</h3>
+<ul class="checklist">
+  <li>Write KNOWLEDGE.md for first domain (american-history)</li>
+  <li>Write wiki content for first domain (at least 5-10 articles)</li>
+  <li>Write manifest.json for first domain</li>
+  <li>Compile wiki → vector index</li>
+  <li>Test: end-to-end domain agent conversation (10+ queries)</li>
+</ul>
+
+<h3>Phase 6: Tooling &amp; Documentation</h3>
+<ul class="checklist">
+  <li>Document "How to add a new domain agent"</li>
+  <li>Write tests for intent classification accuracy</li>
+  <li>Add performance benchmarks (latency per component)</li>
+</ul>
+
+<hr>
+
+<h3>Appendix A: Classification Prompt Template</h3>
+
+<pre><code>You are an intent classifier for a multi-domain agent system.
+Your task: classify the user's query into the most appropriate domain.
+
+Available domains:
+{domains_json}
+
+Rules:
+- Return ONLY a JSON object with "domain" and "confidence" keys.
+- "domain" must be one of the domain names listed above.
+- "confidence" must be a float between 0 and 1.
+- If no domain fits well, use "general" with a low confidence score.
+
+User query: "{user_query}"
+
+Response (JSON only):</code></pre>
+
+<h3>Appendix B: RAG Chunking Strategy</h3>
+
+<table>
+  <thead>
+    <tr><th>Parameter</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Chunk size</td><td>500 tokens (50-token overlap)</td></tr>
+    <tr><td>Embedding model</td><td>text-embedding-3-small</td></tr>
+    <tr><td>Top-K results</td><td>5</td></tr>
+    <tr><td>Similarity metric</td><td>Cosine</td></tr>
+    <tr><td>Confidence threshold</td><td>0.7</td></tr>
+  </tbody>
+</table>
+
+<h3>Appendix C: Integration Points</h3>
+
+<table>
+  <thead>
+    <tr><th>OpenClaw Component</th><th>Integration</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>plugins/entries/talkie</td><td>Add routing table, intent classification pass</td></tr>
+    <tr><td>plugins/entries/plato</td><td>Add domain config loading, subagent spawning</td></tr>
+    <tr><td>memory_search</td><td>Register domain wiki corpora via corpus=wiki parameter</td></tr>
+    <tr><td>plugins/entries/q</td><td>Add domain compliance verification rules</td></tr>
+    <tr><td>AGENTS.md routing rules</td><td>Add domain dispatch logic</td></tr>
+    <tr><td>Cron system</td><td>Add scheduled wiki recompilation if sources change</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<p style="color:var(--text-secondary); font-size:0.85rem; text-align:center; margin-top:3rem;">
+&copy; 2026 Plato (Routing Layer) &middot; OpenClaw Agent Stack
+</p>
+
+</div>
+</body>
+</html>
