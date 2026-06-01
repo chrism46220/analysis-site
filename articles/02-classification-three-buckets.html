@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growth Stock Classification — Consensus, Narrative, or Event-Driven</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+    --orange: #d4762b;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+  header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header .meta {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.75rem;
+  }
+  header .meta span { display: inline-block; margin: 0 0.5rem; }
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--accent);
+  }
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text);
+  }
+  h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+    color: var(--text-secondary);
+  }
+  p { margin-bottom: 1rem; color: var(--text); }
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--text-secondary); font-style: italic; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  thead { background: var(--surface2); }
+  th {
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background: rgba(255,255,255,0.015); }
+  tr:hover { background: rgba(88,166,255,0.04); }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: rgba(88,166,255,0.06);
+    padding: 0.85rem 1.2rem;
+    margin: 1.25rem 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.95rem;
+  }
+  .callout.bull { border-left-color: var(--green); background: rgba(63,185,80,0.06); }
+  .callout.bear { border-left-color: var(--red); background: rgba(248,81,73,0.06); }
+  .callout.warn { border-left-color: var(--yellow); background: rgba(210,153,34,0.06); }
+  .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .tag.risk-10 { background: rgba(248,81,73,0.2); color: var(--red); }
+  .tag.risk-9 { background: rgba(248,81,73,0.15); color: var(--red); }
+  .tag.risk-8 { background: rgba(212,118,43,0.2); color: var(--orange); }
+  .tag.risk-7 { background: rgba(212,118,43,0.15); color: var(--orange); }
+  .tag.bull { background: rgba(63,185,80,0.15); color: var(--green); }
+  .tag.bear { background: rgba(248,81,73,0.15); color: var(--red); }
+  .tag.neutral { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+  li { margin-bottom: 0.35rem; color: var(--text); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    background: rgba(110,118,129,0.2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: var(--text);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  blockquote {
+    border-left: 4px solid var(--border);
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.015);
+    border-radius: 0 6px 6px 0;
+  }
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  .table-wrapper { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Growth Stock Classification — Consensus, Narrative, or Event-Driven</h1>
+  <p class="subtitle">April 13–26, 2026 | Derived from Plato Solo Run — Three-Bucket Categorization Framework</p>
+
+</header>
+
+<h1>Growth Stock Classification — Consensus, Narrative, or Event-Driven</h1>
+<p><strong>April 13–26, 2026 | Derived from Plato solo run</strong></p>
+<p>Source data: Plato's top 10 consensus growth stocks + honorable mentions. Each ticker appears in exactly one category — no overlap.</p>
+<hr>
+<h2>1. CONSENSUS SIGNALS (Pure Frequency)</h2>
+<p>These mega-cap names dominate market conversation across all sources. They are talked about because they are enormous, heavily traded, and always in the spotlight — not because of a discrete catalyst or niche story.</p>
+<div class="table-wrapper"><table>
+  <thead><tr>
+    <th>Ticker</th>
+    <th>Why</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>NVDA</strong></td>
+      <td>12+ mentions across 4/4 sources; the single most-watched stock in the market, always in the conversation regardless of catalyst</td>
+    </tr>
+    <tr>
+      <td><strong>AMZN</strong></td>
+      <td>10+ mentions, 4/4 sources; AWS acceleration chatter is real, but AMZN's constant inclusion comes from being one of the world's most valuable and most-discussed companies</td>
+    </tr>
+    <tr>
+      <td><strong>MSFT</strong></td>
+      <td>8+ mentions, 4/4 sources; perennial mega-cap favorite with sustained interest, not a sudden story-driven surge</td>
+    </tr>
+    <tr>
+      <td><strong>META</strong></td>
+      <td>4+ mentions, 3/4 sources; stable interest driven by its status as a mega-cap with reasonable valuation — standard market conversation, not a narrative spike</td>
+    </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2>2. NARRATIVE DRIVERS (Why People Are Talking)</h2>
+<p>These stocks appear because a specific story, thesis, or emerging-sector bet is generating sustained discussion. Each has a clear narrative arc that explains the attention.</p>
+<div class="table-wrapper"><table>
+  <thead><tr>
+    <th>Ticker</th>
+    <th>Why</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>APLD</strong></td>
+      <td>AI data center buildout is a high-growth thematic narrative; 139% revenue growth and "rising" trend reflect the AI infrastructure story, not general market chatter</td>
+    </tr>
+    <tr>
+      <td><strong>ASML</strong></td>
+      <td>The chip lithography monopoly thesis is a concentrated story about a single company controlling an irreplaceable link in the AI supply chain</td>
+    </tr>
+    <tr>
+      <td><strong>AMD</strong></td>
+      <td>4+ mentions driven by the specific "AI GPU challenger to NVDA" narrative — a long-running storyline with clear competitive framing</td>
+    </tr>
+    <tr>
+      <td><strong>MU</strong></td>
+      <td>Memory cycle recovery (604% EPS growth) is a cyclical thesis: investors are watching for the turn, making it story-driven rather than random frequency</td>
+    </tr>
+    <tr>
+      <td><strong>INTC</strong></td>
+      <td>7+ mentions, 4/4 sources, but the conversation is overwhelmingly about the turnaround narrative — a fallen giant attempting a comeback</td>
+    </tr>
+    <tr>
+      <td><strong>ABNB</strong></td>
+      <td>Travel growth and strong FCF form a post-pandemic recovery+durability thesis; stable mentions, but the conversation is thesis-specific, not broad consensus</td>
+    </tr>
+    <tr>
+      <td><strong>CRM</strong></td>
+      <td>Enterprise AI/cloud growth thesis keeps it in the conversation as the "old guard pivoting to AI" story</td>
+    </tr>
+    <tr>
+      <td><strong>RKLB</strong></td>
+      <td>Space/defense emerging-sector thesis drives discussion; it's about betting on a new industry, not reacting to a one-time event</td>
+    </tr>
+    <tr>
+      <td><strong>MELI</strong></td>
+      <td>Latin American e-commerce/fintech growth story — a thematic bet on an entire region's digital transformation</td>
+    </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2>3. EVENT-DRIVEN SPIKES (Temporary)</h2>
+<p>These tickers appear because a specific, recent event triggered a burst of attention. The conversation is concentrated and may fade quickly as the news cycle moves on.</p>
+<div class="table-wrapper"><table>
+  <thead><tr>
+    <th>Ticker</th>
+    <th>Why</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>WDC</strong></td>
+      <td>+123% YTD on the HDD shortage is a classic supply-shock price surge; the entire discussion is anchored to a temporary hardware shortage dynamic</td>
+    </tr>
+    <tr>
+      <td><strong>RDDT</strong></td>
+      <td>Insider buying post-IPO is a specific event with a clear timestamp — once the buying window closes, the conversation shifts</td>
+    </tr>
+    <tr>
+      <td><strong>PLTR</strong></td>
+      <td>Karp's stock purchases are a discrete insider-trading event driving headlines, not a sustained narrative</td>
+    </tr>
+    <tr>
+      <td><strong>CRWV</strong></td>
+      <td>The $66.8B backlog figure is a data-point blip that spikes attention when the number is reported; it will drop off unless a follow-up catalyst emerges</td>
+    </tr>
+  </tbody>
+</table></div>
+<hr>
+<p><strong>Totals:</strong> 4 Consensus Signals · 9 Narrative Drivers · 4 Event-Driven Spikes</p>
+
+
+<div class="footer">
+  <p>Generated from markdown research &mdash; Dark GitHub-style theme</p>
+</div>
+
+</div>
+</body>
+</html>
