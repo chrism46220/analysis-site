@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Short-Term Trading Strategies for the Part-Time Trader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0e17;color:#d1d5db;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* ── Typography ── */
+h1,h2,h3,h4{color:#f0f4f8;font-weight:600;line-height:1.25}
+h1{font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-0.02em;margin-bottom:0.75rem}
+h2{font-size:clamp(1.35rem,2.5vw,1.85rem);letter-spacing:-0.01em;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid #1e293b}
+h3{font-size:1.2rem;margin:1.5rem 0 0.6rem}
+h4{font-size:1.05rem;margin:1rem 0 0.4rem;color:#94a3b8}
+p{margin-bottom:1rem;max-width:72ch}
+a{color:#60a5fa;text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:'JetBrains Mono',monospace;font-size:0.88em;background:#131a2a;padding:0.15em 0.4em;border-radius:4px}
+pre{background:#0d1225;border:1px solid #1e293b;border-radius:10px;padding:1.2rem;overflow-x:auto;margin:1rem 0 1.5rem;position:relative}
+pre code{background:transparent;padding:0;font-size:0.82rem;line-height:1.6;tab-size:2}
+strong{color:#e2e8f0}
+blockquote{border-left:3px solid #3b82f6;background:#0f172a;padding:0.8rem 1.2rem;margin:1rem 0;border-radius:0 8px 8px 0;color:#94a3b8}
+
+/* ── Layout ── */
+.container{max-width:960px;margin:0 auto;padding:0 1.25rem}
+header{background:linear-gradient(135deg,#0a0e17 0%,#111827 50%,#0a0e17 100%);padding:3rem 0 2rem;text-align:center;border-bottom:1px solid #1e293b}
+header .container{max-width:720px}
+header p{color:#94a3b8;font-size:1.05rem;margin:0}
+.meta{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:0.6rem;font-size:0.85rem;color:#64748b}
+main{padding:2.5rem 0 4rem}
+
+/* ── Strategy Cards ── */
+.card-grid{display:grid;grid-template-columns:1fr;gap:1.25rem;margin:1.5rem 0 2.5rem}
+.card{background:linear-gradient(135deg,#0f172a,#111d33);border:1px solid #1e293b;border-radius:12px;padding:1.5rem;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:#334155;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#1e3a5f;color:#60a5fa;font-weight:700;font-size:0.85rem;margin-right:0.6rem;flex-shrink:0}
+.card-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem}
+.card-header h3{margin:0;font-size:1.1rem}
+.card .tag{display:inline-block;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:0.2em 0.6em;border-radius:20px;margin-left:auto}
+.tag-tr{background:#1e3a5f;color:#60a5fa}
+.tag-mr{background:#3b1f3b;color:#e879f9}
+.tag-pb{background:#1f3b2c;color:#4ade80}
+.tag-rs{background:#3b2e1f;color:#fbbf24}
+.tag-qt{background:#1f2b3b;color:#38bdf8}
+.tag-sn{background:#2d1f3b;color:#a78bfa}
+.card-meta{display:flex;flex-wrap:wrap;gap:0.4rem 1rem;font-size:0.8rem;color:#64748b;margin:0.4rem 0 0.8rem}
+.card-meta span{display:flex;align-items:center;gap:0.3rem}
+.card-meta .label{color:#475569}
+.card p{font-size:0.92rem;color:#a1a9ba;margin-bottom:0.5rem}
+.card ul{font-size:0.9rem;color:#94a3b8;padding-left:1.2rem;margin:0.4rem 0}
+.card ul li{margin-bottom:0.3rem}
+.card .risk{background:#1a1420;border-left:3px solid #ef4444;padding:0.5rem 0.8rem;border-radius:0 6px 6px 0;margin:0.6rem 0;font-size:0.88rem;color:#f87171}
+.card .overfit{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.82rem;padding:0.2rem 0.6rem;border-radius:6px}
+.overfit-low{background:#122a1f;color:#4ade80}
+.overfit-med{background:#2a2612;color:#facc15}
+.overfit-high{background:#2a1212;color:#f87171}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;margin:1.2rem 0 1.8rem;border-radius:10px;border:1px solid #1e293b}
+table{width:100%;border-collapse:collapse;font-size:0.88rem}
+thead{background:#0f172a}
+th{padding:0.7rem 1rem;text-align:left;font-weight:600;color:#94a3b8;border-bottom:1px solid #1e293b;white-space:nowrap}
+td{padding:0.65rem 1rem;border-bottom:1px solid #1a1f2e;color:#c8ceda}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#0f1a2e}
+.num-col{text-align:center;font-weight:600;color:#60a5fa;width:2.2rem}
+.rank-1{background:#0f2a1f!important}
+.rank-2{background:#0f1f2a!important}
+.rank-3{background:#1a0f2a!important}
+
+/* ── Deep Dive Cards ── */
+.deep-dive{border:1px solid #1e293b;border-radius:14px;margin:2rem 0;overflow:hidden}
+.deep-dive-head{padding:1.2rem 1.5rem;display:flex;align-items:center;gap:0.75rem;border-bottom:1px solid #1e293b}
+.deep-dive-head .num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem}
+.deep-dive-head h3{margin:0;font-size:1.15rem}
+.deep-dive-body{padding:1.5rem}
+.deep-dive-body h4{margin-top:1.2rem;margin-bottom:0.4rem;font-size:0.95rem;color:#a1a9ba;text-transform:uppercase;letter-spacing:0.05em}
+.deep-dive-body h4:first-child{margin-top:0}
+.deep-dive-body ul{padding-left:1.2rem;margin:0.3rem 0 0.8rem;color:#94a3b8;font-size:0.9rem}
+.deep-dive-body ul li{margin-bottom:0.25rem}
+.dd-gold .deep-dive-head{background:linear-gradient(135deg,#1a2e1f,#0f2015)}.dd-gold .deep-dive-head .num{background:#4ade80;color:#0a0e17}
+.dd-silver .deep-dive-head{background:linear-gradient(135deg,#1a252e,#0f1a20)}.dd-silver .deep-dive-head .num{background:#38bdf8;color:#0a0e17}
+.dd-bronze .deep-dive-head{background:linear-gradient(135deg,#2a1f1a,#20150f)}.dd-bronze .deep-dive-head .num{background:#f59e0b;color:#0a0e17}
+
+/* ── Metrics grid ── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6rem;margin:0.8rem 0}
+.metric{background:#0d1225;border:1px solid #1a1f2e;border-radius:8px;padding:0.6rem 0.8rem;text-align:center}
+.metric .val{font-size:1.15rem;font-weight:700;color:#e2e8f0}
+.metric .lbl{font-size:0.72rem;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;margin-top:0.1rem}
+
+/* ── ToC ── */
+.toc{background:#0d1225;border:1px solid #1e293b;border-radius:12px;padding:1.5rem;margin:1.5rem 0 2rem}
+.toc h3{margin:0 0 0.6rem;font-size:1rem;color:#94a3b8}
+.toc ol{padding-left:1.2rem;color:#94a3b8;font-size:0.88rem;column-count:2;column-gap:1.5rem}
+.toc ol li{margin-bottom:0.3rem;break-inside:avoid}
+.toc ol li a{color:#60a5fa}
+
+/* ── Inline icons (simple unicode) ── */
+.icon{display:inline-block;width:1.1em;text-align:center}
+
+/* ── Responsive ── */
+@media(max-width:640px){
+  .container{padding:0 1rem}
+  .toc ol{column-count:1}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  header{padding:2rem 0 1.5rem}
+}
+
+/* ── Conclusion / Footer ── */
+.conclusion-box{background:linear-gradient(135deg,#0f172a,#131e33);border:1px solid #1e293b;border-radius:12px;padding:1.8rem;margin:2.5rem 0;text-align:center}
+.conclusion-box p{max-width:600px;margin:0 auto 0.6rem}
+.disclaimer{font-size:0.78rem;color:#475569;border-top:1px solid #1a1f2e;padding-top:1.5rem;margin-top:2.5rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>10 Short-Term Trading Strategies<br>for the Part-Time Trader</h1>
+    <p>Backtestable strategies with 2–15 day holds, 2–8 trades per month, end-of-day decision making. Built for consistency, not maximum returns.</p>
+    <div class="meta">
+      <span>📊 Research Review</span>
+      <span>⏱️ 15-min daily commitment</span>
+      <span>📈 Liquid US ETFs &amp; Large-Cap Stocks</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+<!-- ── Introduction ── -->
+<section id="intro">
+<h2>Introduction</h2>
+<p>Part-time trading occupies an uncomfortable middle ground. Day trading demands constant screen time you do not have. Buy-and-hold offers no tactical engagement. This article explores strategies designed for the trader who reviews the market once per day (at or near the close), makes a decision, and walks away.</p>
+
+<p>The constraints define the design:</p>
+<ul>
+  <li><strong>Hold period:</strong> 2–15 trading days — short enough to feel tactical, long enough to avoid noise</li>
+  <li><strong>Frequency:</strong> 2–8 trades per month — enough to learn, not so many as to overwhelm</li>
+  <li><strong>Universe:</strong> Liquid US ETFs and large-cap stocks — no gaps, no liquidity surprises</li>
+  <li><strong>Instruments:</strong> No options, no leverage, no margin — equity-only, cash-settled at close</li>
+  <li><strong>Decision:</strong> End-of-day — one look at the close, one decision</li>
+</ul>
+
+<p>Each strategy below is presented with backtestable rules, realistic failure modes, and candid overfitting risk assessment. No black boxes. No proprietary indicators. Every calculation can be reproduced in 50 lines of Python or less.</p>
+
+<blockquote>“The goal is not maximum CAGR. The goal is durable strategies that can be traded consistently for years, generating enough opportunities to learn and compound.”</blockquote>
+</section>
+
+<!-- ── Table of Contents ── -->
+<div class="toc">
+<h3>Contents</h3>
+<ol>
+  <li><a href="#s1">200-Day SMA Filter + 50-Day Pullback</a></li>
+  <li><a href="#s2">RSI(2) Mean Reversion (Connors)</a></li>
+  <li><a href="#s3">Three-Day Pullback to Rising 20-Day EMA</a></li>
+  <li><a href="#s4">Relative Strength Sector Rotation</a></li>
+  <li><a href="#s5">Bollinger Band Mean Reversion with Trend Filter</a></li>
+  <li><a href="#s6">20-Day Breakout with Volume Confirmation</a></li>
+  <li><a href="#s7">Seasonal Pattern: Turn of the Month + Best Months</a></li>
+  <li><a href="#s8">Dual Momentum (Antonacci)</a></li>
+  <li><a href="#s9">MACD Histogram Slope Change</a></li>
+  <li><a href="#s10">Donchian Channel 2-Week Breakout</a></li>
+</ol>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- ── THE 10 STRATEGIES ── -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="strategies">
+<h2>The 10 Strategies</h2>
+
+<div class="card-grid">
+
+<!-- ── Strategy 1 ── -->
+<div class="card" id="s1">
+  <div class="card-header">
+    <span class="num">1</span>
+    <h3>200-Day SMA Filter &amp; 50-Day Pullback</h3>
+    <span class="tag tag-tr">TREND</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 3–12 days</span>
+    <span>🔄 Freq: 2–5 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA</span>
+  </div>
+  <p><strong>Rationale.</strong> Markets above their 200-day SMA are in long-term uptrends. Pullbacks to the 50-day SMA within those uptrends represent temporary weakness in a bullish structure — exactly the kind of dip the part-time trader can buy and hold for a few days to a few weeks.</p>
+  <p><strong>Entry rules (long only):</strong></p>
+  <ul>
+    <li>Close &gt; 200-day SMA (long-term trend filter)</li>
+    <li>Close ≤ 50-day SMA + 0.5% (i.e., price has touched or penetrated the 50-day)</li>
+    <li>50-day SMA &gt; 200-day SMA (bullish alignment — golden cross regime)</li>
+    <li>Volume on entry day ≤ 1.5× the 20-day average volume (avoid cliff drops)</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Close ≥ 20-day SMA + 2 × ATR(14) → take profit</li>
+    <li>Close &lt; entry price − 1.5 × ATR(14) → stop loss</li>
+    <li>Otherwise, exit after 12 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 5–12 days. <strong>Trade frequency:</strong> 2–5 per month across universe.</p>
+  <p><strong>Risks:</strong> Fails in prolonged bear markets (200-day filter helps). Whiplash in range-bound choppy markets. A sudden gap-down below the 50-day SMA can turn the pullback into a breakdown — the volume filter catches some but not all.</p>
+  <div class="risk">⚠️ Worst case: A false pullback triggers entry, then price accelerates downward through the 200-day SMA. The 1.5× ATR stop limits damage to ~3–5% but the loss is real.</div>
+  <p><strong>Overfitting risk: <span class="overfit overfit-med">MEDIUM</span></strong> — The 0.5% threshold on the 50-day SMA is the main knob; most other parameters are standard (200, 50, 20, 14-period ATR are textbook). Avoid optimizing the ATR stop multiple beyond 1.0–2.0 range.</p>
+  <p><strong>Ease: 4/5</strong> — Standard indicators on any platform. One daily scan.</p>
+</div>
+
+<!-- ── Strategy 2 ── -->
+<div class="card" id="s2">
+  <div class="card-header">
+    <span class="num">2</span>
+    <span class="tag tag-mr">MEAN REV</span>
+    <h3>RSI(2) Mean Reversion (Connors)</h3>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 2–7 days</span>
+    <span>🔄 Freq: 3–6 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLF, XLE, XLK</span>
+  </div>
+  <p><strong>Rationale.</strong> Larry Connors popularized RSI(2) mean reversion in <em>Short-Term Trading Strategies That Work</em>. When a 2-period RSI drops below 10, the instrument is extremely oversold on a very short time horizon — and tends to snap back over the next 2–7 days. Works best on liquid ETFs, which revert more cleanly than individual stocks.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 200-day SMA (bullish bias filter — only buy oversold in uptrends)</li>
+    <li>RSI(2) &lt; 10 (extreme oversold)</li>
+    <li>Close is within 2% of 50-day SMA (not a free-fall — still near support)</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>RSI(2) crosses above 50 (momentum returned to neutral)</li>
+    <li>OR exit after 7 trading days (time-stop) if RSI above 30</li>
+    <li>Stop loss: close &lt; entry − 2 × ATR(14)</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 2–5 days. <strong>Trade frequency:</strong> 3–6 per month across universe.</p>
+  <p><strong>Risks:</strong> RSI(2) &lt; 10 can persist in trending down-moves (which is why the 200-day filter is essential). Works poorly in volatile bear markets. On individual stocks, earnings gaps can destroy the setup — stick to ETFs for robustness.</p>
+  <div class="risk">⚠️ 2008-style crash: RSI(2) stays below 10 for weeks. The 200-day filter keeps you out after the first leg down, but the drawdown on the one entry that triggers can be painful. The ATR stop is your lifeline.</div>
+  <p><strong>Overfitting risk: <span class="overfit overfit-low">LOW</span></strong> — RSI(2) &lt; 10 is the canonical Connors threshold. The 200-day filter is conservative. Changing the oversold threshold to 8 or 12 has minor effects; avoid adding extra confirmation filters that shrink the opportunity set too much.</p>
+  <p><strong>Ease: 5/5</strong> — RSI(2), SMA(200), SMA(50). Simple scan. One line of Python to check.</p>
+</div>
+
+<!-- ── Strategy 3 ── -->
+<div class="card" id="s3">
+  <div class="card-header">
+    <span class="num">3</span>
+    <h3>Three-Day Pullback to Rising 20-Day EMA</h3>
+    <span class="tag tag-pb">PULLBACK</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 3–10 days</span>
+    <span>🔄 Freq: 3–7 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLY, XLK, XLI</span>
+  </div>
+  <p><strong>Rationale.</strong> In a short-term uptrend, price often pulls back for 3 consecutive days before finding support at the 20-day EMA (exponential moving average). This is a classic entry for trend continuation — the "buy the dip" pattern on a 3–4 week time horizon.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 50-day SMA (intermediate uptrend)</li>
+    <li>20-day EMA &gt; 50-day SMA (short-term trend is above intermediate = bullish)</li>
+    <li>3 consecutive down days (close &lt; prior close) OR 3 of last 4 closes are down</li>
+    <li>Close ≥ 20-day EMA − 0.5% (pullback has arrived at support but not broken through)</li>
+    <li>Today's close &gt; today's low + 0.3 × range (not a gap-down crash day)</li>
+    <li>Enter next day at open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Close ≥ 20-day EMA + 2.5 × ATR(14) (profit target)</li>
+    <li>OR close &lt; 20-day EMA − 1.5 × ATR(14) (trailing stop — tightens as EMA rises)</li>
+    <li>Hard stop: entry − 2 × ATR(14)</li>
+    <li>Time stop: 10 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 4–8 days. <strong>Trade frequency:</strong> 3–7 per month.</p>
+  <p><strong>Risks:</strong> The 3-consecutive-down-day filter is straightforward but can miss pullbacks that begin with a doji or inside day. Works poorly in choppy sideways markets where the EMA provides no real support. The 2.5× ATR profit target may be too tight in high-volatility regimes — consider regime-adaptive targets.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-med">MEDIUM</span></strong> — The "3 of last 4" variant and the 0.3× range filter are mild optimizations. The core logic (pullback to rising EMA) is robust and appears in multiple practitioner books.</p>
+  <p><strong>Ease: 4/5</strong> — EMAs, consecutive close comparisons, percentage calculations. Simple spreadsheet or 15-line Python script.</p>
+</div>
+
+<!-- ── Strategy 4 ── -->
+<div class="card" id="s4">
+  <div class="card-header">
+    <span class="num">4</span>
+    <h3>Relative Strength Sector Rotation</h3>
+    <span class="tag tag-rs">REL STR</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 5–15 days</span>
+    <span>🔄 Freq: 2–4 / mo</span>
+    <span>🎯 Universe: XLE, XLK, XLF, XLV, XLI, XLP, XLY, XLB, XLRE, XLU</span>
+  </div>
+  <p><strong>Rationale.</strong> Sectors rotate in and out of favor. Rather than predicting which sector will lead, measure trailing relative strength and allocate to the top-ranked sectors. This is the core insight behind sector rotation models used by institutional investors.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Calculate 20-day rate of change for each sector ETF: <code>ROC = (close / close_20ago) − 1</code></li>
+    <li>Rank all 10 sector ETFs by ROC(20)</li>
+    <li>Select top 3 sectors</li>
+    <li>Among top 3, select those where Close &gt; 50-day SMA (momentum quality filter)</li>
+    <li>Enter at next day's open; equal-weight the selected sectors</li>
+    <li>If fewer than 2 sectors pass both filters, hold cash (or SPY as default)</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Rebalance every 5 trading days (weekly) — re-rank sectors</li>
+    <li>A sector is sold if it drops out of the top 3 in the new ranking</li>
+    <li>Closed at next day's open</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 5–10 days per rotation. <strong>Trade frequency:</strong> 2–4 rebalances per month.</p>
+  <p><strong>Risks:</strong> ROC(20) is a short lookback — can whip between sectors. Longer lookbacks (50-day) reduce frequency but may lag. The "cash default" is conservative but underperforms in broad bull markets. Sector ETF liquidity is excellent but narrow breadth means a few stocks dominate.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-med">MEDIUM</span></strong> — The 20-day ROC lookback and the 5-day rebalance are the main parameters. Testing 10/20/50-day ROC and 3/5/10-day rebalancing is natural sensitivity analysis. Be wary of adding momentum filters on top of momentum filters.</p>
+  <p><strong>Ease: 3/5</strong> — Requires daily ranking which is best done with a script. 3–5 stocks to check each day. Spreadsheet feasible.</p>
+</div>
+
+<!-- ── Strategy 5 ── -->
+<div class="card" id="s5">
+  <div class="card-header">
+    <span class="num">5</span>
+    <h3>Bollinger Band Mean Reversion with Trend Filter</h3>
+    <span class="tag tag-mr">MEAN REV</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 2–8 days</span>
+    <span>🔄 Freq: 3–6 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLF, XLK</span>
+  </div>
+  <p><strong>Rationale.</strong> Bollinger Bands (20,2) define a statistical envelope around price. When price touches or pierces the lower band but the longer-term trend is still up, the odds favor a snap-back toward the middle (20-day SMA). This is mean reversion with the trend as a safety net.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 200-day SMA (long-term uptrend)</li>
+    <li>Close ≤ lower Bollinger Band (20,2) — <code>close ≤ SMA(20) − 2 × σ(20)</code></li>
+    <li>%B &lt; 0 (percentage of distance from lower to upper band; 0 = at lower band)</li>
+    <li>Bandwidth &gt; 1.5% (avoid extreme squeeze — bands have widened sufficiently)</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Close ≥ SMA(20) (return to middle band — full mean reversion captured)</li>
+    <li>OR close ≥ upper Bollinger Band (20,2) — extreme overextension; exit</li>
+    <li>Stop: entry − 2 × ATR(14)</li>
+    <li>Time stop: 8 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 3–6 days. <strong>Trade frequency:</strong> 3–6 per month.</p>
+  <p><strong>Risks:</strong> Price can ride the lower band for days in a sharp decline — bandwidth filter reduces this risk but doesn't eliminate it. The 200-day filter keeps you out of severe bear markets but may miss multi-month corrections within a primary uptrend (e.g., 2022).</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-low">LOW</span></strong> — (20,2) Bollinger Bands are the default used by John Bollinger himself. The bandwidth threshold and trend filter are standard. Avoid changing the band multiple (1.5, 2.5) — 2.0 is what the literature supports.</p>
+  <p><strong>Ease: 5/5</strong> — Bollinger Bands built into every platform. One-liner scan.</p>
+</div>
+
+<!-- ── Strategy 6 ── -->
+<div class="card" id="s6">
+  <div class="card-header">
+    <span class="num">6</span>
+    <h3>20-Day Breakout with Volume Confirmation</h3>
+    <span class="tag tag-tr">TREND</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 5–15 days</span>
+    <span>🔄 Freq: 2–4 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLI, XLY</span>
+  </div>
+  <p><strong>Rationale.</strong> A new 20-day high accompanied by above-average volume signals institutional accumulation. The market is telling you that buyers are in control and willing to pay more than they have in the last month. Trend-following on a short-to-intermediate horizon.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 20-day SMA and 50-day SMA > 200-day SMA (trend structure)</li>
+    <li>Close = 20-day high (new 20-day closing high)</li>
+    <li>Today's volume &gt; 1.3 × 20-day average volume</li>
+    <li>ADX(14) &gt; 25 (trend is established, not just a random high)</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Close &lt; 10-day SMA (trend has broken in the short term)</li>
+    <li>OR close &lt; entry − 1.5 × ATR(14) (hard stop)</li>
+    <li>Time stop: 15 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 7–12 days. <strong>Trade frequency:</strong> 2–4 per month.</p>
+  <p><strong>Risks:</strong> Breakouts fail frequently (false breakouts). The volume and ADX filters help but reduce trade frequency. In low-volatility environments, 20-day highs are achieved too frequently, producing noise entries. Works best in bull markets with clear sector leadership.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-med">MEDIUM</span></strong> — ADX(14) threshold of 25 is standard (Wilder's original level). Volume multiple of 1.3× is adjustable — 1.5× would reduce frequency, 1.1× would increase it. Decide based on your risk tolerance, not on historical curve-fitting.</p>
+  <p><strong>Ease: 4/5</strong> — Requires ADX calculation (built into most platforms) and volume data. Straightforward daily scan.</p>
+</div>
+
+<!-- ── Strategy 7 ── -->
+<div class="card" id="s7">
+  <div class="card-header">
+    <span class="num">7</span>
+    <h3>Seasonal: Turn of the Month + Best Months</h3>
+    <span class="tag tag-sn">SEASONAL</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 2–6 days</span>
+    <span>🔄 Freq: 3–5 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM</span>
+  </div>
+  <p><strong>Rationale.</strong> The "Turn of the Month" (ToM) effect — the last few trading days of one month plus the first few of the next — captures a disproportionate share of equity returns. November through April (the "Best Six Months") have historically outperformed May–October. Combining these seasonal effects produces a calendar-based system with zero market timing skill.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Turn of the Month entries: Enter SPY on close of the last trading day of month, OR on close 3 days before month end (whichever comes first if markets are trending up). Simplified rule: enter on close of the last trading day before month end if Close &gt; 20-day SMA, otherwise wait for first day of new month.</li>
+    <li>Best Months override: Only take ToM signals in November–April. In May–October, hold cash unless a clear trend exists (Close &gt; 200-day SMA), then use ToM with a 5-day hold.</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Exit on close of the 4th trading day of the new month</li>
+    <li>OR stop loss: entry − 2 × ATR(14)</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 3–5 days per ToM window. <strong>Trade frequency:</strong> 3–5 per month (peak months: 2 entries; off-peak: 1).</p>
+  <p><strong>Risks:</strong> Calendar effects are real but small and can vanish for extended periods (2015–2016 ToM was weak). The strategy produces many small wins and occasional outsized losses if a bear month begins with a gap down. Position sizing is critical — the effect is ~0.3–0.8% per ToM window.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-low">LOW</span></strong> — These are well-studied calendar anomalies, not optimized parameters. The "November–April vs May–October" split is standard folk wisdom (the Halloween Indicator). Avoid adding additional filters that weren't in the original academic work.</p>
+  <p><strong>Ease: 5/5</strong> — No indicators. Just a calendar and a price check. Perfect for the part-time trader.</p>
+</div>
+
+<!-- ── Strategy 8 ── -->
+<div class="card" id="s8">
+  <div class="card-header">
+    <span class="num">8</span>
+    <h3>Dual Momentum (Antonacci)</h3>
+    <span class="tag tag-qt">QUANT</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: ~21 days monthly</span>
+    <span>🔄 Freq: 2–3 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, TLT, GLD, EFA</span>
+  </div>
+  <p><strong>Rationale.</strong> Gary Antonacci's <em>Dual Momentum</em> combines absolute momentum (is the asset up over 12 months?) and relative momentum (which asset is strongest among candidates?). The result: a systematic rotation that stays invested in the strongest trend and moves to cash when all trends are negative.</p>
+  <p><strong>Entry rules (monthly rebalance):</strong></p>
+  <ul>
+    <li>First trading day of each month, evaluate all candidates (SPY, QQQ, IWM, TLT, GLD, EFA)</li>
+    <li>Absolute momentum filter: 12-month return must be positive (Close / close_252ago − 1 &gt; 0)</li>
+    <li>Among assets passing the absolute filter, select the one (or two) with the highest 12-month return</li>
+    <li>If no asset passes absolute filter, hold cash (or SHY)</li>
+    <li>Enter at close on rebalance day</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Hold position until next monthly rebalance (approximately 21 trading days)</li>
+    <li>No intra-month stops — the monthly evaluation IS the stop</li>
+    <li>Optional: add a volatility overlay — if VIX &gt; 30, reduce position size by 50%</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> ~21 trading days. <strong>Trade frequency:</strong> 1–2 rebalances per month (often rotating just 1–2 positions).</p>
+  <p><strong>Risks:</strong> Can miss the first 1–3 months of a new bull market due to the 12-month lookback. Smooth drawdowns but not immune to whipsaw in flat markets. TLT and GLD can dominate for long stretches when bonds or gold outperform — which is fine, but you must trust the process.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-low">LOW</span></strong> — Gary Antonacci's paper is precise about the 12-month lookback. The asset selection is the main variable. Avoid adding your own "improvements" — the published rules are well-validated.</p>
+  <p><strong>Ease: 3/5</strong> — Monthly scan only, but requires 12 months of data per candidate. Python or a simple spreadsheet works. No daily screen time needed.</p>
+</div>
+
+<!-- ── Strategy 9 ── -->
+<div class="card" id="s9">
+  <div class="card-header">
+    <span class="num">9</span>
+    <h3>MACD Histogram Slope Change</h3>
+    <span class="tag tag-tr">TREND</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 3–12 days</span>
+    <span>🔄 Freq: 3–6 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLK, XLI, XLF</span>
+  </div>
+  <p><strong>Rationale.</strong> The MACD histogram (12,26,9) measures the difference between the MACD line and its signal line. When the histogram stops falling and begins to rise (slope turns positive from negative), it signals that short-term momentum is reversing upward. This can catch the early phase of a swing move.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 50-day SMA (intermediate trend up)</li>
+    <li>MACD histogram value today &gt; MACD histogram yesterday (slope turned up)</li>
+    <li>MACD histogram was negative for at least 2 consecutive days before turning (i.e., was in a pullback)</li>
+    <li>MACD line &lt; signal line (still in bearish territory — entering early)</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>MACD line crosses below signal line (momentum exhaustion)</li>
+    <li>OR close &lt; entry − 2 × ATR(14)</li>
+    <li>OR time stop: 12 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 5–10 days. <strong>Trade frequency:</strong> 3–6 per month.</p>
+  <p><strong>Risks:</strong> MACD histogram turns can be premature — the slope often turns up, price rallies for a day, then resumes the decline. The "histogram was negative for 2 days" filter reduces whipsaw but costs trade frequency. MACD is a lagging indicator by design; you are entering after the turn, not at the bottom.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-high">HIGH</span></strong> — MACD (12,26,9) is standard (Gerald Appel's original), but the slope-filtering logic (2 days negative, exact entry condition) is easy to over-optimize in backtesting. Stick to the canonical MACD parameters and resist the urge to "tune" the histogram thresholds.</p>
+  <p><strong>Ease: 4/5</strong> — MACD is built into every platform, but the slope logic requires some care. A short Python script handles it cleanly.</p>
+</div>
+
+<!-- ── Strategy 10 ── -->
+<div class="card" id="s10">
+  <div class="card-header">
+    <span class="num">10</span>
+    <h3>Donchian Channel 2-Week Breakout</h3>
+    <span class="tag tag-pb">PULLBACK</span>
+  </div>
+  <div class="card-meta">
+    <span>📅 Hold: 5–15 days</span>
+    <span>🔄 Freq: 2–4 / mo</span>
+    <span>🎯 Universe: SPY, QQQ, IWM, DIA, XLE, XLF, XLK</span>
+  </div>
+  <p><strong>Rationale.</strong> Richard Donchian, the father of trend-following, used N-day channel breakouts to identify emerging trends. A 10-day Donchian breakout is a shorter-term variant that captures moves lasting 1–3 weeks. By adding a pullback filter (price must have pulled back within the channel first), we enter breakouts that have "rested" before breaking out.</p>
+  <p><strong>Entry rules:</strong></p>
+  <ul>
+    <li>Close &gt; 50-day SMA (intermediate uptrend)</li>
+    <li>Today's close = 10-day Donchian high (highest close in 10 days)</li>
+    <li>At some point in the prior 10 days, price was within 30% of the lower Donchian band (i.e., <code>low_then ≥ Donchian_low_10_then + 0.3 × (Donchian_high_10_then − Donchian_low_10_then)</code>) — this is the "pullback within channel" filter</li>
+    <li>Enter at next day's open</li>
+  </ul>
+  <p><strong>Exit rules:</strong></p>
+  <ul>
+    <li>Close &lt; 10-day Donchian middle (midpoint = (high_10 + low_10) / 2)</li>
+    <li>OR close &lt; entry − 2 × ATR(14)</li>
+    <li>OR time stop: 15 trading days</li>
+  </ul>
+  <p><strong>Expected holding period:</strong> 6–12 days. <strong>Trade frequency:</strong> 2–4 per month.</p>
+  <p><strong>Risks:</strong> 10-day Donchian breakouts can be too frequent in volatile markets (multiple breakouts per week). The "pullback within channel" filter is essential but reduces opportunity. The exit at channel middle can exit too early in strong trends — consider a trailing stop instead for strong-trending environments.</p>
+  <p><strong>Overfitting risk: <span class="overfit overfit-high">HIGH</span></strong> — The 10-day lookback, the 30% pullback threshold, and the mid-channel exit all offer degrees of freedom that can be curve-fitted. Use Donchian's original 20-day channel instead for a more robust version; 10 days is only recommended for the shorter hold target.</p>
+  <p><strong>Ease: 3/5</strong> — Donchian channels are available in most platforms. The "pullback within channel" filter requires tracking historical channel ranges, which is easier with code.</p>
+</div>
+</div><!-- /card-grid -->
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- ── RANKINGS ── -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="rankings">
+<h2>Composite Rankings</h2>
+<p>Each strategy is scored 1–10 (10 = best) across four dimensions important to the part-time trader:</p>
+<ul>
+  <li><strong>Simplicity</strong> — Can you explain it in 30 seconds? Fewest indicators and rules wins.</li>
+  <li><strong>Robustness</strong> — Does it survive parameter changes and regime shifts? Low overfitting risk helps.</li>
+  <li><strong>Trade Frequency</strong> — Enough trades to learn, not so many it becomes a job.</li>
+  <li><strong>Part-Time Fit</strong> — End-of-day, minimal decisions, no surprises.</li>
+</ul>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th>Rank</th>
+  <th>Strategy</th>
+  <th>Simplicity</th>
+  <th>Robustness</th>
+  <th>Trade Freq</th>
+  <th>PT Fit</th>
+  <th>Composite</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rank-1">
+  <td class="num-col">🥇 1</td>
+  <td>RSI(2) Mean Reversion</td>
+  <td>10</td>
+  <td>9</td>
+  <td>7</td>
+  <td>10</td>
+  <td><strong>36</strong></td>
+</tr>
+<tr class="rank-2">
+  <td class="num-col">🥈 2</td>
+  <td>Bollinger Band Mean Reversion</td>
+  <td>10</td>
+  <td>9</td>
+  <td>6</td>
+  <td>9</td>
+  <td><strong>34</strong></td>
+</tr>
+<tr class="rank-3">
+  <td class="num-col">🥉 3</td>
+  <td>200-Day SMA + 50-Day Pullback</td>
+  <td>7</td>
+  <td>8</td>
+  <td>7</td>
+  <td>9</td>
+  <td><strong>31</strong></td>
+</tr>
+<tr>
+  <td class="num-col">4</td>
+  <td>Seasonal ToM + Best Months</td>
+  <td>9</td>
+  <td>8</td>
+  <td>5</td>
+  <td>9</td>
+  <td><strong>31</strong></td>
+</tr>
+<tr>
+  <td class="num-col">5</td>
+  <td>Dual Momentum (Antonacci)</td>
+  <td>7</td>
+  <td>9</td>
+  <td>4</td>
+  <td>9</td>
+  <td><strong>29</strong></td>
+</tr>
+<tr>
+  <td class="num-col">6</td>
+  <td>3-Day Pullback to 20-Day EMA</td>
+  <td>7</td>
+  <td>7</td>
+  <td>8</td>
+  <td>7</td>
+  <td><strong>29</strong></td>
+</tr>
+<tr>
+  <td class="num-col">7</td>
+  <td>MACD Histogram Slope Change</td>
+  <td>6</td>
+  <td>5</td>
+  <td>7</td>
+  <td>7</td>
+  <td><strong>25</strong></td>
+</tr>
+<tr>
+  <td class="num-col">8</td>
+  <td>20-Day Breakout + Volume</td>
+  <td>6</td>
+  <td>6</td>
+  <td>6</td>
+  <td>6</td>
+  <td><strong>24</strong></td>
+</tr>
+<tr>
+  <td class="num-col">9</td>
+  <td>Relative Strength Sector Rotation</td>
+  <td>5</td>
+  <td>6</td>
+  <td>6</td>
+  <td>5</td>
+  <td><strong>22</strong></td>
+</tr>
+<tr>
+  <td class="num-col">10</td>
+  <td>Donchian Channel 2-Week Breakout</td>
+  <td>5</td>
+  <td>4</td>
+  <td>6</td>
+  <td>5</td>
+  <td><strong>20</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>Verbatim:</strong> The top 3 by composite score are <strong>RSI(2) Mean Reversion</strong>, <strong>Bollinger Band Mean Reversion</strong>, and <strong>200-Day SMA + 50-Day Pullback</strong> — all mean-reversion or trend-pullback strategies that rely on well-known parameters and require minimal screen time. These three get the full deep-dive treatment below.</p>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- ── TOP 3 DEEP DIVES ── -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="deep-dives">
+<h2>Top 3 Deep Dives</h2>
+<p>Complete backtestable specifications for each recommended strategy. Every parameter is stated explicitly — no ambiguity, no hand-waving.</p>
+
+<!-- ── DEEP DIVE #1: RSI(2) Mean Reversion ── -->
+<div class="deep-dive dd-gold" id="dive1">
+  <div class="deep-dive-head">
+    <span class="num">1</span>
+    <h3>RSI(2) Mean Reversion — Full Specification</h3>
+  </div>
+  <div class="deep-dive-body">
+    <h4>Concept</h4>
+    <p>Buy when a liquid ETF is extremely oversold on a 2-day RSI and remains in a long-term uptrend. Exit when short-term momentum normalizes. This strategy exploits the statistical tendency for short-term oversold conditions to revert in liquid, trending markets.</p>
+
+    <h4>Complete Backtestable Rules</h4>
+    <p><strong>Data requirements:</strong> Daily OHLCV data for the target ETF. No intraday data needed.</p>
+    <p><strong>Filters (applied to end-of-day data):</strong></p>
+    <ul>
+      <li><code>SMA_200 = average(close, 200)</code></li>
+      <li><code>SMA_50 = average(close, 50)</code></li>
+      <li><code>RSI_2 = rsi(close, 2)</code></li>
+      <li><code>ATR_14 = atr(high, low, close, 14)</code> (using Wilder's smoothing or standard SMA)</li>
+    </ul>
+    <p><strong>Entry conditions (ALL must be true at market close):</strong></p>
+    <ul>
+      <li><code>close &gt; SMA_200</code> — long-term uptrend</li>
+      <li><code>SMA_50 &gt; SMA_200</code> — medium-term uptrend (golden cross confirmation)</li>
+      <li><code>RSI_2 &lt; 10</code> — extreme short-term oversold</li>
+      <li><code>close ≥ SMA_50 × 0.98</code> — price within 2% of the 50-day SMA (not in free-fall)</li>
+      <li>Enter at <strong>next day's open</strong> (market order)</li>
+    </ul>
+    <p><strong>Exit conditions (first condition met wins):</strong></p>
+    <ul>
+      <li><strong>Momentum exit:</strong> <code>RSI_2 &gt; 50</code> at any future close — momentum has normalized</li>
+      <li><strong>Stop loss:</strong> <code>close &lt; entry_price − 2 × ATR_14_on_entry_day</code></li>
+      <li><strong>Time stop:</strong> exit on close of 7th trading day if not already exited</li>
+    </ul>
+
+    <h4>Parameters Summary</h4>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Value</th><th>Why This Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>RSI period</td><td>2</td><td>Connors' canonical overshoot detector</td></tr>
+        <tr><td>RSI threshold</td><td>&lt; 10</td><td>Extreme oversold; Connors uses &lt; 10 for ETFs</td></tr>
+        <tr><td>Trend filter</td><td>Close &gt; SMA(200)</td><td>Standard long-term bull/bear demarcation</td></tr>
+        <tr><td>Pullback limit</td><td>≥ 98% of SMA(50)</td><td>Keeps entry near support, not in free-fall</td></tr>
+        <tr><td>Exit RSI</td><td>&gt; 50</td><td>Momentum has returned to neutral (mean reversion complete)</td></tr>
+        <tr><td>Stop loss</td><td>Entry − 2 × ATR(14)</td><td>Wilder's standard ATR distance; limits single loss to ~3–6%</td></tr>
+        <tr><td>Time stop</td><td>7 days</td><td>Captures mean reversion window; avoids bag-holding</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h4>Variations Worth Testing</h4>
+    <ul>
+      <li><strong>RSI(2) &lt; 8 vs &lt; 12</strong> — Tighter threshold reduces drawdown but lowers frequency. Historical testing on SPY (2000–2023) shows &lt; 10 works well; &lt; 8 misses too many profitable reversals.</li>
+      <li><strong>RSI(3) instead of RSI(2)</strong> — Slightly smoother, trades less frequently. Worth comparing for risk-averse traders.</li>
+      <li><strong>50-day proximity filter variations.</strong> Try 1% and 3% vs 2%. The 2% is a reasonable compromise — tight enough to avoid falling knives, loose enough to catch entries.</li>
+      <li><strong>Exit at RSI(2) &gt; 60 vs &gt; 40.</strong> &gt; 60 holds longer for stronger reversals; &gt; 40 exits earlier (safer, lower return per trade).</li>
+      <li><strong>Universe expansion:</strong> Add XLV, XLI, XLP to the sector ETFs for more opportunities. Be careful with sector ETFs in concentrated markets.</li>
+    </ul>
+
+    <h4>Target Performance Metrics</h4>
+    <div class="metrics">
+      <div class="metric"><div class="val">0.5–1.2</div><div class="lbl">Sharpe Ratio</div></div>
+      <div class="metric"><div class="val">55–65%</div><div class="lbl">Win Rate</div></div>
+      <div class="metric"><div class="val">1.2–1.8</div><div class="lbl">Avg Win / Avg Loss</div></div>
+      <div class="metric"><div class="val">10–18%</div><div class="lbl">Max Drawdown</div></div>
+      <div class="metric"><div class="val">1.3–1.7</div><div class="lbl">Profit Factor</div></div>
+      <div class="metric"><div class="val">30–60</div><div class="lbl">Trades / Year</div></div>
+    </div>
+    <p style="font-size:0.85rem;color:#64748b;">Expected ranges for SPY + sector ETFs, 2010–2024. Performance varies significantly by regime. Bear markets reduce frequency (trend filter keeps you out) and may produce larger losses on the few trades that trigger.</p>
+
+    <h4>Common Backtesting Mistakes</h4>
+    <ul>
+      <li><strong>Look-ahead bias:</strong> Using the same day's close for entry. This strategy enters at <em>next</em> day's open — if you test using today's close, your results are optimistic by 0.1–0.3% per trade.</li>
+      <li><strong>Survivorship bias:</strong> Testing only ETFs that exist today. For ETFs this is minimal (unlike stocks) but be careful with sector ETFs that changed composition.</li>
+      <li><strong>Ignoring commissions and slippage:</strong> At 30–60 trades/year, even $5 commissions add $150–300/year. Slippage on ETFs is low (~0.01–0.05%) but real. Budget 0.1% per trade for a conservative estimate.</li>
+      <li><strong>Over-optimizing the RSI threshold:</strong> Testing RSI(2) &lt; 9, &lt; 10, &lt; 11, &lt; 12 and picking the one that backtests best is a classic overfitting trap. Choose theory-driven thresholds (Connors: &lt; 10).</li>
+      <li><strong>Not simulating the trend filter correctly:</strong> The 200-day SMA must be calculated from available data only — no future data leakage. Use expanding window, not the full series.</li>
+    </ul>
+
+    <h4>Python Implementation Notes</h4>
+    <p>A minimal implementation in Python, using <code>pandas</code> and <code>numpy</code>:</p>
+    <pre><code>import pandas as pd
+import numpy as np
+
+def compute_rsi(series, period=2):
+    delta = series.diff()
+    gain = delta.clip(lower=0)
+    loss = (-delta).clip(lower=0)
+    avg_gain = gain.rolling(period).mean()
+    avg_loss = loss.rolling(period).mean()
+    rs = avg_gain / avg_loss.replace(0, np.nan)
+    rsi = 100 - (100 / (1 + rs))
+    return rsi
+
+def atr(df, period=14):
+    high_low = df['High'] - df['Low']
+    high_close = (df['High'] - df['Close'].shift()).abs()
+    low_close = (df['Low'] - df['Close'].shift()).abs()
+    tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+    return tr.rolling(period).mean()
+
+# Entry signal
+df['SMA_200'] = df['Close'].rolling(200).mean()
+df['SMA_50']  = df['Close'].rolling(50).mean()
+df['RSI_2']   = compute_rsi(df['Close'], 2)
+df['ATR_14']  = atr(df, 14)
+
+long_trend = df['Close'] &gt; df['SMA_200']
+golden_cross = df['SMA_50'] &gt; df['SMA_200']
+oversold = df['RSI_2'] &lt; 10
+near_sma50 = df['Close'] &gt;= df['SMA_50'] * 0.98
+
+df['entry_signal'] = long_trend &amp; golden_cross &amp; oversold &amp; near_sma50
+
+# Exit simulation: track entry price, check RSI &gt; 50, stop, or time stop
+# (trade management loop omitted for brevity — use vectorized backtest or simple loop)</code></pre>
+    <p>For a full backtest, consider <code>vectorbt</code> or <code>backtrader</code> for portfolio-level simulation. The key is ensuring next-day entry and correct exit logic (first condition met).</p>
+  </div>
+</div>
+
+<!-- ── DEEP DIVE #2: Bollinger Band Mean Reversion ── -->
+<div class="deep-dive dd-silver" id="dive2">
+  <div class="deep-dive-head">
+    <span class="num">2</span>
+    <h3>Bollinger Band Mean Reversion — Full Specification</h3>
+  </div>
+  <div class="deep-dive-body">
+    <h4>Concept</h4>
+    <p>Bollinger Bands expand and contract with volatility. When price touches or pierces the lower band while the long-term trend remains bullish, the statistical odds favor reversion toward the middle band (20-day SMA). The key insight: mean reversion is safest when it aligns with the dominant trend.</p>
+
+    <h4>Complete Backtestable Rules</h4>
+    <p><strong>Data requirements:</strong> Daily OHLCV data.</p>
+    <p><strong>Indicators:</strong></p>
+    <ul>
+      <li><code>SMA_20 = average(close, 20)</code></li>
+      <li><code>σ_20 = standard_deviation(close, 20)</code></li>
+      <li><code>Upper Band = SMA_20 + 2 × σ_20</code></li>
+      <li><code>Lower Band = SMA_20 − 2 × σ_20</code></li>
+      <li><code>%B = (close − Lower Band) / (Upper Band − Lower Band)</code></li>
+      <li><code>Bandwidth = (Upper Band − Lower Band) / SMA_20</code></li>
+      <li><code>ATR_14 = atr(high, low, close, 14)</code></li>
+    </ul>
+    <p><strong>Entry conditions (end of day, ALL must be true):</strong></p>
+    <ul>
+      <li><code>close &gt; SMA_200</code> — long-term uptrend (optional but strongly recommended)</li>
+      <li><code>close ≤ Lower Band</code> — at or below the lower Bollinger Band</li>
+      <li><code>%B ≤ 0</code> — at or below zero (zero = lower band)</li>
+      <li><code>Bandwidth &gt; 0.015</code> — bandwidth is at least 1.5% (avoid dead squeezes)</li>
+      <li>Enter at <strong>next day's open</strong></li>
+    </ul>
+    <p><strong>Exit conditions:</strong></p>
+    <ul>
+      <li><strong>Middle band reversion:</strong> <code>close ≥ SMA_20</code> — price has reverted to the mean (primary exit)</li>
+      <li><strong>Upper band overextension:</strong> <code>close ≥ Upper Band</code> — rare but exit if momentum overshoots</li>
+      <li><strong>Stop loss:</strong> <code>close &lt; entry_price − 2 × ATR_14_on_entry</code></li>
+      <li><strong>Time stop:</strong> exit at close of 8th trading day</li>
+    </ul>
+
+    <h4>Parameters Summary</h4>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Value</th><th>Why This Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>BB period</td><td>20</td><td>John Bollinger's standard</td></tr>
+        <tr><td>BB multiplier</td><td>2.0</td><td>Bollinger's default; ~95% of price action inside bands</td></tr>
+        <tr><td>Bandwidth floor</td><td>1.5%</td><td>Filters out compressed ranges where bands aren't meaningful</td></tr>
+        <tr><td>Trend filter</td><td>Close &gt; SMA(200)</td><td>Standard long-term uptrend</td></tr>
+        <tr><td>Exit level</td><td>SMA(20)</td><td>Middle band = mean reversion target</td></tr>
+        <tr><td>Stop loss</td><td>−2 × ATR(14)</td><td>Limits per-trade loss to 3–6%</td></tr>
+        <tr><td>Time stop</td><td>8 days</td><td>Reversion typically occurs in 3–6 days; 8 days is a generous outer bound</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h4>Variations Worth Testing</h4>
+    <ul>
+      <li><strong>%B &lt; −0.5 or %B &lt; −1.0</strong> — Requiring price to be <em>below</em> the lower band reduces frequency but catches deeper reversals. Historical testing shows mixed results — &lt; 0 (at or below band) is simpler and more robust.</li>
+      <li><strong>Bandwidth filter at 2% vs 1%.</strong> At 1%, you get more trades but some in low-volatility conditions. At 2%, you wait for meaningful volatility expansion — fewer trades, better quality.</li>
+      <li><strong>Exit at SMA(10) instead of SMA(20).</strong> Captures only half the reversion. Produces quicker exits with lower profit per trade. Use only if you prefer many small wins.</li>
+      <li><strong>No trend filter.</strong> Works in bear markets too (short-selling) but for a long-only part-time trader the 200-day SMA filter is recommended.</li>
+      <li><strong>Replace SMA(20) with EMA(20).</strong> EMA is more responsive. Test both — the difference is small on daily data but can matter in fast moves.</li>
+    </ul>
+
+    <h4>Target Performance Metrics</h4>
+    <div class="metrics">
+      <div class="metric"><div class="val">0.4–1.0</div><div class="lbl">Sharpe Ratio</div></div>
+      <div class="metric"><div class="val">55–60%</div><div class="lbl">Win Rate</div></div>
+      <div class="metric"><div class="val">1.1–1.6</div><div class="lbl">Avg Win / Avg Loss</div></div>
+      <div class="metric"><div class="val">12–20%</div><div class="lbl">Max Drawdown</div></div>
+      <div class="metric"><div class="val">1.2–1.6</div><div class="lbl">Profit Factor</div></div>
+      <div class="metric"><div class="val">25–50</div><div class="lbl">Trades / Year</div></div>
+    </div>
+    <p style="font-size:0.85rem;color:#64748b;">Slightly lower Sharpe than RSI(2) because Bollinger bands trigger less frequently in strong uptrends (price rarely touches the lower band). The resulting lower drawdown may appeal to risk-averse traders.</p>
+
+    <h4>Common Backtesting Mistakes</h4>
+    <ul>
+      <li><strong>Computing Bollinger Bands with future data:</strong> Standard deviation must be rolling (lookback window), not expanding (full history). Using <code>df['Close'].rolling(20).std()</code> correctly.</li>
+      <li><strong>Ignoring the bandwidth filter:</strong> Without it, you get false signals in tight sideways markets where bands are narrow and meaningless. Always include it.</li>
+      <li><strong>Using intraday band touches:</strong> This strategy uses end-of-day data. Intraday touches of the lower band that close above it are NOT signals. Stick to the close.</li>
+      <li><strong>Overlapping trades:</strong> If you get a signal on SPY and QQQ the same day, factor in correlation. Both may enter simultaneous drawdowns. Portfolio-level backtesting is essential for real capital allocation.</li>
+      <li><strong>Not accounting for dividend gaps:</strong> ETFs have small dividend events. On ex-dividend day, the close drops by the dividend amount, potentially creating a false lower-band signal. Either skip ex-div days or adjust the close.</li>
+    </ul>
+
+    <h4>Python Implementation Notes</h4>
+    <pre><code>import pandas as pd
+import numpy as np
+
+# Calculate Bollinger Bands
+df['SMA_20'] = df['Close'].rolling(20).mean()
+df['std_20'] = df['Close'].rolling(20).std()
+df['Upper'] = df['SMA_20'] + 2 * df['std_20']
+df['Lower'] = df['SMA_20'] - 2 * df['std_20']
+df['%B'] = (df['Close'] - df['Lower']) / (df['Upper'] - df['Lower'])
+df['Bandwidth'] = (df['Upper'] - df['Lower']) / df['SMA_20']
+
+# Trend filter
+df['SMA_200'] = df['Close'].rolling(200).mean()
+
+# ATR for stop loss (see RSI deep dive for ATR function)
+df['ATR_14'] = atr(df, 14)
+
+# Entry signal
+entry = (
+    (df['Close'] &gt; df['SMA_200']) &amp;
+    (df['Close'] &lt;= df['Lower']) &amp;
+    (df['%B'] &lt;= 0) &amp;
+    (df['Bandwidth'] &gt; 0.015)
+)
+
+# Exit: close &gt;= SMA(20), close &gt;= Upper, stop, or time stop
+# The exit logic requires tracking entry price — vectorized approach:
+# 1. Identify entry days and prices
+# 2. For each day after entry, check exit conditions
+# 3. Track the first exit condition met
+
+# For portfolio simulation:
+# positions = df[entry].index  # entry dates
+# For each position, find exit day by scanning forward</code></pre>
+    <p><strong>Portfolio simulation tip:</strong> Use <code>vectorbt</code> to test this on multiple ETFs simultaneously. The strategy often has only 1–2 open positions at a time, making position sizing straightforward (e.g., equal risk: $X / (2 × ATR)).</p>
+  </div>
+</div>
+
+<!-- ── DEEP DIVE #3: 200-Day SMA + 50-Day Pullback ── -->
+<div class="deep-dive dd-bronze" id="dive3">
+  <div class="deep-dive-head">
+    <span class="num">3</span>
+    <h3>200-Day SMA Filter &amp; 50-Day Pullback — Full Specification</h3>
+  </div>
+  <div class="deep-dive-body">
+    <h4>Concept</h4>
+    <p>This is the "buy the dip in a bull market" strategy made systematic. The 200-day SMA identifies whether we are in a primary uptrend. Within that uptrend, price periodically pulls back to the 50-day SMA — a natural support level that institutions watch. Buying these pullbacks in trending markets has been a staple of systematic trading for decades.</p>
+
+    <h4>Complete Backtestable Rules</h4>
+    <p><strong>Data requirements:</strong> Daily OHLCV data.</p>
+    <p><strong>Indicators:</strong></p>
+    <ul>
+      <li><code>SMA_200</code> — simple moving average of close over 200 days</li>
+      <li><code>SMA_50</code> — simple moving average of close over 50 days</li>
+      <li><code>SMA_20</code> — simple moving average of close over 20 days</li>
+      <li><code>ATR_14</code> — average true range over 14 days</li>
+      <li><code>Volume_MA20</code> — average volume over 20 days</li>
+    </ul>
+    <p><strong>Entry conditions (ALL must be true at market close):</strong></p>
+    <ul>
+      <li><code>close &gt; SMA_200</code> — long-term uptrend</li>
+      <li><code>SMA_50 &gt; SMA_200</code> — golden cross regime; medium-term trend confirms long-term</li>
+      <li><code>close ≤ SMA_50 × 1.005</code> — price is at or within 0.5% of 50-day SMA (has pulled back to or through it)</li>
+      <li><code>today_volume ≤ Volume_MA20 × 1.5</code> — volume is not spiking (reduces "breakdown" risk — high volume + price at SMA = distribution)</li>
+      <li><code>close &gt; SMA_200</code> has been true for at least 10 consecutive trading days (market is established in uptrend, not just bouncing)</li>
+      <li>Enter at <strong>next day's open</strong></li>
+    </ul>
+    <p><strong>Exit conditions:</strong></p>
+    <ul>
+      <li><strong>Profit target:</strong> <code>close ≥ SMA_20 + 2 × ATR_14</code> — price has rallied significantly above near-term support</li>
+      <li><strong>Stop loss:</strong> <code>close &lt; entry_price − 1.5 × ATR_14</code></li>
+      <li><strong>Time stop:</strong> exit at close of 12th trading day</li>
+    </ul>
+
+    <h4>Parameters Summary</h4>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Value</th><th>Why This Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Long-term trend</td><td>SMA(200)</td><td>Standard institutional bull/bear line</td></tr>
+        <tr><td>Pullback level</td><td>SMA(50)</td><td>Natural medium-term support — watched by every algo desk</td></tr>
+        <tr><td>Pullback threshold</td><td>≤ SMA(50) × 1.005</td><td>0.5% tolerance around the 50-day SMA</td></tr>
+        <tr><td>Volume filter</td><td>Volume ≤ 1.5× 20-day avg</td><td>Spikes suggest breakdown, not pullback</td></tr>
+        <tr><td>Uptrend maturity</td><td>≥ 10 consecutive days above SMA(200)</td><td>Ensures trend is established, not a dead-cat bounce</td></tr>
+        <tr><td>Profit exit</td><td>SMA(20) + 2 × ATR(14)</td><td>Captures a meaningful rally (~3–6% depending on vol)</td></tr>
+        <tr><td>Stop loss</td><td>Entry − 1.5 × ATR(14)</td><td>Tighter than RSI(2) strategy because pullbacks are less extreme</td></tr>
+        <tr><td>Time stop</td><td>12 days</td><td>Upper bound of expected pullback resolution</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h4>Variations Worth Testing</h4>
+    <ul>
+      <li><strong>Pullback threshold: 0.3% vs 1.0%.</strong> 0.3% is closer to the SMA (catches exact touch); 1.0% is more forgiving (catches price near SMA). 0.5% is a good starting point.</li>
+      <li><strong>Volume filter: 1.3× vs 1.5× vs disabled.</strong> Disabling increases trade frequency 20–30% but more false breakouts. 1.5× is conservative; 1.3× is stricter.</li>
+      <li><strong>Barrier: "10 consecutive days above SMA(200)".</strong> Try 5 or 20 instead. 5 catches earlier entries; 20 is very conservative. This is one of the more tunable parameters — pick a value and commit to it.</li>
+      <li><strong>Exit at SMA(20) + 1.5× ATR vs + 2.5× ATR.</strong> 1.5× exits earlier (lower profit, higher win rate). 2.5× holds for larger moves (fewer winners, bigger when right).</li>
+      <li><strong>Add an "entry delay" variant:</strong> Require 2 consecutive closes at or near the SMA(50) before entering. Reduces whipsaw but may miss the best entry day.</li>
+    </ul>
+
+    <h4>Target Performance Metrics</h4>
+    <div class="metrics">
+      <div class="metric"><div class="val">0.3–0.8</div><div class="lbl">Sharpe Ratio</div></div>
+      <div class="metric"><div class="val">50–58%</div><div class="lbl">Win Rate</div></div>
+      <div class="metric"><div class="val">1.2–1.7</div><div class="lbl">Avg Win / Avg Loss</div></div>
+      <div class="metric"><div class="val">15–25%</div><div class="lbl">Max Drawdown</div></div>
+      <div class="metric"><div class="val">1.2–1.5</div><div class="lbl">Profit Factor</div></div>
+      <div class="metric"><div class="val">25–50</div><div class="lbl">Trades / Year</div></div>
+    </div>
+    <p style="font-size:0.85rem;color:#64748b;">Lower Sharpe because trades take longer to develop and pullback entries have more variable outcomes. The advantage: this strategy has decades of practitioner support and a clear economic rationale (trend persistence + support bounce).</p>
+
+    <h4>Common Backtesting Mistakes</h4>
+    <ul>
+      <li><strong>Using the wrong SMA type:</strong> This strategy calls for <em>simple</em> moving averages. Using an EMA changes the entry dynamics — the 50-day EMA is more responsive and will be touched more frequently, creating more trades. Be explicit about which MA type you use.</li>
+      <li><strong>Not filtering for "top of range" vs "bottom of range":</strong> A pullback to the 50-day SMA from above is different than price that has been below the 50-day SMA and is climbing up to it. The "close ≤ SMA(50) × 1.005" captures the former (above, pulling down) — not the latter.</li>
+      <li><strong>Ignoring the 10-consecutive-day uptrend rule:</strong> Without this, you can catch a market that just crossed above the 200-day after a bear market and immediately pulls back — the worst of both worlds (weak trend + failed pullback).</li>
+      <li><strong>Optimizing the profit target:</strong> If you test SMA(20) + 1× ATR, SMA(20) + 2× ATR, SMA(20) + 3× ATR and pick the best, you are curve-fitting. The theoretical justification for the profit target is that a rally of +2× ATR from short-term support represents a meaningful swing. Keep the rationale, not the backtest.</li>
+      <li><strong>Backtesting with too little data:</strong> This strategy produces ~25–50 trades/year. For statistically meaningful results, you need at least 5 years of data (125–250 trades). 10+ years is better.</li>
+    </ul>
+
+    <h4>Python Implementation Notes</h4>
+    <pre><code>import pandas as pd
+import numpy as np
+
+def consecutive_above(series, threshold, n):
+    """Check if the last n values of series are all &gt; threshold."""
+    return (series.iloc[-n:] &gt; threshold).all()
+
+def entry_signals(df):
+    # Moving averages
+    df['SMA_200'] = df['Close'].rolling(200).mean()
+    df['SMA_50']  = df['Close'].rolling(50).mean()
+    df['SMA_20']  = df['Close'].rolling(20).mean()
+
+    # Volume average
+    df['Vol_MA20'] = df['Volume'].rolling(20).mean()
+
+    # ATR
+    df['ATR_14'] = atr(df, 14)  # from RSI deep dive
+
+    # Conditions
+    above_200 = df['Close'] &gt; df['SMA_200']
+    golden = df['SMA_50'] &gt; df['SMA_200']
+    at_sma50 = df['Close'] &lt;= df['SMA_50'] * 1.005
+    normal_vol = df['Volume'] &lt;= df['Vol_MA20'] * 1.5
+
+    # Consecutive days above SMA(200) — requires expanding check
+    df['days_above_200'] = 0
+    mask = above_200
+    df.loc[mask, 'days_above_200'] = (
+        df['days_above_200'].shift(1).where(mask.shift(1), 0) + 1
+    ).fillna(0).astype(int)
+    trend_established = df['days_above_200'] &gt;= 10
+
+    # Composite entry signal
+    df['entry'] = above_200 &amp; golden &amp; at_sma50 &amp; normal_vol &amp; trend_established
+    return df
+
+# Exit: close &gt;= SMA(20) + 2*ATR(14) OR close &lt; entry - 1.5*ATR(14) OR day 12
+# Track entry_price and ATR_at_entry per trade.
+# Typical simulation:
+# for each_entry in df[df['entry']].index:
+#     entry_price = df.at[each_entry, 'Open']
+#     atr_at_entry = df.at[each_entry, 'ATR_14']
+#     for day in range(each_entry+1, min(each_entry+13, len(df))):
+#         exit_check = ...</code></pre>
+    <p><strong>Important:</strong> The profit target uses <code>SMA_20 + 2 × ATR_14</code> computed <em>at exit time</em> (dynamic), not static. This means the target rises as the SMA(20) rises — a good property that prevents exiting too early in strong upward trends. The stop loss uses the <em>entry ATR</em> (fixed), preventing stop creep on volatile days.</p>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- ── CONCLUSION ── -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="conclusion">
+<h2>Putting It All Together</h2>
+
+<div class="conclusion-box">
+  <p><strong>Start with one strategy. Trade it for 50–100 opportunities. Then evaluate.</strong></p>
+  <p style="font-size:0.92rem;color:#94a3b8;">Choose the strategy that fits your temperament and schedule. Paper trade first. The first strategy is the hardest. The second is easier. The third is routine.</p>
+</div>
+
+<h3>Which Strategy Should You Start With?</h3>
+<p>Match your personality to the strategy:</p>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>If you are...</th><th>Start with</th><th>Why</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Risk-averse, want simplicity</td><td>RSI(2) Mean Reversion</td><td>Clearest rules, lowest screen time, most documented</td></tr>
+    <tr><td>Comfortable waiting for the right setup</td><td>Bollinger Band Mean Reversion</td><td>Fewer trades but quality entries; bandwidth filter is intuitive</td></tr>
+    <tr><td>Want a "market feels" approach</td><td>200-Day SMA + 50-Day Pullback</td><td>Most natural — you're buying the dip in a bull market</td></tr>
+    <tr><td>Monthly decision maker</td><td>Dual Momentum</td><td>Check once per month; data-driven rotation</td></tr>
+    <tr><td>Calendar geek</td><td>Seasonal ToM</td><td>No indicators, just dates. Surprisingly robust.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>A Practical Workflow</h3>
+<ol>
+  <li><strong>5 PM daily — Scan:</strong> Run your 1–2 selected strategies across your universe. 10 minutes. Script it.</li>
+  <li><strong>Review signals:</strong> Check for earnings, news, or macro events on signal days. 5 minutes.</li>
+  <li><strong>Place orders:</strong> Market order at next day's open. 5 minutes.</li>
+  <li><strong>Weekly review:</strong> Update a trade log: entry, exit, P&amp;L, notes. 10 minutes.</li>
+  <li><strong>Monthly review:</strong> Performance dashboard — Sharpe, win rate, drawdown. Is the strategy behaving as expected? 20 minutes.</li>
+</ol>
+
+<h3>Final Principles</h3>
+<ul>
+  <li><strong>Robustness over optimization.</strong> A strategy that works at 10 different parameter settings is worth more than one that peaks at a specific value. Favor strategies from the literature, not from backtesting.</li>
+  <li><strong>Position sizing is strategy.</strong> Use a fixed fraction (1–3% risk per trade based on ATR stop distance). Do not change position size based on recent win/loss streaks — that is performance chasing and it will cost you.</li>
+  <li><strong>Track everything.</strong> A trade log with entry rationale, exit rationale, and emotional state is the most valuable tool you have. It turns experience into learning.</li>
+  <li><strong>Expect drawdowns.</strong> Every strategy has a losing streak of 4–8 consecutive trades at some point. It is not a sign your strategy is broken. Do not change the rules after two consecutive losers.</li>
+  <li><strong>The market is probabilistic.</strong> No strategy wins all the time. The goal is to have an edge — even 55% with 1.5:1 reward-to-risk — and execute it consistently. That is enough.</li>
+</ul>
+
+<blockquote>“The stock market is a device for transferring money from the impatient to the patient.” — Warren Buffett</blockquote>
+</section>
+
+<!-- ── Disclaimer ── -->
+<div class="disclaimer">
+  <p><strong>Disclaimer:</strong> This article is for educational and informational purposes only. It does not constitute financial advice, investment advice, or a recommendation to trade any security. Past performance — whether in backtesting or in actual trading — does not guarantee future results. All trading involves risk of loss. Consult a qualified financial advisor before deploying any strategy with real capital.</p>
+  <p>© 2026 — Published on GitHub Pages. Built for the part-time trading community.</p>
+</div>
+
+</div>
+</main>
+</body>
+</html>
