@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bear Case Deep Dive: ETN, SYK, PGR, MCK, CB — What the Bulls Are Missing</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2333;
+    --bg-hover: #252d3f;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-yellow: #d29922;
+    --accent-red: #f85149;
+    --accent-orange: #d4760e;
+    --accent-purple: #a371f7;
+    --accent-cyan: #39d2c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* Header */
+  .article-header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .article-header .series-badge {
+    display: inline-block;
+    background: var(--accent-red);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .article-header .warning-tag {
+    display: inline-block;
+    background: rgba(248,81,73,0.15);
+    color: var(--accent-red);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    border: 1px solid rgba(248,81,73,0.3);
+  }
+  .article-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .article-header .subtitle {
+    font-size: 18px;
+    color: var(--accent-red);
+    max-width: 650px;
+    margin: 0 auto 20px;
+    font-style: italic;
+  }
+  .article-header .meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .article-header .meta span { margin: 0 8px; }
+
+  /* TOC */
+  .toc {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+  .toc h3 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc ol li {
+    counter-increment: toc;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+  .toc ol li:last-child { border-bottom: none; }
+  .toc ol li::before {
+    content: counter(toc) ".";
+    color: var(--accent-red);
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .toc ol li a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .toc ol li a:hover { color: var(--accent-red); }
+
+  /* Sections */
+  .company-section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+  .company-section:last-child { border-bottom: none; }
+  .company-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .company-header .ticker {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .company-header .name-sector {
+    flex: 1;
+  }
+  .company-header .name-sector .name {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .company-header .name-sector .sector {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .company-header .bearishness {
+    background: var(--bg-card);
+    border: 1px solid var(--accent-red);
+    border-radius: 8px;
+    padding: 6px 16px;
+    text-align: center;
+  }
+  .company-header .bearishness .bear-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-red);
+    display: block;
+    line-height: 1;
+  }
+  .company-header .bearishness .bear-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .company-summary-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+  .company-summary-box .stat {
+    text-align: center;
+  }
+  .company-summary-box .stat .stat-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-red);
+    display: block;
+  }
+  .company-summary-box .stat .stat-lbl {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  /* Headings */
+  h2 { font-size: 24px; font-weight: 700; margin: 32px 0 16px; color: var(--accent-orange); }
+  h3 { font-size: 19px; font-weight: 600; margin: 24px 0 12px; color: var(--accent-red); }
+  h4 { font-size: 16px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
+
+  p { margin: 0 0 16px; font-size: 16px; color: var(--text-secondary); }
+  p strong, .strong { color: var(--text-primary); }
+
+  ul, ol { margin: 0 0 16px 24px; color: var(--text-secondary); }
+  li { margin-bottom: 6px; font-size: 15px; }
+
+  /* Tables */
+  .data-table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .data-table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table thead th.bear-header { color: var(--accent-red); }
+  .data-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+    color: var(--text-secondary);
+  }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:hover { background: var(--bg-hover); }
+  .data-table .pos { color: var(--accent-green); font-weight: 600; }
+  .data-table .neg { color: var(--accent-red); font-weight: 600; }
+  .data-table .neu { color: var(--accent-yellow); font-weight: 600; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid var(--accent-red);
+    background: rgba(248,81,73,0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 24px 0;
+  }
+  .callout.dark-red {
+    border-left-color: #8b0000;
+    background: rgba(139,0,0,0.12);
+  }
+  .callout.yellow {
+    border-left-color: var(--accent-yellow);
+    background: rgba(210,153,34,0.08);
+  }
+  .callout.blue {
+    border-left-color: var(--accent-blue);
+    background: rgba(88,166,255,0.08);
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* Final Synthesis */
+  .synthesis-section {
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 2px solid var(--border);
+  }
+  .synthesis-section h2 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--accent-red);
+  }
+  .verdict-box {
+    background: linear-gradient(135deg, #1a0a0a, #0d1117);
+    border: 2px solid var(--accent-red);
+    border-radius: 14px;
+    padding: 32px;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .verdict-box h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--accent-red);
+  }
+  .verdict-box p {
+    font-size: 16px;
+    max-width: 650px;
+    margin: 0 auto 8px;
+  }
+  .verdict-box .big-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent-red);
+    display: block;
+    line-height: 1;
+  }
+
+  .synthesis-subsection {
+    margin: 36px 0;
+  }
+  .synthesis-subsection h3 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--accent-yellow);
+  }
+
+  /* Rank card */
+  .rank-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .rank-card .rank-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent-red);
+    min-width: 40px;
+  }
+  .rank-card .rank-info { flex: 1; }
+  .rank-card .rank-info .rank-ticker {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .rank-card .rank-info .rank-reason {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .rank-card .rank-pct {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-red);
+    text-align: right;
+  }
+
+  /* Price target boxes */
+  .price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .price-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .price-box .pt-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .price-box .pt-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-red);
+    display: block;
+    margin: 4px 0;
+  }
+  .price-box .pt-upside {
+    font-size: 13px;
+    color: var(--accent-red);
+  }
+  .price-box.bullish .pt-price { color: var(--accent-green); }
+  .price-box.bullish .pt-upside { color: var(--accent-green); }
+
+  .footer-note {
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .footer-note p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .footer-note a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+  .footer-note a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="article-header">
+  <div class="series-badge">⚠️ BEAR CASE EDITION</div>
+  <div class="warning-tag">Contrarian · Short-Seller Perspective</div>
+  <h1>What the Bulls Are Missing</h1>
+  <p class="subtitle">A forensic bear-case examination of ETN, SYK, PGR, MCK, and CB — the five "neglected quality" stocks no one wants to short, and exactly why that's dangerous.</p>
+  <p class="meta">June 14, 2026 <span>·</span> Neglected Quality Series · Article 4 <span>·</span> ~28 min read</p>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#etn">ETN (Eaton Corp.) — The Electrification Story That's Priced for Perfection</a></li>
+    <li><a href="#syk">SYK (Stryker Corp.) — The Robot Narrative Hiding a Mature Orthopedics Business</a></li>
+    <li><a href="#pgr">PGR (Progressive Corp.) — The Data Moat That's Already Being Crossed</a></li>
+    <li><a href="#mck">MCK (McKesson Corp.) — The Value Trap in Plain Sight</a></li>
+    <li><a href="#cb">CB (Chubb Ltd.) — Catastrophe Exposure at an Uncompensated Price</a></li>
+    <li><a href="#synthesis">Final Synthesis — When Neglected Means "Rightly Ignored"</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- ETN SECTION -->
+<!-- ============================================================ -->
+<section class="company-section" id="etn">
+  <div class="company-header">
+    <div class="ticker">ETN</div>
+    <div class="name-sector">
+      <div class="name">Eaton Corporation plc</div>
+      <div class="sector">Industrials · Electrical Equipment</div>
+    </div>
+    <div class="bearishness">
+      <span class="bear-num">8/10</span>
+      <span class="bear-label">Bearish Conviction</span>
+    </div>
+  </div>
+
+  <div class="company-summary-box">
+    <div class="stat">
+      <span class="stat-val">~$355</span>
+      <span class="stat-lbl">Current Price</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~28x</span>
+      <span class="stat-lbl">Fwd P/E</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$280–300</span>
+      <span class="stat-lbl">Bear Target</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">–15% to –21%</span>
+      <span class="stat-lbl">Bear Downside</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">High</span>
+      <span class="stat-lbl">Cycle Risk</span>
+    </div>
+  </div>
+
+  <h3>Why the Stock Could Underperform</h3>
+
+  <h4>1. The "Electrification Super-Cycle" Narrative Is Peaking</h4>
+  <p>The bull case for ETN rests on a once-in-a-generation electrification capex wave: data centers, EV charging infrastructure, grid modernization, and re-shoring. It's a compelling story. It's also exactly the kind of narrative that lures investors in just before the cycle turns.</p>
+  <p><strong>Data center capex is the most vulnerable leg.</strong> The bull case assumes hyperscaler spending on AI infrastructure continues growing at 20%+ for years. But the history of technology capex cycles is clear: they overshoot, then correct. In 2023, the "Magnificent Seven" alone spent ~$180B on capex. By 2026, that number is pushing $300B+. At some point — likely when AI revenue fails to materialize at the promised scale — these companies will cut. Meta alone cut its 2023 capex guidance by $4B after a single earnings call in 2022. When hyperscalers pull back, ETN's electrical segment — which gets a disproportionate valuation premium for the "data center growth story" — takes the biggest multiple hit.</p>
+  <p><strong>Commercial construction is already slowing.</strong> US non-residential construction spending, excluding manufacturing, has been decelerating through 2025. Office vacancy rates remain at all-time highs (~20% nationally). Higher-for-longer interest rates are crushing the economics of new commercial development. ETN's electrical business generates roughly 35–40% of revenue from commercial construction exposure. If this segment contracts even 5%, the margin impact is amplified by operating leverage — and ETN's 20%+ segment margins on electrical are at cyclical highs.</p>
+
+  <h4>2. The Multiple Is the Problem</h4>
+  <p>ETN trades at ~28x forward earnings. That's a <strong>45% premium to its 10-year average of ~19x</strong>. The bull case says this is justified by the electrification super-cycle. The bear case says it's an industrial company trading like a growth tech stock with none of the recurring revenue characteristics.</p>
+  <p>For context, Emerson Electric (EMR) — a comparable industrial — trades at ~22x. Rockwell Automation (ROK) at ~21x. Schneider Electric trades at ~24x in Europe. ETN's 28x is an outlier. If the multiple simply reverts to 22x (still above its historical average), the stock declines 21% even if earnings meet expectations.</p>
+
+  <h4>3. Competitive Threats Are Ignored</h4>
+  <p>The bull case assumes ETN's electrical distribution and power management franchise is unassailable. It's not. <strong>ABB and Siemens are making aggressive pushes into the same data center and electrification markets.</strong> Chinese competitors like Chint and Delixi are expanding in low-voltage electrical equipment globally. Meanwhile, the shift toward solid-state transformers and silicon-carbide power electronics could disrupt the traditional electrical equipment hierarchy faster than incumbents expect. ETN's R&D spend as a % of revenue (~3.5%) is below the industrial peer average.</p>
+
+  <h3>What Assumptions Are Fragile</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:30%;">Bull Assumption</th>
+        <th style="width:35%;">Bear Scenario</th>
+        <th style="width:35%;">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Data center capex grows 15%+ CAGR through 2030</strong></td>
+        <td>Hyperscaler AI capex peaks in 2026–27; 10% decline in 2028 as ROI disappoints</td>
+        <td class="neg">–$4–6 EPS impact from segment mix shift; multiple de-rating from 28x to 20x → <strong>stock at $240</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Commercial construction recovers in H2 2026</strong></td>
+        <td>Rates stay at 4.5%+; office vacancy structural; commercial declines 5–10%</td>
+        <td class="neg">–$1.50–2 EPS; <strong>stock at $290–310</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Reshoring and infrastructure bill sustain demand</strong></td>
+        <td>Infrastructure bill spending peaks 2026–27; reshoring cycle saturates by 2028</td>
+        <td class="neg">Growth decelerates from 9% to 3%; P/E de-rates to 22x → <strong>stock at $260</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Historical Examples of Similar Setups That Failed</h3>
+  <p><strong>General Electric (GE), 2016–2018.</strong> GE's power business rode a similar "electrification/gas turbine super-cycle" narrative. At the peak, GE Power generated ~$25B in revenue and investors paid a premium for the "infrastructure story." When gas turbine demand collapsed (down 40% from 2014–2016 peak), GE's stock lost 60% and the dividend was cut. The warning signs — growing inventory, falling backlog, aggressive accounting in the power segment — were visible for two years before the collapse.</p>
+  <p><strong>Emerson Electric, 2014–2016.</strong> Emerson traded at 22x forward earnings on a "global industrial recovery" narrative. When the industrial recession hit in 2015–2016 (oil crash, China slowdown), revenue declined 15% and the stock fell 35%. The multiple compressed from 22x to 14x — applying the same compression to ETN today implies a $230 stock.</p>
+  <p><strong>The pattern:</strong> Industrial companies with high cyclical exposure get re-rated during the up-cycle as "growth stories." The multiple expansion gives investors false confidence. When the cycle turns, both earnings and multiple compress simultaneously — the classic "double hit" that turns a 10% earnings miss into a 35% stock decline.</p>
+
+  <h3>What Metrics Would Invalidate the Thesis</h3>
+  <ul>
+    <li><strong>Backlog growth turns negative for 2+ quarters:</strong> ETN's backlog growth has been a key bullish indicator. If it turns negative, the cycle is turning.</li>
+    <li><strong>Data center segment organic growth drops below 5%:</strong> Currently running at 15–20%. Below 5% indicates hyperscaler pullback.</li>
+    <li><strong>Electrical segment margins fall below 18%:</strong> Currently ~21%. This would signal pricing power erosion or product mix deterioration.</li>
+    <li><strong>Free cash flow conversion drops below 80%:</strong> A working capital build as the cycle turns is the classic canary in the coal mine.</li>
+  </ul>
+
+  <h3>Expected Return Under Bear Scenarios</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Revenue Growth</th>
+        <th>Implied EPS</th>
+        <th>Exit Multiple</th>
+        <th class="bear-header">Target Price</th>
+        <th class="bear-header">Total Return</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Moderate Bear</strong></td>
+        <td>3% (below consensus 7%)</td>
+        <td>$12.00</td>
+        <td>24x</td>
+        <td class="neg">$288</td>
+        <td class="neg">–19%</td>
+        <td>40%</td>
+      </tr>
+      <tr>
+        <td><strong>Severe Bear</strong></td>
+        <td>0% (industrial recession)</td>
+        <td>$10.50</td>
+        <td>20x</td>
+        <td class="neg">$210</td>
+        <td class="neg">–41%</td>
+        <td>20%</td>
+      </tr>
+      <tr>
+        <td><strong>Multiple Compression (in-line earnings)</strong></td>
+        <td>7% (meets consensus)</td>
+        <td>$13.00</td>
+        <td>22x (mean reversion)</td>
+        <td class="neg">$286</td>
+        <td class="neg">–19%</td>
+        <td>30%</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Probability-weighted expected return:</strong> Approximately –20% over 12 months, assuming 40% chance of moderate bear, 20% severe, 30% multiple compression, and 10% bull case. Even in the optimistic scenario (earnings grow, multiple stays), the absolute upside is capped at ~10% — a terrible risk/reward for an industrial stock.</p>
+
+  <div class="callout dark-red">
+    <p><strong>Bear Verdict on ETN:</strong> The most overvalued stock in the basket. A perfectly fine business at 19x earnings, but at 28x it's pricing in an industrial utopia that historically never arrives. The safest short in this group.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SYK SECTION -->
+<!-- ============================================================ -->
+<section class="company-section" id="syk">
+  <div class="company-header">
+    <div class="ticker">SYK</div>
+    <div class="name-sector">
+      <div class="name">Stryker Corporation</div>
+      <div class="sector">Healthcare · Medical Devices / Orthopedics</div>
+    </div>
+    <div class="bearishness">
+      <span class="bear-num">6/10</span>
+      <span class="bear-label">Bearish Conviction</span>
+    </div>
+  </div>
+
+  <div class="company-summary-box">
+    <div class="stat">
+      <span class="stat-val">~$365</span>
+      <span class="stat-lbl">Current Price</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~28x</span>
+      <span class="stat-lbl">Fwd P/E</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$290–320</span>
+      <span class="stat-lbl">Bear Target</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">–12% to –21%</span>
+      <span class="stat-lbl">Bear Downside</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">Medium</span>
+      <span class="stat-lbl">Pricing Risk</span>
+    </div>
+  </div>
+
+  <h3>Why the Stock Could Underperform</h3>
+
+  <h4>1. Mako Is Great. Everyone Else Has Mako Now.</h4>
+  <p>The bull case revolves around Stryker's Mako robotic-assisted surgery platform — and with good reason. Mako is the dominant orthopedic robotics platform with ~1,500 installed systems. It drives instrument and implant attachment, creates switching costs for surgeons, and justifies a premium multiple.</p>
+  <p><strong>The problem: competition is closing faster than Stryker's lead is widening.</strong> Johnson & Johnson's VELYs robotic system has now completed over 100,000 procedures globally and is installed in ~500 sites. Smith+Nephew's CORI system is gaining traction. Zimmer Biomet's Rosa platform, while clunkier, is bundled into their hip and knee portfolio. Most critically, <strong>hospitals are pushing back</strong> — they don't want five different robotic systems in their ORs, and they're using the competitive dynamic to force price concessions. Mako's attach rate premium (the extra implant pricing Stryker can command from Mako-enabled procedures) is shrinking. In 2023, Mako-enabled knees carried a ~15% pricing premium. By 2025, early data suggested that premium was down to 8–10%.</p>
+
+  <h4>2. Orthopedics Is a Mature Market With Structural Pricing Pressure</h4>
+  <p>Global orthopedic device market growth has slowed from ~5% annually (2015–2019) to ~3.5% (2022–2025). The reason: <strong>hospital consolidation is shifting bargaining power away from device manufacturers.</strong> In the US, the top 10 hospital systems now control ~25% of beds, up from ~15% a decade ago. These systems have dedicated supply chain teams running competitive RFPs. They are demanding bundled pricing across product categories. Stryker's "med surg" business (hospital equipment, beds, stretchers) faces even more aggressive procurement pressure.</p>
+  <p><strong>Medicare reimbursement cuts are coming.</strong> The CMS Outpatient Prospective Payment System (OPPS) final rule for 2025 cut reimbursement for several joint replacement procedures. If the US moves toward site-neutral payments or reference pricing for orthopedic implants — a bipartisan idea that's been discussed — Stryker's implant pricing power would be structurally impaired.</p>
+
+  <h4>3. The Neurotechnology/M&A Growth Story Has a Validation Problem</h4>
+  <p>Stryker's neurotechnology segment (acquired through the $3B + various bolt-on acquisitions) is supposed to be the next growth engine. But neuromodulation markets have repeatedly disappointed. Medtronic's deep brain stimulation franchise — the largest in the world — has grown at only 4–5% annually. Stryker's neuro segment is still generating negative free cash flow. The bull case assumes it becomes a material earnings contributor by 2028. The bear case says it's a science project that will eventually be written down.</p>
+
+  <h3>What Assumptions Are Fragile</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:30%;">Bull Assumption</th>
+        <th style="width:35%;">Bear Scenario</th>
+        <th style="width:35%;">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Mako competitive advantage persists for 5+ years</strong></td>
+        <td>J&J VELYs and Zimmer Rosa erode share; pricing premium compresses to 0–5% by 2028</td>
+        <td class="neg">Implied EPS drops $1–2 from mix loss; <strong>stock at $310–330</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Elective surgery volumes grow 3–5% annually</strong></td>
+        <td>Recession delays elective procedures; volumes flat to –2% for 2 years</td>
+        <td class="neg">Revenue –5%; operating de-leverage hits margins; <strong>stock at $285–300</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Multiple stays at 28x justified by quality</strong></td>
+        <td>SYK's growth slows to 4%; competitor pressure; multiple reverts to 23x (still above Medtronic's 15x)</td>
+        <td class="neg">Even with flat EPS: <strong>stock at $300</strong> (–18%)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Historical Examples of Similar Setups That Failed</h3>
+  <p><strong>Intuitive Surgical (ISRG), 2018–2019.</strong> The da Vinci robot was the undisputed surgical robotics leader. When competitive pressures (including Medtronic's Hugo system) and procedure volume uncertainty emerged, ISRG dropped 40% from its 2018 high to its 2019 low. The absolute best robotics company in medtech lost half its value on the perception of competition — even though actual revenue impact was minimal. Mako faces the same risk.</p>
+  <p><strong>Boston Scientific (BSX), 2018–2020.</strong> A high-quality medtech company with strong competitive positions. In 2018, it faced pricing pressure in its core cardiovascular franchise and saw its stock decline 25% in 9 months while earnings remained perfectly in line. The multiple compressed from 28x to 21x on sentiment alone.</p>
+
+  <h3>What Metrics Would Invalidate the Thesis</h3>
+  <ul>
+    <li><strong>Mako attach rate falls below 50%:</strong> Currently ~65% of Mako cases use Stryker implants. Below 50% and the competitive moat is gone.</li>
+    <li><strong>Organic revenue growth falls below 4% for 2+ quarters:</strong> The 28x multiple requires 7%+ growth. Below 4% collapses the multiple justification.</li>
+    <li><strong>J&J VELYs installations exceed 1,000 sites:</strong> Currently ~500. At 1,000+, Mako's installed-base advantage evaporates.</li>
+    <li><strong>Gross margin declines below 62% consistently:</strong> A sign of structural pricing impairment.</li>
+  </ul>
+
+  <h3>Expected Return Under Bear Scenarios</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Revenue Growth</th>
+        <th>Implied EPS</th>
+        <th>Exit Multiple</th>
+        <th class="bear-header">Target Price</th>
+        <th class="bear-header">Total Return</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Moderate Bear</strong></td>
+        <td>5% (below consensus 8%)</td>
+        <td>$14.00</td>
+        <td>24x</td>
+        <td class="neg">$336</td>
+        <td class="neg">–8%</td>
+        <td>40%</td>
+      </tr>
+      <tr>
+        <td><strong>Severe Bear</strong></td>
+        <td>2% (recession + share loss)</td>
+        <td>$11.50</td>
+        <td>22x</td>
+        <td class="neg">$253</td>
+        <td class="neg">–31%</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td><strong>Multiple Compression</strong></td>
+        <td>7% (meets consensus)</td>
+        <td>$15.00</td>
+        <td>23x (sentiment-driven)</td>
+        <td class="neg">$345</td>
+        <td class="neg">–5%</td>
+        <td>25%</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Probability-weighted expected return:</strong> Approximately –5% to –10% over 12 months. SYK is the most defensible of the five because demographic tailwinds are real and Mako's competitive advantage is differentiated. But the valuation provides very little cushion. You're paying for perfection in a business that historically delivers merely good results.</p>
+
+  <div class="callout yellow">
+    <p><strong>Bear Verdict on SYK:</strong> The safest bear case is not that Stryker is a bad business — it's that the 28x multiple leaves no room for anything to go wrong. And something always goes wrong. This is the stock in the basket most vulnerable to a growth scare.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PGR SECTION -->
+<!-- ============================================================ -->
+<section class="company-section" id="pgr">
+  <div class="company-header">
+    <div class="ticker">PGR</div>
+    <div class="name-sector">
+      <div class="name">The Progressive Corporation</div>
+      <div class="sector">Insurance · Auto / Property &amp; Casualty</div>
+    </div>
+    <div class="bearishness">
+      <span class="bear-num">9/10</span>
+      <span class="bear-label">Bearish Conviction</span>
+    </div>
+  </div>
+
+  <div class="company-summary-box">
+    <div class="stat">
+      <span class="stat-val">~$280</span>
+      <span class="stat-lbl">Current Price</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~19x</span>
+      <span class="stat-lbl">Fwd P/E</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$175–220</span>
+      <span class="stat-lbl">Bear Target</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">–21% to –37%</span>
+      <span class="stat-lbl">Bear Downside</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">Very High</span>
+      <span class="stat-lbl">Cycle Risk</span>
+    </div>
+  </div>
+
+  <h3>Why the Stock Could Underperform</h3>
+
+  <h4>1. The Auto Insurance Cycle Is Turning — and It Always Destroys Earnings</h4>
+  <p>Progressive is having an exceptional run. The combination of rate increases taken through 2023–2025 (cumulative ~25–30%) and moderating claims cost inflation has produced combined ratios in the low 90s — excellent profitability. But <strong>this is the peak of the cycle, not the beginning.</strong></p>
+  <p>Here's how the auto insurance cycle works when it turns: (1) Industry profitability improves → (2) Competitors see the returns and start adding capacity → (3) Rate increases stop, then reverse → (4) Loss ratios deteriorate as prior-year pricing proves inadequate → (5) Profits collapse. We are at step 2–3 right now. Geico has already begun advertising "low rates" again after years of restraint. Allstate is adding auto insurance capacity after pulling back. State Farm, which lost $8B in auto in 2022, has written its way back to profitability and is pricing aggressively again. The competitive discipline that existed from 2021–2024 is gone.</p>
+  <p>Progressive's own guidance suggests combined ratios will drift from ~92 in 2025 to ~95+ in 2026 as prior-year rate adequacy erodes. Every point of combined ratio deterioration represents approximately $350M in pre-tax profit — or about $0.50 in EPS. A move from 92 to 97 (still profitable, but not exceptional) would reduce EPS by ~$2.50 — a 17% earnings decline from consensus.</p>
+
+  <h4>2. Telematics Advantage Is Narrowing</h4>
+  <p>Progressive's "secret weapon" has been its 20-year head start on usage-based insurance (Snapshot/telematics). This data advantage let it price risk more accurately than peers, segment good drivers from bad, and maintain a claims cost advantage of 5–10% over competitors.</p>
+  <p>That advantage is eroding. <strong>Geico launched its telematics program (DriveEasy) and now has over 5 million enrolled drivers.</strong> Allstate's Arity platform aggregates data from 80M+ cars. State Farm's Drive Safe & Save (partnered with GM's OnStar) covers millions. Even upstarts like Root and Lemonade, while small, are commoditizing the data layer. The insurance data that was Progressive's proprietary moat is increasingly available to everyone through connected car APIs, smartphone sensors, and third-party data aggregators. Progressive's loss ratio advantage over peers has narrowed from ~8 points in 2019 to an estimated ~4 points in 2025.</p>
+
+  <h4>3. Catastrophe Exposure Is Underestimated</h4>
+  <p>Progressive has been growing its homeowners insurance business aggressively — direct premiums written in homeowners grew from $2.5B in 2020 to over $5B in 2025. This is a completely different risk profile from auto insurance. <strong>Homeowners is catastrophe-exposed in ways that Progressive's models may not fully capture</strong> — especially given climate change-driven loss volatility. Florida homeowners alone generated $40B+ of insured losses from 2020–2024. Progressive's homeowners combined ratio (estimated ~105 in 2025) is worse than its auto book. They're adding low-margin, high-volatility exposure that could generate a $500M–$1B loss in a single bad hurricane season.</p>
+  <p>The bull case says "insurance cycle + float income." The bear case says "you are paying 19x earnings for a company whose core competitive advantage is eroding, entering a peak cycle, and adding catastrophe risk to a previously stable book."</p>
+
+  <h3>What Assumptions Are Fragile</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:30%;">Bull Assumption</th>
+        <th style="width:35%;">Bear Scenario</th>
+        <th style="width:35%;">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Combined ratio stays below 95</strong></td>
+        <td>Cycle turns; competition drives rates down; combined ratio reaches 98–100</td>
+        <td class="neg">EPS declines 20–30%; <strong>stock at $200–225</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Telematics advantage persists</strong></td>
+        <td>Data commoditization; Geico/Allstate close the gap to 2 points</td>
+        <td class="neg">Premium growth market share loss; <strong>stock at $240–260</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Homeowners growth is profitable</strong></td>
+        <td>Catastrophe losses spike; homeowners combined ratio stays above 105</td>
+        <td class="neg">$0.50–1.00 EPS drag annually; <strong>stock at $230–250</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Historical Examples of Similar Setups That Failed</h3>
+  <p><strong>Progressive itself, 2004–2007.</strong> In the early 2000s, Progressive was the darling of the auto insurance industry — telematics pioneer, superior underwriting, consistent ROEs of 15%+. Then the cycle turned. From 2004–2007, Progressive's combined ratio deteriorated from 93 to 98. The stock fell 30% from its 2004 high and did not recover for 5 years. The identical pattern is repeating today.</p>
+  <p><strong>Allstate, 2021–2023.</strong> Allstate management were so confident in their "transformative" auto insurance strategy that they kept buying back stock aggressively at $120+ in 2021. When auto loss ratios spiked in 2022–2023 (accelerating claims costs from inflation), Allstate's combined ratio hit 107 in auto. The stock fell to $80 — a 40% decline. The CEO's confidence couldn't protect against the cycle.</p>
+
+  <h3>What Metrics Would Invalidate the Thesis</h3>
+  <ul>
+    <li><strong>Combined ratio rises above 97 for a full year:</strong> Progressive is a high-quality insurer; a CR above 97 means the cycle has decisively turned against them.</li>
+    <li><strong>Net written premium growth drops below 5%:</strong> Progressive has grown premiums at 12%+ for years. Below 5% indicates market share battles.</li>
+    <li><strong>Geico telematics enrollment exceeds 10M:</strong> Currently ~5M. At 10M, the telematics moat is effectively gone.</li>
+    <li><strong>Homeowners combined ratio exceeds 110 for any quarter:</strong> This would show Progressive is underpricing catastrophe risk.</li>
+  </ul>
+
+  <h3>Expected Return Under Bear Scenarios</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Combined Ratio</th>
+        <th>Implied EPS</th>
+        <th>Exit Multiple</th>
+        <th class="bear-header">Target Price</th>
+        <th class="bear-header">Total Return</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Moderate Bear</strong></td>
+        <td>96 (cycle drifting)</td>
+        <td>$13.00</td>
+        <td>17x</td>
+        <td class="neg">$221</td>
+        <td class="neg">–21%</td>
+        <td>35%</td>
+      </tr>
+      <tr>
+        <td><strong>Severe Bear</strong></td>
+        <td>100 (cycle turns + competition)</td>
+        <td>$10.50</td>
+        <td>15x</td>
+        <td class="neg">$158</td>
+        <td class="neg">–44%</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td><strong>Catastrophe Spike</strong></td>
+        <td>102 (bad hurricane + cycle)</td>
+        <td>$9.00</td>
+        <td>16x</td>
+        <td class="neg">$144</td>
+        <td class="neg">–49%</td>
+        <td>10%</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Probability-weighted expected return:</strong> Approximately –15% to –25% over 12–18 months. Progressive is an excellent business facing a predictable cyclical headwind. The market is ignoring this because the current earnings are so good. They're extrapolating a peak. When earnings inflect — and they will — the stock will fall harder than people expect.</p>
+
+  <div class="callout dark-red">
+    <p><strong>Bear Verdict on PGR:</strong> The most dangerous stock in the basket. A perfect business in a terrible cyclical position. Every dollar of current EPS is at maximum cycle-adjusted earning power. When the cycle turns — and it will, because it always does — Progressive will decline 25–45%. Avoid.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MCK SECTION -->
+<!-- ============================================================ -->
+<section class="company-section" id="mck">
+  <div class="company-header">
+    <div class="ticker">MCK</div>
+    <div class="name-sector">
+      <div class="name">McKesson Corporation</div>
+      <div class="sector">Healthcare · Pharmaceutical Distribution</div>
+    </div>
+    <div class="bearishness">
+      <span class="bear-num">7/10</span>
+      <span class="bear-label">Bearish Conviction</span>
+    </div>
+  </div>
+
+  <div class="company-summary-box">
+    <div class="stat">
+      <span class="stat-val">~$525</span>
+      <span class="stat-lbl">Current Price</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~15x</span>
+      <span class="stat-lbl">Fwd P/E</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$350–420</span>
+      <span class="stat-lbl">Bear Target</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">–20% to –33%</span>
+      <span class="stat-lbl">Bear Downside</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">High</span>
+      <span class="stat-lbl">Regulatory Risk</span>
+    </div>
+  </div>
+
+  <h3>Why the Stock Could Underperform</h3>
+
+  <h4>1. The Opioid Liability Is Not Over — It's Just Starting</h4>
+  <p>The bull case says the opioid settlement framework (McKesson agreed to pay ~$7.4B over 18 years) removes the legal overhang. This is dangerously naive. <strong>The opioid litigation is entering a second, more dangerous phase: public nuisance and abatement trials at the state and local level.</strong> The settlement McKesson signed covers claims against the company as a distributor — but new abatement demands, "public nuisance" lawsuits, and litigation from states that opted out of the national settlement could add billions more.</p>
+  <p>Consider: In 2024, West Virginia's trial against McKesson and other distributors resulted in a $383M verdict. That's a state with 1.8M people. There are hundreds of counties, cities, and Native American tribes pursuing their own claims. The $7.4B settlement is a ceiling, not a floor. Every additional $1B in opioid-related payments represents roughly $7 per share in NPV destruction.</p>
+
+  <h4>2. Drug Pricing Reform Is the Unseen Iceberg</h4>
+  <p>McKesson makes money by earning a percentage spread on the drugs it distributes. The margin is thin (~1–2% of revenue), but the dollar volume is enormous. Anything that compresses this spread is existential.</p>
+  <p><strong>The Inflation Reduction Act (IRA) drug pricing provisions are just the beginning.</strong> The IRA allows Medicare to negotiate prices on 10 drugs initially, expanding to 20+ by 2029. While this directly affects manufacturers, the ripple effects compress margins throughout the supply chain. Distributors face pressure from both sides: manufacturers demanding lower distribution fees (as their own margins shrink) and pharmacies demanding lower drug costs (as patients face lower reimbursements).</p>
+  <p><strong>De minimis safe harbor for pharmacy benefit managers (PBMs) is under threat.</strong> The proposed rule from HHS/CMS could eliminate the regulatory structure that allows PBMs and distributors to profit from drug rebates. If the PBM model is restructured (a bipartisan idea that keeps gaining momentum), McKesson's Revenue Management Solutions and other fee-based services take a direct hit. PBM reform could reduce McKesson's EPS by $1–2.</p>
+
+  <h4>3. The "Value Trap" Triple Threat</h4>
+  <p>McKesson trades at 15x earnings with a 1% dividend yield and massive buyback activity. This looks cheap. But <strong>the market is right to be skeptical.</strong></p>
+  <p>The company has spent $15B+ on share buybacks over the last 5 years, reducing the share count by ~25%. This creates the illusion of EPS growth. But organic revenue growth in distribution is only 4–6% annually — barely above inflation. Operating margins in the core distribution business are ~1.5%. The buyback-driven EPS growth is a financial engineering game, not a sustainable compounding story. At some point, the buybacks deplete and the real earnings growth — or lack thereof — is exposed.</p>
+  <p><strong>Compare to Cardinal Health (CAH) and AmerisourceBergen (COR):</strong> All three trade at similar multiples (14–16x). None has been able to sustainably grow operating margins. The entire distribution sector trades cheap for a reason — it's a high-volume, low-margin business with limited pricing power. McKesson's "transformation" into a healthcare services company is a self-serving narrative that has failed to meaningfully move the margin needle for a decade.</p>
+
+  <h3>What Assumptions Are Fragile</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:30%;">Bull Assumption</th>
+        <th style="width:35%;">Bear Scenario</th>
+        <th style="width:35%;">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Opioid liability is fully resolved</strong></td>
+        <td>New state/county claims add $3–5B in liability; courts reject settlement framework</td>
+        <td class="neg">$20–35 per share liability; <strong>stock at $420–450</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Drug distribution margins are stable</strong></td>
+        <td>IRA Phase 2 compresses distribution spreads by 10–20 bps</td>
+        <td class="neg">$0.50–1.00 EPS erosion; multiple de-rates to 13x; <strong>stock at $400</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Buybacks drive 10%+ EPS CAGR</strong></td>
+        <td>Debt re-rates; cash flow constrained by opioid payments; buyback slows 50%</td>
+        <td class="neg">EPS growth decelerates to 4%; <strong>stock at $380–410</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Historical Examples of Similar Setups That Failed</h3>
+  <p><strong>Valeant Pharmaceuticals (now Bausch Health), 2014–2016.</strong> Valeant traded at a P/E of ~12x on buyback-adjusted EPS while facing regulatory scrutiny. The market "knew" about the risks but the stock looked cheap on adjusted earnings. When the model broke (drug pricing scrutiny, PBM reform discussions, debt covenant pressure), the stock fell 90%. McKesson is not Valeant — but the pattern of financial engineering masking weak organic fundamentals is the same.</p>
+  <p><strong>Henry Schein (HSIC), 2017–2020.</strong> A healthcare distribution company with similar "neglected quality" characteristics — dominant market position, consistent earnings, reasonable multiple. When Amazon Business entered the medical supply distribution market in 2019, HSIC's stock dropped 25% in 3 months on the <em>threat</em> of disruption, even though actual revenue impact was minimal for years. McKesson faces a similar risk from vertical integration in pharma supply chains.</p>
+  <p><strong>The pattern:</strong> Low-margin distribution businesses look deceptively cheap because buybacks inflate EPS. When a shock hits — regulatory, competitive, or legal — the multiple compresses from "reasonable" to "contempt" very quickly. A 15x stock can become a 10x stock in 6 months.</p>
+
+  <h3>What Metrics Would Invalidate the Thesis</h3>
+  <ul>
+    <li><strong>Operating margin falls below 1.2%:</strong> Currently ~1.5%. Below 1.2% indicates structural margin compression.</li>
+    <li><strong>Debt-to-EBITDA exceeds 3.0x:</strong> Currently ~2.2x. Rising leverage + opioid payments = impaired financial flexibility.</li>
+    <li><strong>Buyback pace slows by more than 40% from current run rate:</strong> Would expose the EPS growth as engineered, not organic.</li>
+    <li><strong>New opioid lawsuit filings exceed 500 in any 12-month period:</strong> The settlement was supposed to channel these. If new claims proliferate, the framework failed.</li>
+  </ul>
+
+  <h3>Expected Return Under Bear Scenarios</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Revenue Growth</th>
+        <th>Implied EPS</th>
+        <th>Exit Multiple</th>
+        <th class="bear-header">Target Price</th>
+        <th class="bear-header">Total Return</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Moderate Bear (opioid overhang)</strong></td>
+        <td>5% (meets low end of guide)</td>
+        <td>$33.00</td>
+        <td>13x</td>
+        <td class="neg">$429</td>
+        <td class="neg">–18%</td>
+        <td>35%</td>
+      </tr>
+      <tr>
+        <td><strong>Severe Bear (margin compression)</strong></td>
+        <td>3% (IRA impact + PBM disruption)</td>
+        <td>$28.00</td>
+        <td>12x</td>
+        <td class="neg">$336</td>
+        <td class="neg">–36%</td>
+        <td>20%</td>
+      </tr>
+      <tr>
+        <td><strong>Buyback shock</strong></td>
+        <td>4% (steady but no buyback boost)</td>
+        <td>$30.00</td>
+        <td>14x</td>
+        <td class="neg">$420</td>
+        <td class="neg">–20%</td>
+        <td>15%</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Probability-weighted expected return:</strong> Approximately –12% to –18% over 12 months. McKesson looks cheap at 15x, but the cheapness is compensation for real risks. The opioid overhang is not resolved, the margin structure is fragile, and the buyback-driven EPS growth masks mediocre organic fundamentals.</p>
+
+  <div class="callout">
+    <p><strong>Bear Verdict on MCK:</strong> The classic value trap. Cheap for good reasons. A 15x multiple is not a bargain when the business generates 1.5% operating margins and faces existential regulatory risk. The market has been right to discount McKesson for a decade.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CB SECTION -->
+<!-- ============================================================ -->
+<section class="company-section" id="cb">
+  <div class="company-header">
+    <div class="ticker">CB</div>
+    <div class="name-sector">
+      <div class="name">Chubb Limited</div>
+      <div class="sector">Insurance · Global Property &amp; Casualty</div>
+    </div>
+    <div class="bearishness">
+      <span class="bear-num">7/10</span>
+      <span class="bear-label">Bearish Conviction</span>
+    </div>
+  </div>
+
+  <div class="company-summary-box">
+    <div class="stat">
+      <span class="stat-val">~$260</span>
+      <span class="stat-lbl">Current Price</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~12x</span>
+      <span class="stat-lbl">Fwd P/E</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$180–215</span>
+      <span class="stat-lbl">Bear Target</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">–17% to –31%</span>
+      <span class="stat-lbl">Bear Downside</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">Very High</span>
+      <span class="stat-lbl">Catastrophe Risk</span>
+    </div>
+  </div>
+
+  <h3>Why the Stock Could Underperform</h3>
+
+  <h4>1. The Hard Market Is Already Priced In — and It's Softening</h4>
+  <p>Chubb has benefited enormously from the P&C hard market of 2020–2025. Commercial insurance rates increased 60%+ cumulatively over this period. Chubb's premium growth and underwriting margins have been outstanding. The bull case assumes this continues.</p>
+  <p><strong>It won't.</strong> The P&C cycle is turning. Commercial lines pricing increases have already decelerated from +12% in 2023 to +3–5% in 2025 according to the Council of Insurance Agents and Brokers (CIAB) quarterly survey. In casualty lines — Chubb's core strength — pricing is actually <em>declining</em> in competitive classes. The industry is adding capacity: new entrants and existing carriers are chasing premium dollars after years of profitability. When pricing turns negative — a "soft market" — Chubb's growth decelerates and its loss ratio deteriorates as reserves booked on peak-cycle premiums prove inadequate.</p>
+  <p>Chubb generates ~$14B of underwriting income at the peak of the cycle. In a soft market, that number could fall to $6–8B. The math is simple: 12x earnings at the peak is not cheap — it's fair. 12x earnings at the trough is expensive.</p>
+
+  <h4>2. Catastrophe Losses Are a Structural Problem Masquerading as Transient</h4>
+  <p>Chubb has significant exposure to property catastrophe risk through its global P&C book. The company has been growing its North American property book aggressively, attracted by the post-2022 rate increases in cat-exposed lines. But <strong>climate change is structurally increasing both the frequency and severity of natural catastrophes.</strong></p>
+  <p>The facts: Insured catastrophe losses have exceeded $100B in each of the last three years (2023–2025), compared to a long-term average of ~$50B. Chubb's annual catastrophe losses have run at $1.5–2.5B, but the trend is rising. A single $10B cat event (Florida hurricane or California earthquake) could hit Chubb's book for $1–2B of pre-tax losses — wiping out 15–25% of annual operating earnings.</p>
+  <p><strong>Reinsurance costs are the hidden tax.</strong> Even when catastrophe losses are manageable, the cost of buying reinsurance protection is structurally higher. Chubb's reinsurance spend has increased ~30–40% from 2021 levels, and those costs are not fully recoverable through higher primary rates in competitive markets. This is a permanent impairment to underwriting margins.</p>
+
+  <h4>3. Interest Rate Exposure Cuts Both Ways</h4>
+  <p>The bull case highlights that higher interest rates boost Chubb's investment income on its massive bond portfolio (~$95B). This is partially true: Chubb is earning ~4.5% on new money versus ~2.5% on the legacy portfolio, creating a tailwind as bonds mature and roll into higher rates.</p>
+  <p>But interest rates are also <strong>Chubb's single biggest latent liability.</strong> Chubb holds a massive duration mismatch: its bond portfolio has a duration of ~4 years (meaning rates can't change too much without significant mark-to-market loss), while its insurance liabilities extend 5–10+ years. If the Federal Reserve cuts rates (as markets expect in 2026–2027), Chubb's reinvestment yield falls, compressing the margin between investment income and claims cost inflation. A 100bp rate cut reduces Chubb's investment income by ~$500M annually — or ~$1.25 per share.</p>
+  <p>Furthermore, Chubb holds ~$6B in bond portfolio unrealized losses from the 2022–2023 rate increase. While these are amortized, they represent real economic capital that constrains Chubb's ability to deploy excess capital for buybacks when operating conditions are best.</p>
+
+  <h3>What Assumptions Are Fragile</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:30%;">Bull Assumption</th>
+        <th style="width:35%;">Bear Scenario</th>
+        <th style="width:35%;">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hard market persists for 2–3 more years</strong></td>
+        <td>Soft market begins H2 2026; pricing turns flat to –3%</td>
+        <td class="neg">Underwriting income drops 30–40%; <strong>stock at $200–220</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Catastrophe losses stay at manageable levels</strong></td>
+        <td>$2.5–3.5B annual cat losses become the new normal</td>
+        <td class="neg">Combined ratio rises 2–3 points; <strong>stock at $215–230</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Interest rates stay elevated (supporting investment income)</strong></td>
+        <td>Fed cuts 100–150bp by end of 2027; investment income declines $500M+</td>
+        <td class="neg">$1.25–1.75 EPS headwind; <strong>stock at $220–240</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Historical Examples of Similar Setups That Failed</h3>
+  <p><strong>AIG, 2004–2007.</strong> AIG was the world's largest insurer, widely considered the best underwriter, with a global franchise and stellar return on equity. It traded at 12–14x earnings — "cheap" for the quality. Then the financial crisis exposed massive counterparty risk in its financial products division, credit default swaps, and securities lending program. AIG fell 98% from its high. Chubb is not AIG (no financial products exposure), but the lesson stands: insurers that appear "best-in-class" can generate catastrophic losses from tail risks that their models underestimate.</p>
+  <p><strong>XL Group (XL), 2011–2014.</strong> XL was a leading global P&C insurer with a reputation for underwriting discipline. It traded at a consistent discount to book value (0.9–1.1x P/B). When catastrophe losses spiked in 2011 (Japanese earthquake, New Zealand earthquake, Thai floods), XL's combined ratio hit 110 and the stock fell 40%. The "great company at a cheap price" narrative collapsed because the cheap price was fully compensating for the risk the company was running.</p>
+
+  <h3>What Metrics Would Invalidate the Thesis</h3>
+  <ul>
+    <li><strong>Combined ratio exceeds 98 for two consecutive years:</strong> Currently ~92. Above 98 means underwriting losses in a supposedly disciplined underwriter.</li>
+    <li><strong>Premium growth turns negative for 2+ quarters:</strong> Would confirm the market is softening faster than expected.</li>
+    <li><strong>Catastrophe losses exceed $3B in any calendar year:</strong> Above $3B means the climate risk is materializing faster than modeled.</li>
+    <li><strong>P/B valuation drops below 1.2x:</strong> Currently ~1.5x. Below 1.2x would signal the market has lost confidence in the book value quality.</li>
+    <li><strong>Reinsurance renewal rate increase reverses:</strong> A decline in reinsurance costs would signal that capacity is returning — bad for primary pricing.</li>
+  </ul>
+
+  <h3>Expected Return Under Bear Scenarios</h3>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Combined Ratio</th>
+        <th>Implied EPS</th>
+        <th>Exit Multiple</th>
+        <th class="bear-header">Target Price</th>
+        <th class="bear-header">Total Return</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Moderate Bear (softening market)</strong></td>
+        <td>96 (still profitable)</td>
+        <td>$19.00</td>
+        <td>11x</td>
+        <td class="neg">$209</td>
+        <td class="neg">–20%</td>
+        <td>35%</td>
+      </tr>
+      <tr>
+        <td><strong>Severe Bear (catastrophe spike + soft market)</strong></td>
+        <td>102 (underwriting loss)</td>
+        <td>$14.00</td>
+        <td>10x</td>
+        <td class="neg">$140</td>
+        <td class="neg">–46%</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td><strong>Rate Cut Compression</strong></td>
+        <td>95 (good underwriting)</td>
+        <td>$20.00</td>
+        <td>11x</td>
+        <td class="neg">$220</td>
+        <td class="neg">–15%</td>
+        <td>20%</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Probability-weighted expected return:</strong> Approximately –18% over 12–18 months. Chubb's 12x P/E is cheap for a reason: peak-cycle earnings, structural catastrophe risk, and interest rate exposure. The 12x multiple is <em>not</em> the bargain it appears to be — it's a fair valuation for a business facing a predictable earnings decline.</p>
+
+  <div class="callout">
+    <p><strong>Bear Verdict on CB:</strong> The market is correctly discounting peak-cycle earnings. A 12x multiple on a business at the peak of the hardest insurance market in 20 years is not a bargain — it's market efficiency. When earnings revert to mid-cycle, the stock will be 20–30% lower.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- FINAL SYNTHESIS -->
+<!-- ============================================================ -->
+<section class="synthesis-section" id="synthesis">
+  <h2>Final Synthesis — When "Neglected" Means "Rightly Ignored"</h2>
+
+  <p>The premise of this series was that the market has overlooked a basket of high-quality, well-managed businesses because investors are obsessed with AI stocks. The bull case says these five stocks trade at attractive valuations for their durable competitive advantages and are poised for a re-rating as attention returns to fundamentals.</p>
+
+  <p>The bear case says something more uncomfortable: <strong>maybe the market is not wrong.</strong></p>
+
+  <p>You can construct a compelling bull narrative for each of these stocks using optimistic assumptions about cycles, competitive positions, and multiple expansion. But the bear case for every single one of them rests on the same pattern: buying peak-cycle earnings at a price that's only attractive if the cycle never turns. ETN's 28x multiple assumes the electrification super-cycle has no end. PGR's 19x assumes auto insurance margins stay at generational highs. CB's 12x assumes hard market pricing never softens. MCK's 15x assumes buybacks can sustain earnings growth forever.</p>
+
+  <p>These are all cycle-peak valuations. And <strong>cycles turn.</strong></p>
+
+<!-- Which Stock Has the Weakest Bull Case -->
+<div class="synthesis-subsection">
+  <h3>Which Stock Has the Weakest Bull Case?</h3>
+  <p>Ranked from "most likely to underperform" to "most defensible":</p>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Ticker</th>
+        <th>Bear Conviction</th>
+        <th>Why the Bull Case Is Weakest</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>PGR</strong></td>
+        <td class="neg">9/10</td>
+        <td>Perfect business at the peak of the cycle. Auto insurance cycle turning + telematics moat eroding + catastrophe exposure rising. The earnings you see are not sustainable. 20–45% downside.</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>ETN</strong></td>
+        <td class="neg">8/10</td>
+        <td>Good industrial business trading at a premium tech multiple. 28x P/E on a cyclical company is a recipe for mean reversion. Data center capex will not grow forever. 20–40% downside.</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>MCK</strong></td>
+        <td class="neg">7/10</td>
+        <td>Classic value trap. Cheap for a reason: 1.5% margins, unresolved opioid liability, regulatory threats. Financial engineering via buybacks masks weak fundamentals. 20–35% downside.</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>CB</strong></td>
+        <td class="neg">7/10</td>
+        <td>12x on peak-cycle earnings is not cheap. Hard market is softening, catastrophe losses are rising, and reserve releases cannot continue forever. 15–30% downside in soft market.</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td><strong>SYK</strong></td>
+        <td class="neg">6/10</td>
+        <td>Best defense: demographic tailwinds are real, Mako is differentiated, and the business is less cyclical. But at 28x, almost any disappointment triggers a 15–20% decline. Growth scare risk.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Bottom line:</strong> SWYK is the most defensible bull case — not because it's cheap (it's the most expensive in the basket at 28x) but because the business quality and demographic tailwinds are genuinely defensible. PGR and ETN have the weakest bull cases because both are cyclical businesses at peak cycle conditions that the market is treating as permanent.</p>
+</div>
+
+<!-- Which Bear Arguments Are Strongest Overall -->
+<div class="synthesis-subsection">
+  <h3>Which Bear Arguments Are Strongest Overall?</h3>
+  <p>The three most credible bear cases across all five stocks:</p>
+
+  <div class="callout dark-red">
+    <p><strong>#1: The Auto Insurance Cycle Turn (PGR)</strong><br>
+    This is the most predictable bear case in the basket. The auto insurance cycle has turned every 4–7 years for 50+ years. We are at the peak. PGR's combined ratio will drift from 92 to 96+ as rate adequacy erodes. Every other auto insurer is adding capacity. The telematics advantage is narrowing. And PGR's valuation still assumes peak-cycle earnings are permanent. This is not a question of if — it's when. The only variable is magnitude.</p>
+  </div>
+
+  <div class="callout dark-red">
+    <p><strong>#2: The Industrial Multiple Trap (ETN)</strong><br>
+    ETN is a fine business at 19x earnings. At 28x, it is pricing in uninterrupted perfection for a company that sells electrical components into a cyclical end market. Valuing ETN at 28x is like valuing an auto supplier at 25x in 2018 or a homebuilder at 15x in 2005. The historical evidence is overwhelming: industrial companies at >25x forward earnings almost never deliver positive returns over the subsequent 3 years.</p>
+  </div>
+
+  <div class="callout dark-red">
+    <p><strong>#3: The Hidden Catastrophe Tax (CB &amp; PGR)</strong><br>
+    Both insurers are adding catastrophe-exposed business in an era of structurally elevated disaster losses. Reinsurance costs are permanently higher. Climate change is not a transient phenomenon — it's a secular trend. Insurers that grew through hard market rate increases in cat-exposed lines are going to face a material headwind as loss costs rise faster than pricing. This is the most underappreciated risk across the entire basket.</p>
+  </div>
+</div>
+
+<!-- At What Price Would You Buy Each -->
+<div class="synthesis-subsection">
+  <h3>At What Price Would You Buy Each?</h3>
+  <p>Even a skeptic can be a buyer — at the right price. Here's where the risk/reward flips from unattractive to compelling for each stock:</p>
+
+  <div class="data-table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Current Price</th>
+        <th>Buy Zone</th>
+        <th>Target Upside</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>ETN</strong></td>
+        <td>$355</td>
+        <td class="neu"><strong>$220–250</strong></td>
+        <td>+15–30%</td>
+        <td>At 16x trough earnings (~$13.00), the industrial cycle and multiple compression are fully priced in. Even a bear would buy ETN at 16x.</td>
+      </tr>
+      <tr>
+        <td><strong>SYK</strong></td>
+        <td>$365</td>
+        <td class="neu"><strong>$280–310</strong></td>
+        <td>+15–25%</td>
+        <td>At 22x normalized earnings (below the historical average of 24x), the growth scare is priced in. Stryker at 22x is a buy for skeptics too.</td>
+      </tr>
+      <tr>
+        <td><strong>PGR</strong></td>
+        <td>$280</td>
+        <td class="neu"><strong>$190–210</strong></td>
+        <td>+20–35%</td>
+        <td>At 14x trough-cycle earnings (combined ratio of 98), the cycle has been priced in. Progressive at 14x during a soft market is historically a great entry.</td>
+      </tr>
+      <tr>
+        <td><strong>MCK</strong></td>
+        <td>$525</td>
+        <td class="neu"><strong>$350–400</strong></td>
+        <td>+15–25%</td>
+        <td>At 12x earnings with opioid overhang fully discounted and margin floors visible. The regulatory risk must be mostly priced in.</td>
+      </tr>
+      <tr>
+        <td><strong>CB</strong></td>
+        <td>$260</td>
+        <td class="neu"><strong>$180–210</strong></td>
+        <td>+20–30%</td>
+        <td>At 10x mid-cycle earnings, Chubb's true quality is available at a trough multiple. Historically, CB at ≤10x earnings has been the buying opportunity of the insurance cycle.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Summary:</strong> On average, these stocks would need to fall 30–35% from current levels to reach a price that compensates even a skeptical investor for the risks identified above. The current "cheap" valuations are not cheap — they are fair prices for companies facing material cyclical and structural headwinds.</p>
+</div>
+
+<!-- What Would Invalidate the Entire "Neglected Quality" Thesis? -->
+<div class="synthesis-subsection">
+  <h3>What Would Invalidate the Entire "Neglected Quality" Thesis?</h3>
+
+  <p>The bear cases laid out in this article are individual stock-level arguments. But there's a deeper question: <strong>if 3 or more of these 5 stocks underperform, what does that say about the original "neglected quality" hypothesis?</strong></p>
+
+  <p>The answer is uncomfortable. If the bear cases for PGR, ETN, and MCK all prove correct — producing 20–40% declines — it would suggest the market is not neglecting these stocks. It is <strong>rationally discounting them</strong> for reasons that the "valuation at face value" screening methodology missed.</p>
+
+  <p>Consider what all five stocks share:</p>
+  <ul>
+    <li><strong>Cyclical exposure that a static screening methodology cannot capture.</strong> The quality screening (ROIC, margins, debt, stability) is backward-looking. It identifies businesses with good <em>past</em> performance, but tells you nothing about where they are in their cycle. All five are at or near peak cycle conditions.</li>
+    <li><strong>Industry structures that look durable but are being disrupted.</strong> Orthopedics looks like an oligopoly, but hospital consolidation is shifting power. Insurance looks like a data moat, but telematics is being commoditized. Drug distribution looks like an unassailable middleman, but PBM reform threatens the model.</li>
+    <li><strong>Low multiples that are actually fair, not cheap.</strong> A common investor mistake: assuming a stock trading below the market multiple is "undervalued." When a stock trades at 12–15x in an S&P 500 that's at 21x, the market is telling you something. The market prices a discount for risk. Ignoring that risk signal is not "contrarian" — it's naive.</li>
+  </ul>
+
+  <div class="verdict-box">
+    <h3>The Uncomfortable Conclusion</h3>
+    <p><strong>What if these stocks aren't neglected? What if they're correctly priced?</strong></p>
+    <p>The market does sometimes make mistakes. But when five stocks in unrelated industries all appear "cheap" by the same metric, the error is more likely in the metric than in the collective wisdom of millions of market participants. The "neglected quality" thesis assumes the market is miscalculating the risk. The bear case says the market has correctly calculated the risk, and the risk is higher than the screen suggests.</p>
+    <p><span style="color:var(--accent-red); font-weight:700;">We believe the bear case is more likely than the bull case for at least 3 of these 5 stocks.</span></p>
+  </div>
+
+  <p>This doesn't mean the "neglected quality" concept is worthless. It means it needs refinement. The right conclusion is probably not "buy all five equally." It's more nuanced:</p>
+  <ul>
+    <li><strong>Stocks at cycle peaks should not be bought.</strong> PGR and ETN belong here. Their earnings power is deteriorating, not stable.</li>
+    <li><strong>Stocks with secular overhangs should only be bought at a deep discount.</strong> MCK and CB belong here. 15x is not deep enough for the regulatory and catastrophe risks.</li>
+    <li><strong>The highest-quality name in the basket is the best bet — but at a lower entry.</strong> SYK has the strongest competitive position and the most durable growth driver (demographics). But even SYK needs to be 15–20% lower to offer a proper margin of safety.</li>
+  </ul>
+
+  <p><strong>The best trade in this basket today may be to wait.</strong> All five stocks are vulnerable to the same macro trigger (recession, AI capex disappointment, or insurance cycle turn). When the sell-off comes, buy the strongest names (SYK, CB) at distressed levels. The "neglected quality" thesis works — but only as a <em>buy the dip</em> strategy, not as a <em>buy the peak</em> strategy.</p>
+
+</div>
+
+<!-- Final bottom line -->
+<div class="synthesis-subsection">
+  <h3>One Chart to Watch</h3>
+
+  <div class="callout yellow">
+    <p><strong>The US 10-Year Treasury Yield.</strong> More than any single company metric, the 10-year yield determines the fate of this basket. Why? Because all five stocks look attractive <em>relative to bonds</em> at current low absolute yields. If the 10-year rises to 5.5%+ (as it threatened in 2025), the equity risk premium on these stocks collapses. ETN's 3.2% earnings yield looks terrible next to a 5.5% risk-free yield. PGR's 5.2% earnings yield offers inadequate compensation for the cycle risk. The entire "quality at a reasonable price" trade works when rates are low or falling. If rates stay elevated — the most likely scenario given persistent fiscal deficits and services inflation — these stocks face structural headwinds from competition with bonds.</p>
+  </div>
+</div>
+
+<div class="footer-note">
+  <p><strong>Disclaimer:</strong> This analysis is a deliberate bear-case exercise designed to stress-test the investment thesis. It represents a skeptical, short-seller perspective and is not intended as investment advice or a recommendation to short any security. All data sourced from company filings, earnings transcripts, industry surveys, and public market data as of June 2026. The author may hold positions in some of the securities discussed. Past performance does not guarantee future results. <strong>This is a contrarian exercise in thesis destruction — do not mistake it for a balanced assessment.</strong></p>
+  <p style="margin-top:8px;">
+    © 2026 Quantitatis Research —
+    <a href="top-5-deep-dive-etn-syk-pgr-mck-cb.html" style="color:var(--accent-blue);">← Read the Bull Case</a>
+    <span style="color:var(--text-secondary);"> · </span>
+    <a href="ai-concentration-neglected-quality.html" style="color:var(--accent-blue);">Read the Original Screening →</a>
+  </p>
+</div>
+
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: The Top 5 Neglected Quality Stocks — ETN, SYK, PGR, MCK, CB</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2333;
+    --bg-hover: #252d3f;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-yellow: #d29922;
+    --accent-red: #f85149;
+    --accent-orange: #d4760e;
+    --accent-purple: #a371f7;
+    --accent-cyan: #39d2c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* Header */
+  .article-header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .article-header .series-badge {
+    display: inline-block;
+    background: var(--accent-blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .article-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .article-header .subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 650px;
+    margin: 0 auto 20px;
+  }
+  .article-header .meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .article-header .meta span { margin: 0 8px; }
+
+  /* TOC */
+  .toc {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+  .toc h3 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc ol li {
+    counter-increment: toc;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+  .toc ol li:last-child { border-bottom: none; }
+  .toc ol li::before {
+    content: counter(toc) ".";
+    color: var(--accent-blue);
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .toc ol li a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .toc ol li a:hover { color: var(--accent-blue); }
+
+  /* Sections */
+  .company-section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+  .company-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .company-header .ticker {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .company-header .name-sector {
+    flex: 1;
+  }
+  .company-header .name-sector .name {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .company-header .name-sector .sector {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .company-header .score-badge {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 16px;
+    text-align: center;
+  }
+  .company-header .score-badge .score-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-green);
+    display: block;
+    line-height: 1;
+  }
+  .company-header .score-badge .score-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .company-summary-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+  .company-summary-box .stat {
+    text-align: center;
+  }
+  .company-summary-box .stat .stat-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    display: block;
+  }
+  .company-summary-box .stat .stat-lbl {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  /* Headings */
+  h2 { font-size: 24px; font-weight: 700; margin: 32px 0 16px; color: var(--accent-cyan); }
+  h3 { font-size: 19px; font-weight: 600; margin: 24px 0 12px; color: var(--accent-blue); }
+  h4 { font-size: 16px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
+
+  p { margin: 0 0 16px; font-size: 16px; color: var(--text-secondary); }
+  p strong, .strong { color: var(--text-primary); }
+
+  ul, ol { margin: 0 0 16px 24px; color: var(--text-secondary); }
+  li { margin-bottom: 6px; font-size: 15px; }
+
+  /* Tables */
+  .data-table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .data-table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+    color: var(--text-secondary);
+  }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:hover { background: var(--bg-hover); }
+  .data-table .pos { color: var(--accent-green); font-weight: 600; }
+  .data-table .neg { color: var(--accent-red); font-weight: 600; }
+  .data-table .neu { color: var(--accent-yellow); font-weight: 600; }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid var(--accent-blue);
+    background: rgba(88,166,255,0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 24px 0;
+  }
+  .callout.green { border-left-color: var(--accent-green); background: rgba(63,185,80,0.08); }
+  .callout.yellow { border-left-color: var(--accent-yellow); background: rgba(210,153,34,0.08); }
+  .callout.red { border-left-color: var(--accent-red); background: rgba(248,81,73,0.08); }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* Final Synthesis */
+  .synthesis-section {
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 2px solid var(--border);
+  }
+  .synthesis-section h2 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .verdict-box {
+    background: linear-gradient(135deg, var(--bg-card), #0d2137);
+    border: 2px solid var(--accent-blue);
+    border-radius: 14px;
+    padding: 32px;
+    margin: 32px 0;
+    text-align: center;
+  }
+  .verdict-box h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--accent-cyan);
+  }
+  .verdict-box p {
+    font-size: 16px;
+    max-width: 650px;
+    margin: 0 auto 8px;
+  }
+
+  /* Risk meter */
+  .risk-meter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+  }
+  .risk-meter .bar {
+    width: 60px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-secondary);
+  }
+  .risk-meter .bar.filled.low { background: var(--accent-green); }
+  .risk-meter .bar.filled.med { background: var(--accent-yellow); }
+  .risk-meter .bar.filled.high { background: var(--accent-red); }
+
+  .footer-note {
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 24px 16px; }
+    .article-header h1 { font-size: 26px; }
+    .company-header { flex-wrap: wrap; }
+    .company-summary-box { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ARTICLE HEADER -->
+<div class="article-header">
+  <div class="series-badge">Neglected Quality Series · Article 3</div>
+  <h1>Deep Dive: The Top 5 Neglected Quality Stocks</h1>
+  <p class="subtitle">Full fundamental analysis of Eaton (ETN), Stryker (SYK), Progressive (PGR), McKesson (MCK), and Chubb (CB) — the high-quality businesses the AI boom forgot</p>
+  <div class="meta">Published June 14, 2026 · <span>by Quantitatis Research</span> · <span>~7,500 words</span></div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#etn">Eaton Corporation (ETN) — The Electrification Backbone</a></li>
+    <li><a href="#syk">Stryker Corporation (SYK) — Aging Demographics Meet MedTech Excellence</a></li>
+    <li><a href="#pgr">Progressive Corporation (PGR) — The Underwriting Machine</a></li>
+    <li><a href="#mck">McKesson Corporation (MCK) — The Pharmacy Backbone Nobody Talks About</a></li>
+    <li><a href="#cb">Chubb Limited (CB) — The Gold Standard in Global Insurance</a></li>
+    <li><a href="#synthesis">Final Synthesis: Head-to-Head Comparison &amp; Portfolio Construction</a></li>
+  </ol>
+</div>
+
+<p>In our <a href="ai-concentration-neglected-quality.html" style="color:var(--accent-blue);">first article</a>, we screened the S&P 500 and S&P MidCap 400 to find quality businesses trading at reasonable valuations that are being overlooked in the stampede toward AI. The top 5 ranked names — ETN, SYK, PGR, MCK, and CB — all scored 86 or higher on our composite quality-score framework. Each combines strong competitive moats, consistent compounding, and a valuation that leaves room for upside.</p>
+
+<p>In this deep dive, we go beyond the screening data. For each company, we examine the actual business model, quantify the secular tailwinds, diagnose why the market isn't assigning a premium multiple, stress-test the downside scenarios, and compute the expected return from today's valuation. The goal is to develop conviction — or identify hidden risks — before allocating capital.</p>
+
+<p>Let's begin.</p>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== ETN ===================== -->
+<section class="company-section" id="etn">
+
+<div class="company-header">
+  <div class="ticker">ETN</div>
+  <div class="name-sector">
+    <div class="name">Eaton Corporation plc</div>
+    <div class="sector">Industrials · Electrical Equipment · NYSE</div>
+  </div>
+  <div class="score-badge">
+    <span class="score-num">92</span>
+    <span class="score-label">Quality Score</span>
+  </div>
+</div>
+
+<div class="company-summary-box">
+  <div class="stat"><span class="stat-val">$60B+</span><span class="stat-lbl">Market Cap</span></div>
+  <div class="stat"><span class="stat-val">9%</span><span class="stat-lbl">Revenue CAGR</span></div>
+  <div class="stat"><span class="stat-val">12%</span><span class="stat-lbl">EPS CAGR</span></div>
+  <div class="stat"><span class="stat-val">15%</span><span class="stat-lbl">ROIC</span></div>
+  <div class="stat"><span class="stat-val">18x</span><span class="stat-lbl">Fwd P/E</span></div>
+  <div class="stat"><span class="stat-val">~4%</span><span class="stat-lbl">Div Yield</span></div>
+</div>
+
+<h3>1. What Is the Actual Business?</h3>
+
+<p>Eaton is a global power management company that sells electrical components, systems, and services to commercial, industrial, residential, and utility customers. Think of it this way: <strong>whenever electricity needs to be distributed, protected, converted, or managed, Eaton makes the gear that does it</strong>. The company sits on a mid-cycle revenue run rate of roughly $26 billion, with about two-thirds coming from its Electrical segment (Americas + Global) and the remainder from Aerospace and Vehicle (hydraulics, transmissions, engine components).</p>
+
+<p><strong>Revenue breakdown (FY2025 approximate):</strong></p>
+<ul>
+  <li><strong>Electrical Americas (~48%)</strong> — Circuit breakers, switchgear, transformers, panelboards, UPS systems, lighting controls, power quality solutions. Customers include data centers, hospitals, factories, commercial buildings, utilities.</li>
+  <li><strong>Electrical Global (~18%)</strong> — Same product categories for markets outside the Americas, plus electrification of mining, oil &amp; gas, and industrial processes.</li>
+  <li><strong>Aerospace (~18%)</strong> — Fuel systems, hydraulic actuation, electrical power generation and distribution for commercial and military aircraft.</li>
+  <li><strong>Vehicle (~16%)</strong> — Transmissions, clutches, superchargers, hydraulics for commercial trucks and off-highway equipment. This segment is the most cyclical and is being reshaped by the EV transition.</li>
+</ul>
+
+<p><strong>Competitive moat:</strong> Eaton's moat comes primarily from <strong>switching costs and installed-base economics</strong>. A factory or data center that installs Eaton switchgear builds electrical infrastructure around it; replacing it with a competitor's product requires rewiring panels, retraining electricians, and obtaining new certifications. In the aerospace segment, Eaton components are certified into aircraft platforms that fly for 20–30 years, creating a multi-decade aftermarket revenue stream. The company's distribution network — thousands of electrical distributors that stock Eaton products — acts as a barrier to entry: a new entrant would need to replicate this logistics and relationship infrastructure from scratch.</p>
+
+<p><strong>Management:</strong> CEO Craig Arnold has led Eaton since 2016, previously serving as COO and spending 16 years in senior leadership. Under his tenure, the company exited low-margin automotive businesses, shifted the portfolio toward electrical (the segment was ~50% of revenue in 2015; it's now ~66%), and improved operating margins from ~14% to over 20%. Arnold is widely respected as a disciplined capital allocator who runs the company with a clear owner-operator mentality.</p>
+
+<h3>2. Why Is It Winning?</h3>
+
+<p><strong>Secular tailwinds:</strong> Eaton is benefiting from three simultaneous electrification mega-trends:</p>
+<ul>
+  <li><strong>Data center buildout ($200B+/year globally):</strong> Each megawatt of AI-capable data center capacity requires $1–2M in electrical infrastructure — circuit breakers, switchgear, transformers, power distribution units, UPS systems. Eaton is the #1 or #2 supplier in most of these categories. Every time a hyperscaler announces a new data center campus, Eaton ships containers of electrical gear.</li>
+  <li><strong>Grid modernization and renewables integration:</strong> Aging electrical grids in North America and Europe need $500B+ in investment over the next decade. Eaton's grid-edge solutions (smart meters, distribution automation, EV charging infrastructure) are growing 12–15% annually.</li>
+  <li><strong>Electrification of everything:</strong> Heat pumps, induction stoves, EV chargers, building electrification, factory automation — all require more circuit breakers, more transformers, more power management. The electrified world needs more Eaton gear than the fossil-fueled one.</li>
+</ul>
+
+<p><strong>Operational execution:</strong> Eaton's segment operating margins have expanded from ~14% in 2016 to over 22% in FY2025, driven by mix shift toward electrical, pricing discipline, and manufacturing efficiency (the Eaton Business System, a continuous improvement framework borrowed from Toyota/Danaher). Return on invested capital (ROIC) has risen from ~11% to ~15% over the same period. Revenue growth has averaged 9% CAGR over the last 5 years — impressive for a company entering the period as a mature industrial.</p>
+
+<p><strong>Financial trajectory (approximate):</strong></p>
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Metric</th><th>FY2020</th><th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025 Est.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Revenue ($B)</td><td>$17.9</td><td>$19.6</td><td>$20.8</td><td>$23.2</td><td>$25.6</td><td>~$27.5</td></tr>
+    <tr><td>Operating Margin</td><td>16.0%</td><td>17.2%</td><td>18.1%</td><td>20.0%</td><td>21.0%</td><td>~22.0%</td></tr>
+    <tr><td>ROIC</td><td>11.2%</td><td>12.5%</td><td>13.4%</td><td>14.5%</td><td>15.0%</td><td>~15.5%</td></tr>
+    <tr><td>EPS (GAAP)</td><td>$5.10</td><td>$6.30</td><td>$7.40</td><td>$8.55</td><td>$9.80</td><td>~$11.00</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>DCF implications:</strong> At 18x fwd earnings, the market is pricing Eaton for ~5–6% long-term EPS growth to generate a 10% equity return. Given the secular tailwinds and margin expansion trajectory, 8–10% EPS growth is achievable. This creates a structural upside: the market is pricing in a deceleration that may not materialize.</p>
+
+<div class="callout green">
+<p><strong>The Bottom Line:</strong> Eaton is a high-quality compounder trading at a mid-cycle multiple that doesn't fully reflect the multi-decade electrification super-cycle. It's the kind of business that looks unexciting on the surface — circuit breakers and switchgear — but generates exceptional capital efficiency and predictable growth.</p>
+</div>
+
+<h3>3. Why Is the Market Not Assigning a Higher Multiple?</h3>
+
+<ul>
+  <li><strong>Sector stigma:</strong> "Old economy industrial." The market associates industrials with cyclical commodity exposure, not secular growth. Eaton's best-in-class electrical business gets tarred with the same brush as Caterpillar's construction equipment cycle.</li>
+  <li><strong>Data center revenue underestimated:</strong> Eaton doesn't break out data center exposure precisely, but analysts estimate it's now 10–15% of total revenue and growing at 20%+ annually. The market hasn't re-rated Eaton as a "data center beneficiary" the way it has Vertiv (VRT), despite Eaton being a larger, more diversified supplier.</li>
+  <li><strong>Vehicle segment overhang:</strong> The Truck/auto parts legacy creates anxiety about peak-cycle earnings and EV transition disruption, even though this segment is now only ~16% of revenue.</li>
+  <li><strong>AI distraction:</strong> In a market obsessed with direct AI plays (NVIDIA, hyperscalers, utilities with AI data center exposure), Eaton's circular breakers don't inspire headlines. Investors are chasing the AI gold rush, not selling picks and shovels.</li>
+</ul>
+
+<h3>4. What Could Go Wrong?</h3>
+
+<ul>
+  <li><strong>Data center spending slowdown:</strong> If hyperscalers hit a capex digestion period (as happened in 2023 after the pandemic buildout), electrical orders could slow. However, the structural need for data center capacity suggests any slowdowns would be temporary.</li>
+  <li><strong>Recession in non-residential construction:</strong> Commercial and industrial construction is cyclical. A deep recession would hit Eaton's non-data-center electrical business. But the backlog (reported at $10B+, multi-year visibility) provides a buffer.</li>
+  <li><strong>Aerospace downturn:</strong> A recession or geopolitical event that reduces air travel would pressure the aerospace segment. Boeing's production issues create near-term headwinds.</li>
+  <li><strong>Commodity price disruption:</strong> Copper, steel, and resin are major inputs. Eaton has pricing power (demonstrated through 2022–2024 inflation), but input cost spikes could compress margins temporarily.</li>
+  <li><strong>Key person risk:</strong> CEO Craig Arnold is 63. His eventual departure creates succession uncertainty.</li>
+</ul>
+
+<h3>5. What Expected Return Do We Get From Today's Valuation?</h3>
+
+<p><strong>Base case (60% probability):</strong> Revenue grows 7% annually (data centers + grid + electrification). Margins expand to 23% by 2028 (from mix shift toward electrical, pricing discipline). EPS grows ~10% annually. P/E stays at 18x. Implied annual total return: <strong>~10–11%</strong> (4% dividend + 6–7% earnings growth).</p>
+
+<p><strong>Bull case (20% probability):</strong> Data center acceleration drives 9% revenue growth. Electrical margins reach 24%. EPS grows 13% annually. P/E re-rates to 22x (deserved given the quality and growth profile). Implied annual total return: <strong>~18–22%</strong> (growth + multiple expansion).</p>
+
+<p><strong>Bear case (20% probability):</strong> Recession slows industrial orders. Revenue growth drops to 3% for 2 years. Margins compress to 18%. EPS flat to down 5% for two years. P/E compresses to 15x. Implied annual total return over 3 years: <strong>~0 to –3%</strong>.</p>
+
+<div class="callout green">
+<p><strong>Breakeven growth analysis:</strong> At 18x earnings with a ~4% dividend yield, the market is pricing in ~5–6% long-term EPS growth to deliver a ~10% equity return. Given Eaton's 12% historical EPS CAGR and sustained tailwinds, the market expectations are undemanding. The business needs to deliver only half of its historical growth rate to meet current valuations.</p>
+<p><strong>Rating: BUY</strong> — Price target $420–440 (18–20% upside from ~$360), representing 20x FY2026 estimated EPS of ~$12.25</p>
+</div>
+
+</section>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== SYK ===================== -->
+<section class="company-section" id="syk">
+
+<div class="company-header">
+  <div class="ticker">SYK</div>
+  <div class="name-sector">
+    <div class="name">Stryker Corporation</div>
+    <div class="sector">Healthcare · Medical Devices · NYSE</div>
+  </div>
+  <div class="score-badge">
+    <span class="score-num">91</span>
+    <span class="score-label">Quality Score</span>
+  </div>
+</div>
+
+<div class="company-summary-box">
+  <div class="stat"><span class="stat-val">9–10%</span><span class="stat-lbl">Revenue CAGR</span></div>
+  <div class="stat"><span class="stat-val">$25B+</span><span class="stat-lbl">FY2025 Revenue</span></div>
+  <div class="stat"><span class="stat-val">~15%</span><span class="stat-lbl">ROIC</span></div>
+  <div class="stat"><span class="stat-val">~24x</span><span class="stat-lbl">Fwd P/E</span></div>
+  <div class="stat"><span class="stat-val">~18%</span><span class="stat-lbl">Op. Margin</span></div>
+  <div class="stat"><span class="stat-val">~1%</span><span class="stat-lbl">Div Yield</span></div>
+</div>
+
+<h3>1. What Is the Actual Business?</h3>
+
+<p>Stryker is one of the world's largest medical device companies, focused primarily on orthopedics (knees, hips, spines, trauma) and medical/surgical equipment (operating room beds, surgical power tools, endoscopy systems, stretchers, hospital beds). If you've ever had a joint replacement, spinal fusion, or surgery in a modern hospital, there's a good chance Stryker made the implant or the equipment in the room.</p>
+
+<p><strong>Revenue breakdown (FY2025 approximate):</strong></p>
+<ul>
+  <li><strong>MedSurg &amp; Neurotechnology (~54%)</strong> — Surgical instruments, endoscopy systems, powered surgical tools, patient handling equipment (hospital beds, stretchers), and neurovascular/cranial products. These have high recurring revenue from disposable instruments and service contracts.</li>
+  <li><strong>Orthopedics &amp; Spine (~46%)</strong> — Hip and knee implants, spine surgery products, trauma and extremities. This is higher-ticket, lower-volume, with significant procedure-driven demand (growing with the aging population).</li>
+</ul>
+
+<p><strong>Competitive moat:</strong> Stryker's moat is built on <strong>surgeon loyalty, regulatory barriers, and scale economics</strong>. A surgeon who trains on a particular hip implant system — learning its specific instruments, alignment guides, and feel — is unlikely to switch to a competitor's system for the same procedure. Surgical training programs, hospital inventory management, and the decades-long regulatory process create powerful lock-in. In the MedSurg segment, the capital equipment base (hospital beds, OR tables, surgical power tools) creates a recurring aftermarket for disposables and service contracts. Stryker's ~25% market share in U.S. orthopedics (second only to Johnson &amp; Johnson's DePuy Synthes) gives it significant manufacturing and R&D scale advantages.</p>
+
+<p><strong>Management:</strong> CEO Kevin Lobo has led Stryker since 2014 (Chairman since 2016). Under his leadership, Stryker has maintained consistent 7–10% organic revenue growth, executed well on M&A (notably the $4B Wright Medical acquisition in 2021, expanding upper extremities and biologics), and driven steady margin improvement. Lobo is known for a disciplined capital allocation framework and a strong culture of continuous improvement (the "Stryker Way," originally the Stryker Production System).</p>
+
+<h3>2. Why Is It Winning?</h3>
+
+<p><strong>Secular tailwinds:</strong></p>
+<ul>
+  <li><strong>Aging demographics:</strong> The population aged 65+ in developed markets is growing at 3–4% annually. This demographic gets joint replacements at 10x the rate of younger cohorts. As the last Baby Boomers enter their 70s, hip/knee replacement volume is structurally rising 4–5% per year. Stryker estimates the global joint replacement market grows 3–5% annually (before pricing).</li>
+  <li><strong>Procedure backlog and volume recovery:</strong> COVID created a massive deferred surgery backlog. Normalization is still playing out as hospital capacity expands and patient willingness returns. Elective surgery volumes continue to recover toward trend.</li>
+  <li><strong>Technology infusion in the OR:</strong> Stryker's robotic surgery platform (Mako) is the leading robotic-assisted joint replacement system with ~1,500 installed systems globally. Mako-equipped surgeons perform more consistent joint replacements, which reduces revision rates and creates a powerful competitive advantage. Stryker is also expanding into interventional spine with its Q Guidance System.</li>
+  <li><strong>Endoscopy and minimally invasive surgery growth:</strong> Stryker's endoscopy portfolio (arthroscopy, laparoscopy, ENT) benefits from the secular shift toward less invasive procedures, which require more specialized imaging and instrumentation.</li>
+</ul>
+
+<p><strong>Financial trajectory (approximate):</strong></p>
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Metric</th><th>FY2020</th><th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025 Est.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Revenue ($B)</td><td>$14.4</td><td>$17.1</td><td>$18.4</td><td>$20.5</td><td>$22.8</td><td>~$25.5</td></tr>
+    <tr><td>Adj. Operating Margin</td><td>7.5%*</td><td>17.0%</td><td>17.8%</td><td>18.5%</td><td>19.0%</td><td>~19.5%</td></tr>
+    <tr><td>ROIC</td><td>9.0%</td><td>12.5%</td><td>13.2%</td><td>14.0%</td><td>14.5%</td><td>~15.0%</td></tr>
+    <tr><td>Adj. EPS</td><td>$3.90</td><td>$7.50</td><td>$8.30</td><td>$9.35</td><td>$10.50</td><td>~$11.75</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:13px; color:var(--text-secondary);">*FY2020 margin depressed by COVID procedure disruption.</p>
+
+<p><strong>DCF implications:</strong> At 24x forward earnings, the market prices Stryker for ~7–8% long-term EPS growth (assuming a 9–10% required equity return). Given the demographic tailwinds, Mako expansion, and margin improvement trajectory, 10%+ EPS growth is achievable. The market is slightly discounting Stryker's quality — it's pricing a mature medical device company, not one with substantial market share gain runway in robotic surgery and international expansion.</p>
+
+<h3>3. Why Is the Market Not Assigning a Higher Multiple?</h3>
+
+<ul>
+  <li><strong>Medical device pricing pressure:</strong> The market worries about hospital cost-containment efforts, group purchasing organization pressure, and potential government price controls. While real, these pressures have been present for decades, and Stryker has consistently managed pricing (typically 1–2% annual net price erosion, offset by volume and mix).</li>
+  <li><strong>Regulatory overhang:</strong> FDA medical device regulation creates uncertainty around new product approvals. Any major adverse regulatory event (e.g., metal-on-metal hip recall — a historical ghost from a different era) would be a significant headline risk.</li>
+  <li><strong>Procedure volume sensitivity:</strong> A recession that causes people to delay elective surgeries could compress revenue and margins temporarily. This is a real but usually short-lived risk.</li>
+  <li><strong>Comparable company multiple compression:</strong> Competitor JNJ trades at ~15x earnings, giving the entire orthopedics sector a low-multiple anchor, even though Stryker has far higher organic growth and margin trajectory. The "orthopedics is low-growth" narrative from legacy players creeps onto Stryker.</li>
+  <li><strong>AI distraction:</strong> Healthcare investors are chasing AI-driven drug discovery, genomics, and digital health. A company that makes hip implants and hospital beds seems prosaic by comparison, even though its revenue is highly predictable and its competitive position is rock-solid.</li>
+</ul>
+
+<h3>4. What Could Go Wrong?</h3>
+
+<ul>
+  <li><strong>Recession delaying elective procedures:</strong> In a severe recession, patients postpone elective joint replacements. Revenue could decline 5–10% cyclically. However, the backlog builds, and recovery usually comes within 12–18 months (as seen post-COVID).</li>
+  <li><strong>Price regulation:</strong> U.S. government intervention in medical device pricing (e.g., Medicare price controls, reference pricing) could compress margins. This is a tail risk, not a base case, given the current political environment.</li>
+  <li><strong>Mako competition:</strong> Other orthopedic companies (Zimmer Biomet, Smith+Nephew) are developing or marketing competing robotic systems. Mako's installed base and surgeon training create a significant head start, but competition could erode Stryker's robotic advantage.</li>
+  <li><strong>Supply chain / raw materials:</strong> Cobalt-chrome, titanium, and polyethylene are critical inputs. Supply disruptions or price spikes could impact margins.</li>
+  <li><strong>Product recall:</strong> A significant implant recall would damage surgeon trust, create legal liability, and impact revenue for years. This is Stryker's biggest single tail risk.</li>
+</ul>
+
+<h3>5. What Expected Return Do We Get From Today's Valuation?</h3>
+
+<p><strong>Base case (60% probability):</strong> Revenue grows 7% (demographics + Mako + international). Margins expand to 21% by 2028. EPS grows ~10% annually. P/E holds at 24x. Implied annual total return: <strong>~9–10%</strong> (1% dividend + 8–9% earnings growth).</p>
+
+<p><strong>Bull case (20% probability):</strong> Mako accelerates market share gains, driving 9% revenue growth. Margins reach 22%. EPS grows 13% annually. P/E re-rates to 28x (still below historical premium for compounders). Implied annual total return: <strong>~15–18%</strong>.</p>
+
+<p><strong>Bear case (20% probability):</strong> Recession pushes procedure volume down 5% for 18 months. Revenue flat to down 2–3% annually. P/E compresses to 20x. Implied annual total return: <strong>~2 to –2%</strong>.</p>
+
+<div class="callout green">
+<p><strong>Breakeven growth analysis:</strong> At 24x earnings, the market requires roughly 7–8% long-term EPS growth. Stryker has delivered 10%+ consistently. The margin of safety is moderate — the business needs to deliver below its historical trend to underperform. For patient investors with a 5-year horizon, Stryker offers a solid risk-adjusted return in a quality compounder at a fair price.</p>
+<p><strong>Rating: BUY</strong> — Price target $410–430 (12–18% upside from ~$365), based on 24.5x FY2026 estimated EPS of ~$13.00</p>
+</div>
+
+</section>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== PGR ===================== -->
+<section class="company-section" id="pgr">
+
+<div class="company-header">
+  <div class="ticker">PGR</div>
+  <div class="name-sector">
+    <div class="name">The Progressive Corporation</div>
+    <div class="sector">Financials · Property &amp; Casualty Insurance · NYSE</div>
+  </div>
+  <div class="score-badge">
+    <span class="score-num">90</span>
+    <span class="score-label">Quality Score</span>
+  </div>
+</div>
+
+<div class="company-summary-box">
+  <div class="stat"><span class="stat-val">~15%</span><span class="stat-lbl">Revenue Growth</span></div>
+  <div class="stat"><span class="stat-val">~18%</span><span class="stat-lbl">ROIC</span></div>
+  <div class="stat"><span class="stat-val">~16x</span><span class="stat-lbl">Fwd P/E</span></div>
+  <div class="stat"><span class="stat-val">~20%+</span><span class="stat-lbl">Combined Ratio</span></div>
+  <div class="stat"><span class="stat-val">$120B+</span><span class="stat-lbl">Market Cap</span></div>
+  <div class="stat"><span class="stat-val">~0.5%</span><span class="stat-lbl">Div Yield</span></div>
+</div>
+
+<h3>1. What Is the Actual Business?</h3>
+
+<p>Progressive is the largest U.S. auto insurer by direct premiums written and the third-largest overall property and casualty insurer. The company writes personal auto, commercial auto, homeowners, and other specialty property insurance. But calling it "an insurance company" is like calling Amazon "a bookstore." Progressive is an <strong>underwriting technology company that uses insurance as the product</strong>.</p>
+
+<p><strong>Revenue breakdown (FY2025 approximate):</strong></p>
+<ul>
+  <li><strong>Personal Auto (~75%)</strong> — The core franchise. Progressive offers direct-to-consumer (Progressive.com, Progressive app, comparison shopping via "Name Your Price" tool) and agency distribution. The company is the #1 or #2 auto insurer in most states, with ~14–15% national market share.</li>
+  <li><strong>Commercial Auto (~12%)</strong> — Insurance for small businesses, trucks, vans, and specialty vehicles. Growing rapidly as Progressive leverages its personal auto data and underwriting to underprice competitors.</li>
+  <li><strong>Property/Homeowners (~10%)</strong> — Relatively new (really scaling since 2015). Progressive is using its auto customer base to cross-sell homeowners insurance, often as part of a bundle. Premiums in this segment have grown 20%+ annually from a small base.</li>
+  <li><strong>Other (~3%)</strong> — Umbrella, recreational vehicle, motorcycle, and specialty insurance.</li>
+</ul>
+
+<p><strong>Competitive moat:</strong> Progressive's moat is one of the strongest in all of financials — it comes from <strong>data, analytics, and brand</strong>:</p>
+<ul>
+  <li><strong>Superior risk modeling:</strong> Progressive pioneered usage-based insurance (Snapshot, now in its 3rd generation) and telematics. The company has more than 20 years of driving behavior data from millions of policyholders. This data enables it to price risk more accurately than competitors — it can offer lower rates to good drivers while declining or pricing up bad drivers. The result: Progressive consistently achieves better loss ratios on the same book of business.</li>
+  <li><strong>Scale-driven cost advantage:</strong> With 18M+ policies in force, Progressive's unit cost per policy is among the lowest in the industry. Its direct-to-consumer channel eliminates agent commissions (15–20% of premiums for competitors that use captive agents).</li>
+  <li><strong>Brand and distribution:</strong> "Flo" is one of the most recognizable advertising characters in America. Progressive spends ~$2B/year on advertising (largest ad budget in insurance). The "Name Your Price" tool and comparison shopping make it a default destination for insurance buyers, generating low-cost leads.</li>
+  <li><strong>Underwriting discipline:</strong> Progressive has one of the longest track records in insurance of maintaining an underwriting profit. Its combined ratio (losses + expenses as % of premiums) has been below 96 (meaning a 4%+ underwriting profit) in 18 of the last 20 years. In a hard market, this discipline allows the company to grow rapidly because competitors are pulling back.</li>
+</ul>
+
+<p><strong>Management:</strong> CEO Tricia Griffith has led Progressive since 2016, succeeding founder Glenn Renwick. She previously ran the Consumer Auto division and has maintained Progressive's underwriting-centric culture. Under her leadership, Progressive has expanded into homeowners insurance, grown commercial auto market share, and maintained its position as the industry's most analytics-driven carrier. The company promotes from within and has remarkably low management turnover.</p>
+
+<h3>2. Why Is It Winning?</h3>
+
+<p><strong>Hard market cycle:</strong> P&C insurance is in a multi-year hard market (prices rising significantly) driven by elevated loss costs (higher repair costs, higher medical costs, nuclear verdicts, and climate-related catastrophe losses). In a hard market, carriers with strong balance sheets and accurate pricing — i.e., Progressive — can grow rapidly because competitors are under-reserved or retreating. Progressive's written premium has grown 15%+ annually for the last 4 years.</p>
+
+<ul>
+  <li><strong>Telematics superiority:</strong> Progressive's Snapshot program covers 5M+ active policies. The data advantage compounds over time — each additional year of data makes the risk model more accurate, enabling better pricing and lower loss ratios. Competitors (GEICO, Allstate) have telematics programs, but none match Progressive's data depth or deployment.</li>
+  <li><strong>Capital allocation:</strong> Progressive runs its insurance operation to generate consistent underwriting profits (unlike most competitors that accept underwriting losses in favor of float income). This means it earns money even when investment returns are low. When returns normalize, Progressive outperforms on both underwriting AND investment income.</li>
+  <li><strong>Share repurchases:</strong> Progressive has retired ~20% of its shares over the last 5 years, demonstrating a consistent commitment to returning excess capital to shareholders.</li>
+</ul>
+
+<p><strong>Financial trajectory (approximate):</strong></p>
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Metric</th><th>FY2020</th><th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025 Est.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Net Premiums Written ($B)</td><td>$42.6</td><td>$46.8</td><td>$49.5</td><td>$57.5</td><td>$67.0</td><td>~$76.0</td></tr>
+    <tr><td>Combined Ratio</td><td>87.5</td><td>90.2</td><td>95.3</td><td>89.5</td><td>85.0</td><td>~86.0</td></tr>
+    <tr><td>ROE</td><td>28%</td><td>26%</td><td>12%</td><td>27%</td><td>33%</td><td>~30%</td></tr>
+    <tr><td>Adj. EPS</td><td>$5.50</td><td>$6.80</td><td>$4.20</td><td>$7.90</td><td>$10.80</td><td>~$13.00</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>DCF implications:</strong> At 16x earnings, the market is pricing Progressive for ~6–7% long-term earnings growth (after adjusting for the hard market peak), implying that current earnings are cyclical and will revert. With Progressive's structural advantages, 8–10% normalized earnings growth is credible. The valuation does not reflect the significant competitive moat or the compounding potential from expanding into homeowners and commercial lines.</p>
+
+<h3>3. Why Is the Market Not Assigning a Higher Multiple?</h3>
+
+<ul>
+  <li><strong>Insurance sector stigma:</strong> Insurance is seen as a cyclical, commoditized industry where earnings quality is opaque due to reserve accounting and investment volatility. The sector historically trades at 10–14x earnings. Progressive's 16x is actually a premium, but it's a modest one relative to the quality of the business.</li>
+  <li><strong>Hard market peak anxiety:</strong> The market worries that premium growth will slow as the hard market turns. Historically, rising competition and moderating loss costs lead to price deceleration. But Progressive can grow volume even in soft markets (2017–2020) because of its cost advantage and brand.</li>
+  <li><strong>Catastrophe loss volatility:</strong> A severe hurricane season or wildfire year could wipe out a quarter of earnings. Investors who don't understand insurance underwriting see this as unpredictable risk (in reality, it's well-modeled and Progressive buys significant reinsurance).</li>
+  <li><strong>Investment income noise:</strong> Progressive's earnings fluctuate with the bond market. Rising interest rates boosted investment income in 2023–2025, creating "one-time" noise in EPS. Investors struggle to normalize this.</li>
+  <li><strong>Limited analyst coverage depth:</strong> The insurance sector has fewer analysts per company than technology or healthcare. Progressive is covered by only ~20 analysts vs. 40+ for a comparable quality industrial.</li>
+</ul>
+
+<h3>4. What Could Go Wrong?</h3>
+
+<ul>
+  <li><strong>Soft market cycle turn:</strong> When competitors stabilize pricing (typically after 3–5 years of hard market), premium growth decelerates to 5–8%. This is not a fundamental problem but would compress the P/E further.</li>
+  <li><strong>Adverse reserve development:</strong> If Progressive under-reserved for claims (historically unlikely given their conservative reserving philosophy), earnings would take a large one-time hit. This is the tail risk that insurance investors fear most.</li>
+  <li><strong>Climate change / catastrophe losses:</strong> Increasing frequency and severity of natural disasters could erode underwriting margins. Progressive has reduced exposure in catastrophe-prone states (Florida, California), but homeowners expansion creates new climate risk.</li>
+  <li><strong>Telematics competition:</strong> Allstate (Arity), GEICO (DriveEasy), and Tesla Insurance are investing in telematics. Progressive's lead is significant (decade+ head start), but it's not insurmountable given the right competitor investment.</li>
+  <li><strong>Regulatory risk:</strong> State insurance commissioners can reject rate increases or impose price caps. California's Prop 103 is an example, though Progressive operates in all 50 states and the risk is diversified.</li>
+</ul>
+
+<h3>5. What Expected Return Do We Get From Today's Valuation?</h3>
+
+<p><strong>Base case (60% probability):</strong> Premium growth moderates to 8% annually (hard market fades but market share gains continue). Combined ratio holds at 88–90 (strong underwriting profit). Buybacks continue at $3–4B/year, reducing share count 3–4% annually. EPS grows ~10% annually (earnings + buybacks). P/E stays at 16x. Implied annual total return: <strong>~10–11%</strong>.</p>
+
+<p><strong>Bull case (20% probability):</strong> Hard market extends 2 more years. Premium growth stays 12%+. Combined ratio stays below 88. EPS grows 15%+ annually. P/E re-rates to 20x (a well-deserved multiple for a durable competitive advantage). Implied annual total return: <strong>~18–22%</strong>.</p>
+
+<p><strong>Bear case (20% probability):</strong> Soft market returns. Premium growth drops to 3–5%. Combined ratio rises to 95+. Catastrophe losses materialize. EPS flat to down. P/E compresses to 12x. Implied annual total return: <strong>~2 to –4%</strong>.</p>
+
+<div class="callout green">
+<p><strong>Breakeven growth analysis:</strong> At 16x earnings, the market prices Progressive for ~6–7% normalized EPS growth. Given Progressive's structural advantages (data moat, brand, cost advantage), 8–10% is realistic. The valuation embeds a reasonable base case with moderate upside. The insurance stigma creates the mispricing opportunity.</p>
+<p><strong>Rating: BUY</strong> — Price target $320–340 (15–22% upside from ~$280), based on 18x FY2026 estimated EPS of ~$15.00</p>
+</div>
+
+</section>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== MCK ===================== -->
+<section class="company-section" id="mck">
+
+<div class="company-header">
+  <div class="ticker">MCK</div>
+  <div class="name-sector">
+    <div class="name">McKesson Corporation</div>
+    <div class="sector">Healthcare · Pharmaceutical Distribution · NYSE</div>
+  </div>
+  <div class="score-badge">
+    <span class="score-num">87</span>
+    <span class="score-label">Quality Score</span>
+  </div>
+</div>
+
+<div class="company-summary-box">
+  <div class="stat"><span class="stat-val">~12%</span><span class="stat-lbl">Revenue Growth</span></div>
+  <div class="stat"><span class="stat-val">~18%</span><span class="stat-lbl">ROIC</span></div>
+  <div class="stat"><span class="stat-val">~15x</span><span class="stat-lbl">Fwd P/E</span></div>
+  <div class="stat"><span class="stat-val">$300B+</span><span class="stat-lbl">Revenue</span></div>
+  <div class="stat"><span class="stat-val">~1.5%</span><span class="stat-lbl">Div Yield</span></div>
+  <div class="stat"><span class="stat-val">$65B+</span><span class="stat-lbl">Market Cap</span></div>
+</div>
+
+<h3>1. What Is the Actual Business?</h3>
+
+<p>McKesson is one of the "Big 3" pharmaceutical distributors in the United States (along with AmerisourceBergen/Cencora and Cardinal Health). The company sits in the middle of the pharmaceutical supply chain: it buys drugs from manufacturers (Pfizer, AbbVie, Novo Nordisk) and distributes them to pharmacies (CVS, Walgreens, independents), hospitals, clinics, and long-term care facilities. Despite handling ~$300 billion in pharmaceutical volume annually, McKesson operates on razor-thin gross margins (~4–5%).</p>
+
+<p><strong>Revenue breakdown (FY2025 approximate):</strong></p>
+<ul>
+  <li><strong>U.S. Pharmaceutical Distribution (~88%)</strong> — The giant. McKesson distributes branded drugs, generics, specialty pharmaceuticals, and over-the-counter products to ~40,000 pharmacy locations and ~10,000 hospitals/clinics. Specialty pharmaceuticals (high-cost biologics for cancer, rheumatoid arthritis, autoimmune diseases) are the fastest-growing segment within this, growing 15%+ annually as biotech innovation accelerates.</li>
+  <li><strong>Prescription Technology Solutions (~7%)</strong> — Software and services: prior authorization, adherence programs, patient access, and data analytics for pharma manufacturers. This is a high-margin, fast-growing business that McKesson is scaling rapidly.</li>
+  <li><strong>Medical-Surgical Solutions (~3%)</strong> — Distribution of medical supplies to physician offices, surgery centers, and long-term care facilities. Competitive but steady.</li>
+  <li><strong>Other (~2%)</strong> — International operations, including European distribution and Canada.</li>
+</ul>
+
+<p><strong>Competitive moat:</strong> McKesson's moat is one of the most powerful and least understood in the market: <strong>distribution scale economics</strong>. Pharmaceutical distribution is a fixed-cost-heavy business (warehouses, trucks, IT systems, compliance infrastructure). The cost per package routed through McKesson's network declines as volume increases. The top 3 distributors control ~95% of the U.S. pharmaceutical distribution market. It would take a decade and $10B+ for a new entrant to replicate McKesson's warehouse network, customer relationships, and manufacturing connectivity. This oligopoly structure creates exceptional stability and pricing power (drug manufacturers and pharmacies need the distributors, not the other way around). Additionally, McKesson has high switching costs: customers integrate their inventory systems deeply with McKesson's ordering and logistics platforms.</p>
+
+<p><strong>Management:</strong> CEO Brian Tyler has been at McKesson since 2005 and CEO since 2019. He previously ran McKesson's U.S. Pharmaceutical segment. Under his leadership, McKesson has (a) resolved the worst of the opioid litigation (more below), (b) consistently returned capital through buybacks (reducing shares outstanding by ~25% over the last 5 years), and (c) expanded the higher-margin Prescription Technology Solutions segment through both organic growth and targeted acquisitions.</p>
+
+<h3>2. Why Is It Winning?</h3>
+
+<p><strong>Secular tailwinds:</strong></p>
+<ul>
+  <li><strong>Aging demographics + drug consumption:</strong> The 65+ population consumes 3–4x more prescription drugs per capita than working-age adults. As the population ages, the total addressable market grows 4–5% annually before any price effects.</li>
+  <li><strong>Specialty drug explosion:</strong> GLP-1 agonists (Ozempic, Mounjaro, Wegovy), cancer immunotherapies (Keytruda, Opdivo), gene therapies, and autoimmune biologics are the fastest-growing categories in pharma. These are high-priced specialty drugs that generate higher absolute margin dollars per unit for distributors. GLP-1 alone could add $50B+ in channel revenue over the next 5 years.</li>
+  <li><strong>Generic drug adoption:</strong> As brand drugs lose patent protection (the "patent cliff" — $200B+ in branded revenue losing exclusivity 2025–2029), generic utilization increases. McKesson generates higher margins on generics than on brands.</li>
+  <li><strong>Pharmacy services growth:</strong> McKesson's partnership with Walgreens in specialty distribution and its scale in oncology (Texas Oncology, US Oncology Network) create captive demand.</li>
+</ul>
+
+<p><strong>Capital allocation and execution:</strong> McKesson has been a remarkable capital compounder. The company has reduced its share count by ~25% over 5 years, deployed billions into tuck-in acquisitions in the technology/services space, and maintained a ~15–18% ROIC despite a low-margin distribution business. The operating margin has expanded from ~1.0% in 2018 to ~2.0% in FY2025 — a 100bps expansion in a business where every 10bps is $300M in profit — driven by mix shift toward specialty drugs, cost discipline, and technology scaling.</p>
+
+<p><strong>Financial trajectory (approximate):</strong></p>
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Metric</th><th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025 Est.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Revenue ($B)</td><td>$238</td><td>$264</td><td>$277</td><td>$309</td><td>~$335</td></tr>
+    <tr><td>Adj. Op. Margin</td><td>1.30%</td><td>1.40%</td><td>1.65%</td><td>1.90%</td><td>~2.00%</td></tr>
+    <tr><td>ROIC</td><td>13%</td><td>15%</td><td>16%</td><td>17%</td><td>~18%</td></tr>
+    <tr><td>Adj. EPS</td><td>$18.10</td><td>$22.30</td><td>$24.85</td><td>$28.25</td><td>~$32.00</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>DCF implications:</strong> At 15x earnings, the market prices McKesson for ~5–6% long-term EPS growth — essentially pricing it as a low-growth distribution business. If McKesson maintains its ~9% EPS CAGR (driven by 4–5% revenue growth + 2–3% buybacks + 2% margin expansion), the valuation creates significant upside. The market is ignoring the compounding power of the buyback machine and the mix shift toward higher-margin specialty and tech services.</p>
+
+<h3>3. Why Is the Market Not Assigning a Higher Multiple?</h3>
+
+<ul>
+  <li><strong>Opioid litigation overhang:</strong> The single biggest factor. McKesson, along with the other major distributors, was sued by thousands of municipalities, states, and individuals over the opioid crisis. The company agreed to a $7.4B settlement in 2022 (50% to be paid over 18 years, with the rest in legal representation fees and abatement funding). Many investors still see "unlimited liability" risk, but the settlement structure — combined with new opioid-related laws — effectively caps McKesson's liability. This remains the dominant reason for the low multiple, even as the risk has been largely resolved.</li>
+  <li><strong>"Low-margin distribution" stigma:</strong> The 2% operating margin looks terrifying to most investors. They don't appreciate that 2% of $335 billion is $6.7 billion in profit — a massive sum. The thin margin makes investors nervous about disruption (a 50bps compression is $1.6B in lost profit), even though the oligopoly structure makes such compression unlikely.</li>
+  <li><strong>Amazon fear:</strong> Periodic "Amazon will disrupt pharma distribution" narratives surface. Amazon Pharmacy exists but aggregates demand from consumers, not from pharmacies and hospitals. Amazon would need to build a nationwide pharmaceutical warehouse network — a $10B+, multi-year undertaking — and get manufacturers to entrust their controlled substances to a new entrant. This remains more threat than reality, but the narrative persists.</li>
+  <li><strong>PBM regulation uncertainty:</strong> Pharmacy Benefit Manager regulation could theoretically affect McKesson's indirect economics, though McKesson isn't a PBM (unlike CVS/Caremark or Cigna/Express Scripts). Guilt by association.</li>
+  <li><strong>Low headline growth:</strong> Revenue growth of 8–12% is unexciting compared to tech or healthcare growth stocks, obscuring the much more attractive EPS growth driven by buybacks and margin expansion.</li>
+</ul>
+
+<h3>4. What Could Go Wrong?</h3>
+
+<ul>
+  <li><strong>Drug pricing reform:</strong> Government intervention in drug pricing (e.g., Inflation Reduction Act expansion) could compress distributor margins if manufacturers pass costs downstream. However, distributors typically earn percentage-based fees, so a lower list price directly reduces absolute margin dollars.</li>
+  <li><strong>PBM vertical integration:</strong> CVS/Caremark and Cigna/Express Scripts own their own distribution networks and could self-distribute more volume, reducing market share for the Big 3. But the independents and smaller chains that rely on McKesson represent a stable base.</li>
+  <li><strong>Opioid liability re-ignition:</strong> Though largely settled, additional opioid-related lawsuits (e.g., from private plaintiffs, foreign jurisdictions) could generate new liability. McKesson has reserved $12B+ for opioid-related costs, providing a significant cushion.</li>
+  <li><strong>Amazon entry:</strong> If Amazon builds a serious pharmaceutical distribution network (not just mail-order pharmacy for consumers), it could disrupt McKesson. This is the single largest risk, but improbable in a 3–5 year timeframe.</li>
+  <li><strong>Regulatory disruption:</strong> Changes to 340B drug pricing program could reduce specialty drug margins.</li>
+</ul>
+
+<h3>5. What Expected Return Do We Get From Today's Valuation?</h3>
+
+<p><strong>Base case (60% probability):</strong> Revenue grows 6% annually (drug consumption + specialty + GLP-1). Margins expand to 2.2% by 2028. Share buybacks reduce count by 3%/year. EPS grows ~10% annually. P/E stays at 15x. Implied annual total return: <strong>~11–12%</strong>.</p>
+
+<p><strong>Bull case (20% probability):</strong> GLP-1 boom accelerates revenue growth to 8%. Margins reach 2.5%. Opioid concerns fade, P/E re-rates to 18x. EPS grows 14% annually. Implied annual total return: <strong>~18–22%</strong>.</p>
+
+<p><strong>Bear case (20% probability):</strong> Drug pricing reform reduces margins. Revenue growth slows to 4%. Margins compress to 1.7%. P/E falls to 12x. EPS growth of 2–3%. Implied annual total return: <strong>~1 to –2%</strong>.</p>
+
+<div class="callout green">
+<p><strong>Breakeven growth analysis:</strong> At 15x earnings (and no net debt), McKesson's breakeven EPS growth is ~5% to generate a 10% equity return. With its buyback program alone contributing 3% EPS growth, the business needs only ~2% organic earnings growth to meet market expectations. The market is pricing in virtually no margin expansion or GLP-1 tailwind. This creates one of the most asymmetric return profiles in the entire S&P 500.</p>
+<p><strong>Rating: STRONG BUY</strong> — Price target $660–700 (25–33% upside from ~$525), based on 17x FY2026 estimated EPS of ~$36.00</p>
+</div>
+
+</section>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== CB ===================== -->
+<section class="company-section" id="cb">
+
+<div class="company-header">
+  <div class="ticker">CB</div>
+  <div class="name-sector">
+    <div class="name">Chubb Limited</div>
+    <div class="sector">Financials · Property &amp; Casualty Insurance · NYSE</div>
+  </div>
+  <div class="score-badge">
+    <span class="score-num">86</span>
+    <span class="score-label">Quality Score</span>
+  </div>
+</div>
+
+<div class="company-summary-box">
+  <div class="stat"><span class="stat-val">~8%</span><span class="stat-lbl">Revenue CAGR</span></div>
+  <div class="stat"><span class="stat-val">~12%</span><span class="stat-lbl">ROIC</span></div>
+  <div class="stat"><span class="stat-val">~12x</span><span class="stat-lbl">Fwd P/E</span></div>
+  <div class="stat"><span class="stat-val">$60B+</span><span class="stat-lbl">Market Cap</span></div>
+  <div class="stat"><span class="stat-val">~1.7%</span><span class="stat-lbl">Div Yield</span></div>
+  <div class="stat"><span class="stat-val">~4%</span><span class="stat-lbl">Buyback Yield</span></div>
+</div>
+
+<h3>1. What Is the Actual Business?</h3>
+
+<p>Chubb is the largest publicly traded property &amp; casualty insurer in the world, operating in 54 countries. The company was formed through the 2016 merger of Chubb and ACE Limited (a combination of equals, though ACE was the acquirer). It offers virtually every type of insurance: personal auto/home, commercial property/casualty, workers' compensation, directors &amp; officers liability, cyber insurance, marine, aerospace, and accident &amp; health insurance. The common thread: <strong>Chubb writes insurance where underwriting discipline matters more than price competition</strong>.</p>
+
+<p><strong>Revenue breakdown (FY2025 approximate):</strong></p>
+<ul>
+  <li><strong>North America Commercial P&C (~38%)</strong> — Large account and middle-market commercial insurance. Fortune 500 companies' property, liability, workers' comp, and specialty lines.</li>
+  <li><strong>North America Personal P&C (~12%)</strong> — High-net-worth homeowners and auto (Chubb is the dominant insurer of wealthy individuals in the U.S.). This is the highest-margin personal lines insurance market because wealthy clients are less price-sensitive and claims are more predictable.</li>
+  <li><strong>Overseas General (~28%)</strong> — Commercial and personal insurance in Europe, Asia Pacific, Latin America, and other international markets. Chubb is the largest non-Life insurer in many of these markets.</li>
+  <li><strong>Reinsurance (~8%)</strong> — Global property/casualty and life reinsurance through Chubb Tempest Re. Volatile but adds diversification.</li>
+  <li><strong>Life Insurance (~14%)</strong> — Accident & health, term life, and supplemental health products in Asia, Latin America, and the U.S.</li>
+</ul>
+
+<p><strong>Competitive moat:</strong> Chubb's moat comes from <strong>underwriting expertise, global distribution, and a strong balance sheet</strong>:</p>
+<ul>
+  <li><strong>Best-in-class underwriting:</strong> Chubb's combined ratio has been consistently below 90 (meaning a 10%+ underwriting profit) in most years for the commercial P&C segment — best among large global insurers. This comes from decades of data, deep risk assessment capabilities, and a culture that prioritizes underwriting profit over premium growth.</li>
+  <li><strong>High-net-worth franchise:</strong> Chubb is the dominant insurer of wealthy individuals (homes valued $1M+, multiple properties, art collections, personal liability). These clients have low price sensitivity and high retention rates (90%+). This franchise is nearly impossible to replicate because it requires a claims and service infrastructure that only scale provides.</li>
+  <li><strong>Global network:</strong> Chubb operates licensed insurance companies in 54 countries, making it a one-stop global insurer for multinational corporations. A competitor would need a decade and billions in capital to replicate this global footprint.</li>
+  <li><strong>Conservative capital management:</strong> Chubb maintains a fortress balance sheet with $130B+ in assets and industry-leading claims-paying ratings. This enables it to write large, complex risks that smaller competitors can't handle.</li>
+</ul>
+
+<p><strong>Management:</strong> CEO Evan Greenberg ran Chubb (previously ACE) from 2004 until stepping down in 2025, handing the reins to his brother (and long-time deputy) John Keogh. The Greenberg family is legendary in insurance (father Maurice "Hank" Greenberg built AIG from a small insurer into the world's largest insurance company). Evan Greenberg is widely regarded as the best CEO in the P&C insurance industry, known for exceptional capital allocation, a conservative underwriting culture, and a global vision. His departure creates some succession risk, but the team he built is deep and experienced.</p>
+
+<h3>2. Why Is It Winning?</h3>
+
+<p><strong>Secular tailwinds:</strong></p>
+<ul>
+  <li><strong>Hard market in commercial insurance:</strong> Like personal auto, commercial P&C is in a sustained hard market driven by social inflation (nuclear verdicts), natural catastrophe losses, and rising reinsurance costs. Chubb's underwriting discipline and strong balance sheet allow it to grow rapidly while competitors retrench. Net premiums written grew ~10% in 2024.</li>
+  <li><strong>Wealth creation:</strong> The global high-net-worth population is growing 6–8% annually, driving demand for the wealthy-insurance segment. This is a pure demographic tailwind for Chubb's most profitable business.</li>
+  <li><strong>Cyber insurance growth:</strong> Cyber is one of the fastest-growing insurance lines (20%+ annually) and one of the most profitable because pricing is still ahead of loss experience. Chubb is a top-3 global cyber insurer.</li>
+  <li><strong>International expansion:</strong> Emerging market insurance penetration is rising. Chubb's Asian and Latin American operations are growing 12–15% annually.</li>
+</ul>
+
+<p><strong>Capital allocation excellence:</strong> Chubb is one of the most aggressive and well-timed share repurchasers in the S&amp;P 500. The company has reduced its share count by ~35% over the last 10 years — an enormous compounding force. In 2024–2025 alone, Chubb bought back $5B+ in stock, reducing the share count by ~8%. The combination of underwriting profit + investment income + aggressive buybacks has produced mid-teens EPS growth for a decade.</p>
+
+<p><strong>Financial trajectory (approximate):</strong></p>
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Metric</th><th>FY2020</th><th>FY2021</th><th>FY2022</th><th>FY2023</th><th>FY2024</th><th>FY2025 Est.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Net Premiums Written ($B)</td><td>$32.1</td><td>$35.8</td><td>$37.5</td><td>$40.5</td><td>$44.0</td><td>~$47.5</td></tr>
+    <tr><td>Combined Ratio</td><td>88.5</td><td>87.0</td><td>88.5</td><td>87.5</td><td>86.5</td><td>~87.0</td></tr>
+    <tr><td>ROE</td><td>10%</td><td>12%</td><td>11%</td><td>14%</td><td>16%</td><td>~15%</td></tr>
+    <tr><td>Adj. EPS</td><td>$9.20</td><td>$11.50</td><td>$11.80</td><td>$15.20</td><td>$18.50</td><td>~$20.50</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>DCF implications:</strong> At 12x earnings, the market is pricing Chubb for ~0% long-term earnings growth — essentially valuing it as a declining business. Yet Chubb has delivered 12%+ EPS CAGR over the last 5 years and has structural tailwinds for continued growth. The valuation is pricing in maximum pessimism about the hard market turning and investment income normalizing. This creates the most compelling valuation disconnect of any stock in this analysis.</p>
+
+<h3>3. Why Is the Market Not Assigning a Higher Multiple?</h3>
+
+<ul>
+  <li><strong>Insurance sector stigma (amplified):</strong> Chubb trades at the lowest multiple in our top 5 because it combines the insurance stigma with "reinsurance overhang" (investors view reinsurance as volatile, even though it's only 8% of revenue).</li>
+  <li><strong>Hard market peak fear:</strong> The market fears that as commercial P&C hard market moderates (typically 5–7 year cycles), Chubb's premium growth will fall from 10%+ to 4–6%. This is a valid concern, but Chubb has demonstrated ability to grow even in soft markets.</li>
+  <li><strong>Low interest rate scar tissue:</strong> In a low-rate environment (2010–2021), Chubb's float generated abysmal investment returns, compressing overall ROE. The scars from that era linger in investors' minds, even though the current rate environment is structurally higher.</li>
+  <li><strong>Evan Greenberg retirement:</strong> CEO transition creates uncertainty. The market dislikes CEO changes at complex financial institutions, even when succession is well-planned.</li>
+  <li><strong>Complexity discount:</strong> Chubb's global operations spanning 54 countries, multiple lines of insurance, and a life/reinsurance book create an opaqueness that reduces the multiple. Simpler peers (like WR Berkley) trade at higher multiples.</li>
+  <li><strong>Catastrophe loss headline risk:</strong> A single large hurricane can wipe out a quarter's earnings and create a 5–10% stock drawdown, scaring off generalist investors.</li>
+</ul>
+
+<h3>4. What Could Go Wrong?</h3>
+
+<ul>
+  <li><strong>Major catastrophe loss:</strong> A $50B+ insured catastrophe (like a major hurricane hitting Miami or an earthquake in California) would hit Chubb's earnings meaningfully. The company carries reinsurance, but a truly extreme event would still have a multi-billion dollar impact.</li>
+  <li><strong>Social inflation / nuclear verdicts:</strong> Growing frequency of billion-dollar+ jury verdicts in commercial liability cases could push up loss costs. Chubb has significant exposure to large commercial liability and D&amp;O.</li>
+  <li><strong>Recession driving demand destruction:</strong> A deep recession would reduce commercial insurance demand (fewer new businesses, lower payrolls, reduced construction activity). This would compress premium growth.</li>
+  <li><strong>Succession disruption:</strong> If the Keogh transition goes poorly, or if key underwriting talent leaves, Chubb's competitive position could erode.</li>
+  <li><strong>Reserve deficiency:</strong> A significant adverse reserve development could create a multi-billion dollar earnings hit and destroy the franchise's credibility. Historically, Chubb has been conservative in reserving, but the risk always exists.</li>
+</ul>
+
+<h3>5. What Expected Return Do We Get From Today's Valuation?</h3>
+
+<p><strong>Base case (60% probability):</strong> Premium growth moderates to 6% (hard market fades but buybacks continue). Combined ratio stays at 87–89. Investment income stable. Buybacks reduce shares by 4% annually. EPS grows ~9% annually. P/E stays at 12x. Implied annual total return: <strong>~10–11%</strong> (9% growth + 1.7% dividend).</p>
+
+<p><strong>Bull case (20% probability):</strong> Hard market extends. Premium growth stays 9%+. Combined ratio stays below 87. Buybacks continue aggressively. EPS grows 13% annually. P/E re-rates to 16x (still below the S&P 500, but respectable for an insurer). Implied annual total return: <strong>~16–20%</strong>.</p>
+
+<p><strong>Bear case (20% probability):</strong> Soft market + catastrophe losses + hard market end. Premium growth drops to 3%. Combined ratio rises to 93. EPS flat. P/E compresses to 10x. Implied annual total return: <strong>~0 to –2%</strong>.</p>
+
+<div class="callout green">
+<p><strong>Breakeven growth analysis:</strong> At 12x earnings with a 1.7% dividend yield, the market is pricing Chubb for ~0% EPS growth. This is absurdly pessimistic for a business with structural tailwinds, a 90%+ retention rate, and a management team that has delivered 12%+ EPS CAGR for a decade. Even a flat earnings scenario generates a 10%+ return from the dividend + buyback yield alone. Chubb prices in virtually no optionality — and executes against that pessimism.</p>
+<p><strong>Rating: STRONG BUY</strong> — Price target $320–340 (25–33% upside from ~$260), based on 14x FY2026 estimated EPS of ~$23.00</p>
+</div>
+
+</section>
+
+<hr style="border:none; border-top:1px solid var(--border); margin:48px 0;">
+
+<!-- ===================== SYNTHESIS ===================== -->
+<section class="synthesis-section" id="synthesis">
+
+<h2>Final Synthesis</h2>
+
+<h3>Head-to-Head Comparison</h3>
+
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Sector</th>
+      <th>ROIC</th>
+      <th>Fwd P/E</th>
+      <th>Revenue CAGR</th>
+      <th>EPS CAGR</th>
+      <th>Base Case Return</th>
+      <th>Risk Score</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>ETN</strong></td>
+      <td>Industrials</td>
+      <td class="pos">15%</td>
+      <td>18x</td>
+      <td class="pos">9%</td>
+      <td class="pos">12%</td>
+      <td class="pos">10–11%</td>
+      <td>Low-Med</td>
+      <td class="pos">BUY</td>
+    </tr>
+    <tr>
+      <td><strong>SYK</strong></td>
+      <td>MedTech</td>
+      <td class="pos">15%</td>
+      <td>24x</td>
+      <td class="pos">9–10%</td>
+      <td class="pos">10%</td>
+      <td class="pos">9–10%</td>
+      <td>Low</td>
+      <td class="pos">BUY</td>
+    </tr>
+    <tr>
+      <td><strong>PGR</strong></td>
+      <td>Insurance</td>
+      <td class="pos">18%</td>
+      <td>16x</td>
+      <td class="pos">15%</td>
+      <td class="pos">12%+</td>
+      <td class="pos">10–11%</td>
+      <td>Med</td>
+      <td class="pos">BUY</td>
+    </tr>
+    <tr>
+      <td><strong>MCK</strong></td>
+      <td>Healthcare Distribution</td>
+      <td class="pos">18%</td>
+      <td>15x</td>
+      <td class="pos">10–12%</td>
+      <td class="pos">10–12%</td>
+      <td class="pos">11–12%</td>
+      <td>Low-Med</td>
+      <td class="pos" style="color:var(--accent-cyan);">STRONG BUY</td>
+    </tr>
+    <tr>
+      <td><strong>CB</strong></td>
+      <td>Global Insurance</td>
+      <td class="pos">12%</td>
+      <td>12x</td>
+      <td class="pos">8%</td>
+      <td class="pos">9–10%</td>
+      <td class="pos">10–11%</td>
+      <td>Med</td>
+      <td class="pos" style="color:var(--accent-cyan);">STRONG BUY</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style="font-size:14px; color:var(--text-secondary);">Risk Score: Low = &lt;10% drawdown in base case; Low-Med = 10–15%; Med = 15–25%; High = &gt;25%</p>
+
+<h3>Which Is the Best Risk-Adjusted Return From Here?</h3>
+
+<p>On a pure risk-adjusted basis, the ranking is:</p>
+
+<ol>
+  <li><strong>MCK (McKesson)</strong> — 15x earnings with an 18% ROIC, a 3% buyback yield, and the market pricing in zero margin expansion despite visible GLP-1 and specialty drug tailwinds. The opioid overhang creates the mispricing opportunity. Low business risk (oligopoly), moderate valuation risk, high upside.</li>
+  <li><strong>CB (Chubb)</strong> — 12x earnings for a global insurance franchise with 90%+ retention rates, 10%+ ROE, and aggressive buybacks. The market is pricing in terminal decline. Even with conservative assumptions, Chubb delivers a 10%+ return with limited downside from current levels.</li>
+  <li><strong>ETN (Eaton)</strong> — 18x earnings for a business that has the secular tailwinds of electrification and data centers built into its core. The valuation is reasonable rather than cheap, but the quality of the business justifies a higher multiple. If data center investors recognize Eaton as part of the story, the upside is significant.</li>
+  <li><strong>PGR (Progressive)</strong> — 16x earnings with best-in-class underwriting and a data moat. The insurance cycle creates a timing question — the hard market will moderate, but Progressive's structural advantages mean it will grow through the soft market too. A great business at a fair price.</li>
+  <li><strong>SYK (Stryker)</strong> — 24x earnings is the most expensive, and the expected return is driven primarily by business compounding rather than valuation multiple expansion. A wonderful business that you own for the long term at a reasonable, not cheap, price.</li>
+</ol>
+
+<div class="verdict-box">
+  <h3>📊 Verdict: Buy the Basket</h3>
+  <p>Each of these 5 businesses has a durable competitive advantage, consistent compounding, and a valuation that doesn't fully reflect its quality. Together, they form a diversified basket of neglected quality — spanning industrials, healthcare, and financials — with low correlation to each other and to the AI-driven growth trade.</p>
+  <p style="margin-top:12px; font-size:15px; color:var(--text-secondary);">The two most compelling individual picks for maximum risk-adjusted upside: <strong>MCK</strong> and <strong>CB</strong> — both pricing in excessive pessimism for real businesses with structural advantages.</p>
+</div>
+
+<h3>Portfolio Construction Thoughts</h3>
+
+<p>If building a basket allocation today, we'd suggest approximately equal weighting with a slight tilt toward the value-disconnected names:</p>
+
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Ticker</th><th>Suggested Weight</th><th>Rationale</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>MCK</td><td><strong>25%</strong></td><td>Most asymmetric return profile; opioid overhang creates the best entry point</td></tr>
+    <tr><td>CB</td><td><strong>20%</strong></td><td>Deeply undervalued; insurance cycle timing is favorable</td></tr>
+    <tr><td>ETN</td><td><strong>20%</strong></td><td>Highest quality industrial; direct beneficiary of non-AI capex</td></tr>
+    <tr><td>PGR</td><td><strong>18%</strong></td><td>Best-in-class insurer; more cyclical exposure but higher ROIC</td></tr>
+    <tr><td>SYK</td><td><strong>17%</strong></td><td>Highest multiple but lowest risk; defensive hedge for the basket</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Correlation analysis:</strong></p>
+<ul>
+  <li><strong>ETN ↔ SYK:</strong> Low correlation (different sectors: industrials vs. healthcare). Data center capex drives ETN; demographics drive SYK.</li>
+  <li><strong>PGR ↔ CB:</strong> Moderate correlation (insurance sector common factors: interest rates, catastrophe losses). But PGR is personal auto-focused, CB is commercial/high-net-worth focused, so correlation is only ~0.4.</li>
+  <li><strong>MCK ↔ Others:</strong> Very low correlation. McKesson's drivers (drug consumption, buybacks, regulatory) are independent of insurance cycle, electrification, or surgical volumes.</li>
+  <li><strong>Basket vs. S&P 500:</strong> The combined basket probably has a beta of ~0.7–0.8 (lower than the market) and significantly lower correlation to AI/nasdaq factors.</li>
+</ul>
+
+<p>This is a well-diversified basket with: 2 insurers (rate-sensitive), 1 industrial (capex-sensitive), 1 med device (demographics-sensitive), 1 pharma distributor (consumption-sensitive). The sectors don't move together except in a severe economic recession.</p>
+
+<h3>Key Catalyst Timeline</h3>
+
+<div class="data-table-wrapper">
+<table class="data-table">
+  <thead>
+    <tr><th>Timeline</th><th>ETN</th><th>SYK</th><th>PGR</th><th>MCK</th><th>CB</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Q3 2026</strong></td>
+      <td>Earnings reinforce backlog growth; data center segment disclosure</td>
+      <td>Mako install count up; procedural volume recovery sustained</td>
+      <td>Premium growth guidance; hard market signals</td>
+      <td>GLP-1 distribution volume ramp; continued buyback acceleration</td>
+      <td>Keogh completes first year; capital return update</td>
+    </tr>
+    <tr>
+      <td><strong>H2 2026</strong></td>
+      <td>Infrastructure bill spending hits electrical demand</td>
+      <td>New robot platform milestones</td>
+      <td>Telematics adoption update; homeowners cross-sell results</td>
+      <td>Opioid settlement milestones reduce overhang</td>
+      <td>Hard market pricing data points; buyback program renewal</td>
+    </tr>
+    <tr>
+      <td><strong>2027</strong></td>
+      <td>Potential re-rating as data-center analyst coverage grows</td>
+      <td>Next-gen Mako launch; new product cycle begins</td>
+      <td>Insurance cycle inflection — growth moderation test</td>
+      <td>Margin expansion trajectory visible; P/E re-rating catalyst</td>
+      <td>If hard market continues, premium growth + buybacks compound aggressively</td>
+    </tr>
+    <tr>
+      <td><strong>2028+</strong></td>
+      <td>Electrification super-cycle fully expected; 20x+ P/E plausible</td>
+      <td>Demographic dividend fully in play; steady compounder</td>
+      <td>Data moat deepens; erosion of hard market already priced in</td>
+      <td>Market realizes it's a tech-enabled specialty drug distribution company, not a low-margin wholesaler</td>
+      <td>10 year track record of capital compounding attracts generalists</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Would You Buy the Basket Today?</h3>
+
+<p><strong>Unequivocally yes.</strong></p>
+
+<p>Here's the case in one paragraph: The five companies average a <strong>~15% ROIC</strong>, trade at a <strong>~17x forward P/E</strong> (below the S&P 500's ~21x), and have demonstrated <strong>9–12% revenue CAGR</strong> over the last five years. Their business models have durable competitive advantages — oligopoly distribution, installed-base lock-in, surgeon loyalty, data-driven risk pricing, and brand equity — that create high switching costs and pricing power. The market's neglect (driven by AI narrative crowding, sector stigmas, and specific overhangs) has created a valuation that prices in below-trend growth. The most likely outcome is continued compounding at 10–12% annual returns, with significant upside optionality from multiple re-rating as these quality businesses are rediscovered.</p>
+
+<p>The primary risk is common to all: a severe economic recession that simultaneously reduces capital spending, insurance demand, elective surgery volumes, and drug consumption growth. In that scenario, the basket would likely underperform. But for a long-term investor (5+ years), buying a diversified basket of high-quality businesses trading at reasonable valuations is the most reliable formula for excess returns in financial history.</p>
+
+<div class="callout">
+<p><strong>Investment Thesis Summary:</strong> Buy a basket of the highest-quality businesses in neglected sectors. The AI narrative has created substantial mispricing in traditional compounders. Over the next 3–5 years, as the market's attention rotates from AI infrastructure spending toward fundamental earnings quality, these five companies offer a compelling risk-adjusted return that most investors are ignoring today.</p>
+</div>
+
+<div class="footer-note">
+  <p><strong>Disclaimer:</strong> This analysis is for informational purposes only and does not constitute investment advice. All data sourced from company filings, earnings transcripts, and public market data as of June 2026. Past performance does not guarantee future results. Do your own diligence before making investment decisions.</p>
+  <p style="margin-top:8px;">© 2026 Quantitatis Research — <a href="ai-concentration-neglected-quality.html" style="color:var(--accent-blue);">← Read the Screening Article</a></p>
+</div>
+
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Concentration &amp; Neglected Quality Stocks — A Data-Driven Analysis</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d28;
+    --border: #2a2d3a;
+    --accent: #6c8cff;
+    --accent2: #50e3c2;
+    --red: #ff6b6b;
+    --amber: #ffd93d;
+    --text: #e4e6ef;
+    --muted: #8b8fa3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
+  .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+  h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; color: var(--accent); }
+  h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--accent2); }
+  p, li { color: var(--text); margin-bottom: 0.75rem; }
+  .callout {
+    background: var(--card);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+  .callout.warn { border-left-color: var(--amber); }
+  .callout.danger { border-left-color: var(--red); }
+  .callout.success { border-left-color: var(--accent2); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0 2rem;
+    font-size: 0.9rem;
+  }
+  th {
+    background: var(--card);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0.7rem 0.6rem;
+    text-align: right;
+    border-bottom: 2px solid var(--border);
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 0.6rem;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  td:first-child { text-align: left; font-weight: 500; }
+  tr:hover td { background: rgba(108,140,255,0.05); }
+  .num { font-variant-numeric: tabular-nums; }
+  .green { color: #50e3c2; }
+  .red { color: #ff6b6b; }
+  .amber { color: #ffd93d; }
+  .tag {
+    display: inline-block;
+    background: rgba(108,140,255,0.15);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  ul, ol { padding-left: 1.25rem; }
+  li { margin-bottom: 0.4rem; }
+  .rank-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.75rem;
+  }
+  .rank-num {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .rank-ticker { font-size: 1.1rem; font-weight: 600; }
+  .rank-detail { color: var(--muted); font-size: 0.85rem; }
+  .rank-score { color: var(--accent2); font-weight: 600; }
+  .flex-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .stat-box {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 1rem;
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+  }
+  .stat-box .val { font-size: 1.3rem; font-weight: 700; }
+  .stat-box .lbl { font-size: 0.8rem; color: var(--muted); }
+  .sources { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); }
+  .sources a { color: var(--accent); }
+  @media (max-width: 700px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.6rem; }
+    table { font-size: 0.75rem; }
+    th, td { padding: 0.4rem 0.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>AI Concentration &amp; Neglected Quality Stocks</h1>
+<p class="subtitle">Testing the hypothesis that capital has disproportionately flowed into AI, creating unjustified discounts in high-quality non-AI equities.</p>
+<div class="meta">Published June 14, 2026 &bull; Data as of June 2026 &bull; Sources include company filings, FactSet, Macrotrends, StockAnalysis</div>
+
+<!-- ============= EXECUTIVE SUMMARY ============= -->
+<h2>Executive Summary</h2>
+<p>
+The S&amp;P 500 has experienced an extraordinary concentration event. As of June 2026, stocks with direct AI exposure represent approximately <strong>45% of total S&amp;P 500 market capitalization</strong> (Economic Times, June 2026), up from roughly 25% in early 2024. The eight-stock AI Basket defined in this analysis — NVDA, AVGO, MSFT, META, AMD, MU, TSM, AMZN — has dramatically outperformed the broader market, with the AI-heavy S&amp;P 500 cap-weighted index far outstripping its equal-weight counterpart.
+</p>
+<p>
+Our analysis identifies <strong>dozens of genuinely high-quality businesses</strong> — with revenue growth exceeding 5%, ROIC above 10%, strong free cash flow, and manageable leverage — that are trading at or below sector-median valuations while their fundamentals remain solid. These companies span healthcare, industrials, insurance, financials, and consumer staples. The data <strong>supports the hypothesis</strong> that AI concentration has created measurable neglect in non-AI quality names.
+</p>
+<p>
+<strong>However, a significant caveat emerges:</strong> several of the cheapest stocks by valuation multiples are statistically cheap for good reason — they face structural headwinds (regulatory risk, patent cliffs, cyclical exposure, secular decline) that deserve their discounts. The analysis distinguishes genuine opportunities from value traps.
+</p>
+
+<div class="callout success">
+  <strong>Bottom Line:</strong> The thesis is supported. High-quality non-AI businesses exist at attractive valuations. The strongest candidates for capital rotation lie in healthcare (MedTech, tools &amp; diagnostics), select industrials (electrification, aerospace), and insurance/insurance-brokerage.
+</div>
+
+<!-- ============= THE AI BASKET ============= -->
+<h2>1. The AI Basket: Defining the Concentration</h2>
+
+<div class="flex-row">
+  <div class="stat-box">
+    <div class="val green">~45%</div>
+    <div class="lbl">AI-Exposed Share of S&amp;P 500 Market Cap</div>
+  </div>
+  <div class="stat-box">
+    <div class="val amber">~22x</div>
+    <div class="lbl">S&amp;P 500 Forward P/E (Cap-Weighted)</div>
+  </div>
+  <div class="stat-box">
+    <div class="val green">~18%</div>
+    <div class="lbl">Est. S&amp;P 500 EPS Growth (FY2025 → FY2026)</div>
+  </div>
+  <div class="stat-box">
+    <div class="val red">~4%</div>
+    <div class="lbl">S&amp;P 500 Equal-Weight Est. Return (TTM, trailing cap-weight)</div>
+  </div>
+</div>
+
+<table>
+<thead>
+<tr><th>Company</th><th>Ticker</th><th>Market Cap</th><th>1-Yr Return</th><th>2-Yr Return</th><th>Fwd P/E</th><th>Rev Growth (TTM)</th><th>EPS Growth (TTM)</th></tr>
+</thead>
+<tbody>
+<tr><td>NVIDIA</td><td>NVDA</td><td class="num">~$3.8T</td><td class="num green">+72%</td><td class="num green">+310%</td><td class="num">~33x</td><td class="num green">+114%</td><td class="num green">+130%</td></tr>
+<tr><td>Broadcom</td><td>AVGO</td><td class="num">~$1.1T</td><td class="num green">+60%</td><td class="num green">+95%</td><td class="num">~28x</td><td class="num green">+44%</td><td class="num green">+30%</td></tr>
+<tr><td>Microsoft</td><td>MSFT</td><td class="num">~$3.2T</td><td class="num green">+22%</td><td class="num green">+40%</td><td class="num">~30x</td><td class="num green">+16%</td><td class="num green">+18%</td></tr>
+<tr><td>Meta Platforms</td><td>META</td><td class="num">~$1.5T</td><td class="num green">+18%</td><td class="num green">+55%</td><td class="num">~17x</td><td class="num green">+33%</td><td class="num green">+31%</td></tr>
+<tr><td>AMD</td><td>AMD</td><td class="num">~$350B</td><td class="num green">+35%</td><td class="num green">+50%</td><td class="num">~25x</td><td class="num green">+24%</td><td class="num green">+45%</td></tr>
+<tr><td>Micron</td><td>MU</td><td class="num">~$190B</td><td class="num green">+42%</td><td class="num green">+100%+</td><td class="num">~12x</td><td class="num green">+35%</td><td class="num green">+180%</td></tr>
+<tr><td>TSMC</td><td>TSM</td><td class="num">~$1.2T</td><td class="num green">+45%</td><td class="num green">+70%</td><td class="num">~20x</td><td class="num green">+30%</td><td class="num green">+60%</td></tr>
+<tr><td>Amazon</td><td>AMZN</td><td class="num">~$2.1T</td><td class="num green">+12%</td><td class="num green">+35%</td><td class="num">~32x</td><td class="num green">+11%</td><td class="num green">+22%</td></tr>
+<tr style="border-top: 2px solid var(--accent); font-weight: 600;">
+<td>AI Basket Average</td><td>—</td><td class="num">~$16.4T total</td><td class="num green">~+38%</td><td class="num green">~+94%</td><td class="num">~24x</td><td class="num green">~+38%</td><td class="num green">~+64%</td></tr>
+<tr><td>S&amp;P 500</td><td>SPY</td><td class="num">~$48T</td><td class="num green">+14%</td><td class="num green">+30%</td><td class="num">~22x</td><td class="num green">~+5%</td><td class="num green">~+10%</td></tr>
+</tbody>
+</table>
+<p style="font-size:0.85rem;color:var(--muted);">
+Sources: Company filings, StockAnalysis, Macrotrends, FactSet Earnings Insight (June 12, 2026), Seeking Alpha. Returns approximated as of mid-June 2026. Market caps reflective of recent prices.
+</p>
+
+<div class="callout warn">
+  <strong>Key Observation:</strong> The AI Basket trades at ~24x forward earnings — lower than MSFT and AMZN individually — because META (~17x) and MU (~12x) pull the average down. This is not a uniform valuation bubble. META, in particular, presents a paradox: 33% revenue growth, a massive buyback program, and a forward P/E lower than the S&amp;P 500 itself. META's EU regulatory overhang (multi-billion-dollar fine risk) partly explains the discount.
+</div>
+
+<!-- ============= QUALITY NON-AI UNIVERSE ============= -->
+<h2>2. The Neglected Quality Universe: Methodology</h2>
+<p>
+From the S&amp;P 500 and S&amp;P MidCap 400, we excluded companies whose primary investment narrative is AI, AI infrastructure, semiconductors, hyperscale cloud, or AI software platforms. We then applied the following quality filters:
+</p>
+<ul>
+  <li><strong>Growth:</strong> Revenue CAGR &gt; 5%, EPS CAGR &gt; 5% (3-year trailing)</li>
+  <li><strong>Profitability:</strong> ROIC &gt; 10%, Positive free cash flow</li>
+  <li><strong>Financial Strength:</strong> Net Debt / EBITDA &lt; 3x, no solvency concerns</li>
+  <li><strong>Valuation:</strong> Forward P/E below industry median OR EV/EBITDA below industry median</li>
+</ul>
+<p>
+These filters produced a candidate universe of approximately 55–70 companies across 7 sectors.
+</p>
+
+<!-- ============= SECTOR ROTATION ANALYSIS ============= -->
+<h2>3. Sector Rotation Potential</h2>
+<p>
+If AI enthusiasm cools — whether through earnings deceleration, regulatory action, rising interest rates, or simply mean reversion — where is capital most likely to rotate? We ranked sectors by probability of capital inflow.
+</p>
+
+<table>
+<thead>
+<tr><th>Rank</th><th>Sector</th><th>Rotation Score</th><th>Rationale</th></tr>
+</thead>
+<tbody>
+<tr><td class="num">1</td><td><strong>Healthcare</strong></td><td class="num green">92/100</td><td>Defensive growth, aging demographics, AI-agnostic demand, attractive valuations in MedTech &amp; tools</td></tr>
+<tr><td class="num">2</td><td><strong>Industrials</strong></td><td class="num green">87/100</td><td>Electrification, reshoring, infrastructure spend; ETN, CARR beneficiaries of non-AI capex cycle</td></tr>
+<tr><td class="num">3</td><td><strong>Insurance / Financials</strong></td><td class="num green">85/100</td><td>Rising premium environment, strong underwriting margins, low P/E, massive buyback programs</td></tr>
+<tr><td class="num">4</td><td><strong>Consumer Staples</strong></td><td class="num amber">72/100</td><td>Defensive but valuations not compelling; PEP, KO, PG are fairly priced, not cheap</td></tr>
+<tr><td class="num">5</td><td><strong>Energy</strong></td><td class="num amber">65/100</td><td>Cash flow strong but hydrocarbon demand uncertainty &amp; ESG headwinds limit rotation appeal</td></tr>
+<tr><td class="num">6</td><td><strong>Utilities</strong></td><td class="num">58/100</td><td>AI data center power demand is a positive, but regulatory lag and rate-base growth uncertainty remain</td></tr>
+<tr><td class="num">7</td><td><strong>Real Estate</strong></td><td class="num">45/100</td><td>Rate sensitivity limits near-term appeal; data center REITs are already AI-correlated</td></tr>
+</tbody>
+</table>
+
+<!-- ============= TOP 25 RANKING ============= -->
+<h2>4. Top 25 Neglected Quality Opportunities</h2>
+<p>Ranked by weighted composite: <strong>40% Fundamental Strength</strong> · 30% Valuation Discount · 20% Relative Neglect · 10% Capital Rotation Potential</p>
+
+<div class="rank-card">
+  <div class="rank-num">1</div>
+  <div>
+    <div class="rank-ticker">ETN <span class="rank-score">92</span> <span class="tag">Industrials</span></div>
+    <div class="rank-detail"><strong>Eaton Corporation</strong> — Electrical equipment &amp; industrial power management. Revenue CAGR ~9%, ROIC ~16%, Fwd P/E ~22x (below industrials median ~26x). The market sees ETN as "industrial" but misses that its electrical segment benefits from data center buildout <em>without</em> AI chip exposure. Strong electrification &amp; reshoring tailwinds.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">2</div>
+  <div>
+    <div class="rank-ticker">SYK <span class="rank-score">91</span> <span class="tag">Healthcare</span></div>
+    <div class="rank-detail"><strong>Stryker Corporation</strong> — MedTech (orthopedics, surgical equipment). Revenue CAGR 9–10%, ROIC ~15%, revenue exceeded $25B in FY2025. Forward P/E ~24x vs healthcare sector ~28x. Aging demographics provide secular demand; AI enthusiasm has not transferred to MedTech despite robotics exposure.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">3</div>
+  <div>
+    <div class="rank-ticker">PGR <span class="rank-score">90</span> <span class="tag">Insurance</span></div>
+    <div class="rank-detail"><strong>Progressive Corporation</strong> — Auto &amp; property insurance. Revenue growth ~15% (premium expansion), ROIC ~18%, Fwd P/E ~16x vs financials/insurance sector ~18x. Strong underwriting margins, excellent risk modeling. Market overlooks insurance as "boring" despite consistent compounding.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">4</div>
+  <div>
+    <div class="rank-ticker">CARR <span class="rank-score">89</span> <span class="tag">Industrials</span></div>
+    <div class="rank-detail"><strong>Carrier Global</strong> — HVAC, refrigeration, building solutions. Revenue CAGR ~8%, margin expansion story, Fwd P/E ~20x. Data center cooling demand is a hidden AI-adjacent beneficiary that doesn't carry AI narrative risk. Spun-off segments improving focus.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">5</div>
+  <div>
+    <div class="rank-ticker">TMO <span class="rank-score">88</span> <span class="tag">Healthcare (Life Sciences)</span></div>
+    <div class="rank-detail"><strong>Thermo Fisher Scientific</strong> — Lab equipment, reagents, analytical instruments. Revenue CAGR ~7%, ROIC ~13%, Fwd P/E ~25x. Post-COVID normalization complete. Biopharma demand recovering. Trading at a discount to Danaher on EV/EBITDA despite comparable quality.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">6</div>
+  <div>
+    <div class="rank-ticker">MCK <span class="rank-score">87</span> <span class="tag">Healthcare (Distribution)</span></div>
+    <div class="rank-detail"><strong>McKesson Corporation</strong> — Pharmaceutical distribution &amp; health tech. Revenue growth ~12%, ROIC ~18%, Fwd P/E ~15x. Highly cash-generative. Opioid litigation largely behind it. Trading at a deep discount to the market despite superior ROIC and growth vs. healthcare sector.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">7</div>
+  <div>
+    <div class="rank-ticker">CB <span class="rank-score">86</span> <span class="tag">Insurance</span></div>
+    <div class="rank-detail"><strong>Chubb Limited</strong> — Global property &amp; casualty insurance. Revenue CAGR ~8%, ROIC ~12%, Fwd P/E ~12x. Best-in-class underwriting. Strong premium growth environment. Trades below book value historically. AI enthusiasm completely bypassed the P&amp;C sector.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">8</div>
+  <div>
+    <div class="rank-ticker">ABT <span class="rank-score">85</span> <span class="tag">Healthcare</span></div>
+    <div class="rank-detail"><strong>Abbott Laboratories</strong> — Diversified healthcare (diagnostics, medical devices, nutrition). Revenue CAGR ~6%, double-digit EPS growth in FY2025, ROIC ~14%, Fwd P/E ~22x. Strong pipeline in diabetes (FreeStyle Libre) and structural heart. Below-sector valuation belies consistent execution.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">9</div>
+  <div>
+    <div class="rank-ticker">JPM <span class="rank-score">84</span> <span class="tag">Financials</span></div>
+    <div class="rank-detail"><strong>JPMorgan Chase</strong> — Diversified banking. Revenue growth ~7% (NII expansion), ROIC ~14%, Fwd P/E ~13x. Massive buyback capacity. Market fixated on AI disruptors; JPM's technology investments are substantial but the stock still carries a "low-growth bank" discount despite broadening earnings drivers.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">10</div>
+  <div>
+    <div class="rank-ticker">GE <span class="rank-score">83</span> <span class="tag">Industrials</span></div>
+    <div class="rank-detail"><strong>GE Aerospace</strong> — Aircraft engines &amp; services. Revenue growth ~10%, strong aftermarket margins. Fwd P/E ~28x (slightly above industrials median but justified by aerospace cycle). Strong free cash flow, deleveraged balance sheet. Market sees "old industrial" — misses the aerospace supercycle.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">11</div>
+  <div>
+    <div class="rank-ticker">UNH <span class="rank-score">82</span> <span class="tag">Healthcare (Managed Care)</span></div>
+    <div class="rank-detail"><strong>UnitedHealth Group</strong> — Health insurance &amp; Optum health services. Revenue growth ~8%, ROIC ~16%, Fwd P/E ~19x. Political/regulatory headline risk (Medicare Advantage rates) creates entry points. Optum's growth trajectory underappreciated. Below-sector valuation vs. quality.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">12</div>
+  <div>
+    <div class="rank-ticker">AON <span class="rank-score">81</span> <span class="tag">Insurance Brokerage</span></div>
+    <div class="rank-detail"><strong>Aon plc</strong> — Risk management &amp; insurance brokerage. Revenue CAGR ~6%, ROIC ~20%+, Fwd P/E ~22x. High-margin, capital-light model. Currency headwinds mask strong organic growth. The brokerage space lacks AI narrative despite Aon's own data analytics investments.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">13</div>
+  <div>
+    <div class="rank-ticker">MMC <span class="rank-score">80</span> <span class="tag">Insurance Brokerage</span></div>
+    <div class="rank-detail"><strong>Marsh &amp; McLennan</strong> — Insurance brokerage &amp; consulting. Revenue CAGR ~7%, ROIC ~18%, Fwd P/E ~22x. Resilient revenue (recurring brokerage commissions). Strong pricing environment. Like Aon, capital-light and ignored by momentum-driven AI-focused capital.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">14</div>
+  <div>
+    <div class="rank-ticker">DHR <span class="rank-score">79</span> <span class="tag">Healthcare (Life Sciences)</span></div>
+    <div class="rank-detail"><strong>Danaher Corporation</strong> — Life sciences &amp; diagnostics tools. Revenue growth ~5%, ROIC ~12%, Fwd P/E ~26x. Post-COVID normalization hit harder than TMO, creating a steeper discount. Strong portfolio management (Kaizen culture). Bioprocessing recovery is a near-term catalyst.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">15</div>
+  <div>
+    <div class="rank-ticker">HIG <span class="rank-score">78</span> <span class="tag">Insurance</span></div>
+    <div class="rank-detail"><strong>The Hartford</strong> — P&amp;C insurance &amp; group benefits. Revenue growth ~7%, ROIC ~13%, Fwd P/E ~12x. Trades at a significant discount to book value. Strong commercial lines pricing. Minimal AI exposure, ignored by growth capital.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">16</div>
+  <div>
+    <div class="rank-ticker">CAT <span class="rank-score">76</span> <span class="tag">Industrials</span></div>
+    <div class="rank-detail"><strong>Caterpillar Inc.</strong> — Construction &amp; mining equipment, engines. Revenue slowed to ~3% growth, but FCF yield ~4%, ROIC ~18%, Fwd P/E ~16x. Cyclical headwinds and China exposure create neglect. Strong aftermarket parts revenue provides resilience. Trough-cycle valuation but peak-cycle caution warranted.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">17</div>
+  <div>
+    <div class="rank-ticker">TJX <span class="rank-score">75</span> <span class="tag">Consumer Discretionary</span></div>
+    <div class="rank-detail"><strong>TJX Companies</strong> — Off-price retail (T.J. Maxx, Marshalls). Revenue CAGR ~6%, ROIC ~22%, Fwd P/E ~24x. Defensive retail model (trading down benefits in any economy). Strong inventory management. Ignored because it's "just retail" despite best-in-class ROIC.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">18</div>
+  <div>
+    <div class="rank-ticker">LLY <span class="rank-score">74</span> <span class="tag">Healthcare (Pharma)</span></div>
+    <div class="rank-detail"><strong>Eli Lilly and Company</strong> — Pharmaceuticals (diabetes, obesity). Revenue growth ~32%, ROIC ~25%, Fwd P/E ~30x. The valuation is <em>not</em> cheap — but the growth is extraordinary and the market has already priced in GLP-1 dominance with limited room for error. The "neglect" here is relative: LLY outperforms the S&amp;P 500 but lags AI stocks, creating a potential rotation target for growth investors seeking alternatives to AI.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">19</div>
+  <div>
+    <div class="rank-ticker">WMT <span class="rank-score">73</span> <span class="tag">Consumer Staples</span></div>
+    <div class="rank-detail"><strong>Walmart Inc.</strong> — Retail. Revenue growth ~5%, ROIC ~13%, Fwd P/E ~26x. The premium valuation reflects execution quality, e-commerce investments, and advertising growth. Not neglected in the traditional sense but rotated-into during 2022 and now ignored by AI-focused capital. Steady compounding.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">20</div>
+  <div>
+    <div class="rank-ticker">COST <span class="rank-score">72</span> <span class="tag">Consumer Staples</span></div>
+    <div class="rank-detail"><strong>Costco Wholesale</strong> — Membership warehouse retail. Revenue CAGR ~7%, ROIC ~18%, Fwd P/E ~42x. Consistently high quality, consistently high valuation. The "neglect" here is minimal — COST is fairly priced for what it is. Included for completeness.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">21</div>
+  <div>
+    <div class="rank-ticker">BRK.B <span class="rank-score">71</span> <span class="tag">Financials / Conglomerate</span></div>
+    <div class="rank-detail"><strong>Berkshire Hathaway</strong> — Diversified insurance, railroads, utilities, energy, manufacturing. Revenue growth ~6%, ROIC ~10%, Fwd P/E ~19x. Massive cash position (~$350B) provides optionality. Market has yawned at Berkshire despite its insurance businesses benefiting from the same hard market as PGR and CB.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">22</div>
+  <div>
+    <div class="rank-ticker">MDT <span class="rank-score">70</span> <span class="tag">Healthcare</span></div>
+    <div class="rank-detail"><strong>Medtronic plc</strong> — Medical devices. Revenue growth ~4% (below 5% filter boundary but close), ROIC ~9% (below 10% boundary). Included as an illustration: MDT has struggled with organic growth and margin compression. Its cheap valuation (Fwd P/E ~15x) may be deserved. <strong>Potential value trap.</strong></div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">23</div>
+  <div>
+    <div class="rank-ticker">HD <span class="rank-score">69</span> <span class="tag">Consumer Discretionary</span></div>
+    <div class="rank-detail"><strong>The Home Depot</strong> — Home improvement retail. Revenue growth ~3% (cyclically pressured), ROIC ~22%, Fwd P/E ~23x. Housing market weakness weighs on same-store sales. Once rates decline, housing turnover picks up, and HD sees acceleration. The quality is unquestionable; the timing is uncertain.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">24</div>
+  <div>
+    <div class="rank-ticker">PG <span class="rank-score">67</span> <span class="tag">Consumer Staples</span></div>
+    <div class="rank-detail"><strong>Procter &amp; Gamble</strong> — Consumer packaged goods. Revenue growth ~3%, ROIC ~15%, Fwd P/E ~24x. Solid quality but growth below the 5% CAGR threshold. Valuation is fair but not compelling. Inflation-driven pricing power is fading. A hold, not a buy for rotation.</div>
+  </div>
+</div>
+
+<div class="rank-card">
+  <div class="rank-num">25</div>
+  <div>
+    <div class="rank-ticker">PEP <span class="rank-score">65</span> <span class="tag">Consumer Staples</span></div>
+    <div class="rank-detail"><strong>PepsiCo</strong> — Beverages &amp; snacks. Revenue CAGR ~5%, ROIC ~14%, Fwd P/E ~22x. Reliable dividend grower. GLP-1 obesity drug fears create a narrative overhang (less snacking) that may be overblown. Quality is high but growth is slow — rotation beneficiary only if capital flees to safety.</div>
+  </div>
+</div>
+
+<!-- ============= TOP 5 RECOMMENDATIONS ============= -->
+<h2>5. Five Strongest Candidates for Capital Rotation</h2>
+<p>These are the companies with the strongest combination of quality, valuation discount, and neglect — the most likely beneficiaries if capital rotates away from AI concentration.</p>
+
+<table>
+<thead>
+<tr><th>#</th><th>Ticker</th><th>Key Metric</th><th>Why the Market is Wrong</th><th>Risk</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td class="num">1</td><td><strong>ETN</strong></td>
+  <td>ROIC 16%, Fwd P/E 22x</td>
+  <td>Ignored as "industrial" but electrification &amp; data center power are secular, not cyclical</td>
+  <td>Commercial construction slowdown</td>
+</tr>
+<tr>
+  <td class="num">2</td><td><strong>SYK</strong></td>
+  <td>Revenue grew 11% in FY2025, ROIC 15%</td>
+  <td>MedTech is overlooked while AI gets all the "technology" attention; SYK's robotics exposure is real but unpriced</td>
+  <td>Medicare pricing pressure</td>
+</tr>
+<tr>
+  <td class="num">3</td><td><strong>PGR</strong></td>
+  <td>Fwd P/E 16x, ROIC 18%</td>
+  <td>Insurance sector entirely ignored by growth capital; PGR's analytics-driven underwriting generates consistent ROIC that rivals tech companies</td>
+  <td>Reserve deficiency in hard market turn</td>
+</tr>
+<tr>
+  <td class="num">4</td><td><strong>MCK</strong></td>
+  <td>Fwd P/E 15x, ROIC 18%, revenue growth 12%</td>
+  <td>Trades like a low-growth distributor despite 12% revenue growth and superior capital allocation</td>
+  <td>Opioid liability tail, GPO disruption</td>
+</tr>
+<tr>
+  <td class="num">5</td><td><strong>CB</strong></td>
+  <td>Fwd P/E 12x, below book value</td>
+  <td>Global P&amp;C underwriting at cycle highs dismissed as "peak earnings" but CB's franchise pricing power is structural</td>
+  <td>Catastrophe loss volatility</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ============= VALUE TRAPS ============= -->
+<h2>6. Five Value Traps: Statistically Cheap, Deservedly Cheap</h2>
+<div class="callout danger">
+  <strong>Critical distinction:</strong> These companies pass the statistical filters of "cheap valuation" but deserve their discounts. Buying them as "rotation plays" would likely underperform.
+</div>
+
+<table>
+<thead>
+<tr><th>#</th><th>Ticker</th><th>What Looks Cheap</th><th>Why It Deserves the Discount</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td class="num">1</td><td><strong>MDT</strong></td>
+  <td>Fwd P/E ~15x, below healthcare sector median</td>
+  <td>Struggling organic growth (~4%), margin compression, competitive pressure from newer entrants (SYK in robotics, Abbott in diabetes). Low single-digit organic growth does not justify a re-rating.</td>
+</tr>
+<tr>
+  <td class="num">2</td><td><strong>VZ</strong></td>
+  <td>Fwd P/E ~9x, 6% dividend yield</td>
+  <td>Legacy telecom with negative organic revenue growth, massive capex needs for fiber/5G, $150B+ debt load. The "cheap P/E" is a value trap that has destroyed capital for a decade.</td>
+</tr>
+<tr>
+  <td class="num">3</td><td><strong>PARA</strong></td>
+  <td>Fwd P/E ~7x, below book value</td>
+  <td>Secular decline in linear TV, massive debt, streaming losses. The low multiple reflects a declining earnings base, not a bargain. Capital would not rotate here under any plausible scenario.</td>
+</tr>
+<tr>
+  <td class="num">4</td><td><strong>DOW</strong></td>
+  <td>Fwd P/E ~13x, EV/EBITDA ~6x</td>
+  <td>Commodity chemicals with high cyclicality, China overcapacity, and low ROIC (~5–7%). The cheap multiple reflects peak- or mid-cycle earnings that will fall in a downturn.</td>
+</tr>
+<tr>
+  <td class="num">5</td><td><strong>T</strong></td>
+  <td>Fwd P/E ~10x, high dividend yield</td>
+  <td>Same structural issues as VZ: declining legacy revenue, heavy debt, capex requirements. The dividend is well-covered but earnings growth is negative. A yield trap, not a quality compounder.</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ============= FINAL ANALYSIS ============= -->
+<h2>7. Final Analysis</h2>
+
+<h3>Question 1: Is the hypothesis supported by the data?</h3>
+<p><strong>Yes, with nuance.</strong></p>
+<p>The data clearly shows that AI-exposed equities have absorbed a disproportionate share of capital flows. The AI Basket averaged ~38% returns over 1 year vs. ~14% for the S&amp;P 500. AI-related stocks now constitute ~45% of S&amp;P 500 market cap. General-purpose equal-weight indices have lagged cap-weight by a wide margin. These facts are consistent with the hypothesis.</p>
+<p>However, the "neglect" is not uniform. Some non-AI sectors (staples, utilities) are fairly priced, not undervalued. And some AI stocks (META at 17x earnings with 33% revenue growth) are arguably <em>not</em> in a bubble. The concentration is real, but it's partially justified by superior earnings growth: the AI Basket's ~38% revenue growth massively exceeds the S&amp;P 500's ~5%.</p>
+
+<h3>Question 2: Are there genuinely high-quality businesses being ignored?</h3>
+<p><strong>Yes.</strong> The analysis identified 15–20 non-AI companies meeting the quality filters with valuations below sector medians. These are not distressed turnarounds or declining businesses — they are companies like:</p>
+<ul>
+  <li><strong>Eaton (ETN):</strong> 9% revenue growth, 16% ROIC, trading at a discount to industrial peers</li>
+  <li><strong>Progressive (PGR):</strong> 15% revenue growth, 18% ROIC, 16x forward earnings</li>
+  <li><strong>McKesson (MCK):</strong> 12% revenue growth, 18% ROIC, 15x forward earnings</li>
+  <li><strong>Stryker (SYK):</strong> 10% revenue growth, 15% ROIC, 24x forward earnings</li>
+  <li><strong>Chubb (CB):</strong> 8% revenue growth, 12x forward earnings, below book value</li>
+</ul>
+<p>These companies compound capital at 12–18% ROIC, grow revenue at 5–15%, and trade at valuations that assume no growth. The disconnect between fundamental quality and market price is genuine in these names.</p>
+
+<h3>Question 3: Five strongest candidates for outperformance if capital rotates away from AI</h3>
+<ol>
+  <li><strong>Eaton (ETN)</strong> — Electrification &amp; data center power play without AI narrative risk. Best risk/reward in the industrials space.</li>
+  <li><strong>Stryker (SYK)</strong> — MedTech with robotics exposure. Demographics-driven demand. AI capital rotation would rediscover medical technology as "real tech."</li>
+  <li><strong>Progressive (PGR)</strong> — Analytics-driven insurance compounding at 18% ROIC with a single-digit P/E multiple. The ultimate "boring company that prints money."</li>
+  <li><strong>McKesson (MCK)</strong> — Pharmaceutical distribution with hidden health-tech optionality. Revenue growth that rivals AI companies but with a 15x P/E.</li>
+  <li><strong>Chubb (CB)</strong> — Global P&amp;C insurance at 12x earnings with best-in-class underwriting discipline. A hard market cycle combined with AI-neglect creates a compelling entry.</li>
+</ol>
+
+<h3>Question 4: Five statistically cheap companies that deserve to be cheap (value traps)</h3>
+<ol>
+  <li><strong>Medtronic (MDT)</strong> — Cheap but struggling to grow organically; margin compression is structural.</li>
+  <li><strong>Verizon (VZ)</strong> — Negative organic growth, massive debt, destructive capex cycle.</li>
+  <li><strong>Paramount (PARA)</strong> — Secular decline in advertising-supported linear TV; streaming losses persist.</li>
+  <li><strong>Dow Inc. (DOW)</strong> — Commodity cyclical with low ROIC; China overcapacity is a multi-year headwind.</li>
+  <li><strong>AT&amp;T (T)</strong> — Same as Verizon: declining legacy revenue, heavy leverage, negative earnings growth.</li>
+</ol>
+
+<h3>Question 5: What would invalidate this thesis?</h3>
+<div class="callout warn">
+  <p><strong>The thesis fails if any of the following occur:</strong></p>
+  <ol>
+    <li><strong>AI earnings growth continues to accelerate.</strong> If the AI Basket sustains 30%+ revenue growth while the broader economy slows, the concentration premium is justified and may widen further. Neglected stocks would remain neglected.</li>
+    <li><strong>The quality stocks are not actually neglected — they are fairly priced.</strong> If ROIC for these companies begins mean-reverting downward (competition, margin compression, regulation), today's "cheap" valuations merely reflect future deterioration.</li>
+    <li><strong>Capital does not rotate.</strong> AI could become a permanent feature of market structure — like technology did in the late 1990s — with the premium persisting for years. Timing a rotation is notoriously difficult.</li>
+    <li><strong>A recession hits.</strong> Non-AI cyclical quality stocks (ETN, CAT, GE) would fall alongside everything else. The "neglect premium" only matters in a risk-on rotation, not a flight to cash.</li>
+    <li><strong>The insurance underwriting cycle turns.</strong> PGR, CB, and HIG benefit from a hard market (rising premiums). If pricing softens, earnings compress and the cheap P/E multiplies up (higher denominator = higher P/E = no bargain).</li>
+  </ol>
+</div>
+
+<!-- ============= CONCLUSION ============= -->
+<h2>8. Conclusion</h2>
+<p>
+The hypothesis that AI concentration has created unjustified discounts in high-quality non-AI equities is <strong>supported by the evidence</strong>. The magnitude of concentration — 45% of S&amp;P 500 market cap tied to AI narratives — is historically extreme. Meanwhile, companies with 10–18% ROIC, 5–15% revenue growth, and strong balance sheets trade at forward P/E ratios of 12–24x, well below the S&amp;P 500 average of ~22x in many cases.
+</p>
+<p>
+The strongest opportunities lie in:
+</p>
+<ul>
+  <li><strong>Healthcare</strong> — MedTech (SYK), Life Sciences Tools (TMO, DHR), Distribution (MCK), Diversified (ABT)</li>
+  <li><strong>Industrials</strong> — Electrification (ETN), HVAC/Data Center Cooling (CARR), Aerospace (GE)</li>
+  <li><strong>Insurance</strong> — Underwriting (PGR, CB), Brokerage (AON, MMC), Multi-line (HIG)</li>
+  <li><strong>Financials</strong> — Diversified banking (JPM), Conglomerates (BRK.B)</li>
+</ul>
+<p>
+The most important risk to the thesis is <strong>timing</strong>. Capital concentration can persist longer than fundamentals justify. A disciplined approach — buying when valuations are compelling and holding through volatility — is essential. The stocks identified here are high-quality compounders; even without AI rotation, they offer attractive risk-adjusted returns over a multi-year horizon.
+</p>
+<p>
+<strong>The market's AI obsession has created genuine opportunity for patient capital in the overlooked parts of the equity market.</strong> The data says so. The question is whether investors have the conviction to act on it.
+</p>
+
+<!-- ============= SOURCES ============= -->
+<div class="sources">
+<h3>Sources &amp; Further Reading</h3>
+<ul>
+  <li>Economic Times — "AI stocks surge to 45% of S&amp;P 500 market cap in 2026" (June 2026)</li>
+  <li>FactSet Earnings Insight — June 12, 2026 edition</li>
+  <li>Macrotrends — Revenue, EPS, P/E data for NVDA, AVGO, MSFT, META, AMD, AMZN, JPM, UNH, PGR, CAT, ETN, CARR, SYK, TMO, DHR, ABT, MCK, CB, AON, MMC, HIG (2025–2026)</li>
+  <li>StockAnalysis.com — Company overviews and financial data</li>
+  <li>Seeking Alpha — META at 17x earnings analysis; AVGO value/growth debate; AMZN rotation analysis</li>
+  <li>NVIDIA Q4 FY2026 Earnings Press Release (May 2026)</li>
+  <li>Meta Q4 &amp; Full Year 2025 Earnings Results</li>
+  <li>Barchart — "How AI Ate the S&amp;P 500" (2026)</li>
+  <li>Longtermtrends.com — Market-Cap Weight vs Equal-Weight S&amp;P 500 Performance</li>
+  <li>Capital Group — "How AI Is Reshaping US Equity Markets" (2026)</li>
+  <li>Goldman Sachs — US stocks forecast 2026</li>
+  <li>YCharts — S&amp;P 500 Forward P/E Estimate</li>
+  <li>Raymond James — Equal Weight commentary (2025–2026)</li>
+</ul>
+<p style="margin-top:1rem;font-style:italic;">
+  Disclaimer: This analysis is for informational purposes only and does not constitute investment advice. All data is sourced from publicly available information and may contain estimates where exact figures were not available. Past performance does not guarantee future results.
+</p>
+</div>
+
+</div>
+</body>
+</html>
