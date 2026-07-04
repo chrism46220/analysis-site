@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options Trading Overview — Pros, Cons &amp; 7 Strategies for a $5,000 Fund — The Clawed Journal</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="top-nav"><a href="../index.html">← Back to Home</a></nav>
+<main class="article">
+<h1>Options Trading Overview — Pros, Cons &amp; 7 Strategies for a $5,000 Fund</h1>
+<p class="article-date"><span class="date">2026-07-04</span></p>
+<p class="desc">Comprehensive intro to options: what they are, pros/cons, the Greeks, and 7 capital-efficient strategies designed for a $3k–5k account. Cash-secured puts, credit spreads, PMCC, and more with exact risk numbers.</p>
+<div class="content">
+
+<h2>Part 1: Options Trading Overview</h2>
+
+<h3>What Are Options?</h3>
+<p>An <strong>option</strong> is a contract that gives the buyer the <em>right, but not the obligation</em>, to buy or sell 100 shares of an underlying stock or ETF at a predetermined price (the <strong>strike price</strong>) on or before a specific date (the <strong>expiration date</strong>). The buyer pays a <strong>premium</strong> for this right; the seller (writer) collects the premium and assumes the obligation to fulfill the contract if the buyer exercises it.</p>
+
+<p>There are two fundamental types:</p>
+<ul>
+<li><strong>Call option</strong> — gives the buyer the right to <em>buy</em> 100 shares at the strike. Calls are bullish: you profit when the underlying price rises above the strike plus the premium paid.</li>
+<li><strong>Put option</strong> — gives the buyer the right to <em>sell</em> 100 shares at the strike. Puts are bearish: you profit when the underlying falls below the strike minus the premium paid.</li>
+</ul>
+
+<h3>Key Terminology</h3>
+<ul>
+<li><strong>Strike price (K):</strong> The fixed price at which the option can be exercised. For example, a $200 AAPL call strike means you can buy 100 AAPL shares at $200 each regardless of the market price.</li>
+<li><strong>Expiration date:</strong> The last day the option can be exercised. After this, the contract expires worthless.</li>
+<li><strong>Premium:</strong> The market price of the option contract (quoted <em>per share</em>; multiply by 100 for total cost). A $1.50 premium means $150 per contract.</li>
+<li><strong>Moneyness:</strong> Describes the relationship between the strike price and the current stock price:
+  <ul>
+    <li><strong>ITM (In-The-Money):</strong> A call with strike below the stock price, or a put with strike above. ITM options have intrinsic value.</li>
+    <li><strong>ATM (At-The-Money):</strong> Strike roughly equals the stock price. These have the highest time premium.</li>
+    <li><strong>OTM (Out-of-The-Money):</strong> A call with strike above the stock price, or a put with strike below. These are cheaper but require a favorable move to be profitable.</li>
+  </ul>
+</li>
+</ul>
+
+<h3>The Options Chain</h3>
+<p>Every optionable stock has an <strong>options chain</strong> — a matrix showing all available contracts across strikes and expirations. The chain displays bid/ask prices, volume (number of contracts traded that day), and <strong>open interest</strong> (total outstanding contracts that haven't been closed or exercised). High open interest and volume indicate liquidity; low-OI contracts often have wide bid-ask spreads and are harder to exit.</p>
+
+<p>For a small account, always prioritize underlyings with robust options chains: SPY, QQQ, AAPL, MSFT, AMD. These have tight spreads and deep liquidity across strikes and expirations.</p>
+
+<h3>Single-Contract Mechanics</h3>
+<p>Every equity option contract represents exactly <strong>100 shares</strong> of the underlying. This is critical for sizing: one SPY contract controls about $54,000 worth of the S&amp;P 500 (at SPY ~$540), but the premium to buy a 30-day OTM call might only cost $50–200. This is the leverage that makes options powerful and dangerous.</p>
+
+<hr />
+
+<h2>Part 2: Pros — Why Traders Use Options</h2>
+
+<h3>Leverage — Control 100 Shares for a Fraction of the Cost</h3>
+<p>Options are the cleanest form of financial leverage. Buying 100 shares of MSFT (~$45,000) requires $45,000 in cash. Buying an ATM call option for the same exposure might cost $800–2,000 depending on time to expiration. The remaining cash stays in your account earning interest or deployed elsewhere. This capital efficiency is the primary draw for small accounts.</p>
+
+<h3>Defined Risk with Puts</h3>
+<p>Buying a put option caps your maximum loss to the premium paid. Unlike short-selling a stock (theoretically unlimited loss if the stock rallies), a put buyer can only lose what they paid for the contract. This makes put buying the safest way to express a bearish view or hedge a portfolio.</p>
+
+<h3>Income Generation via Selling Premium</h3>
+<p>Option sellers collect premium upfront and profit if the option expires worthless. Strategies like cash-secured puts and covered calls convert time decay from an enemy into an ally. Consistent income of 1–3% per month on capital is achievable with disciplined risk management, making options a powerful yield tool.</p>
+
+<h3>Flexibility — Profit in Any Market Direction</h3>
+<ul>
+<li><strong>Bullish:</strong> Buy calls, sell puts, bull put spreads, covered calls</li>
+<li><strong>Bearish:</strong> Buy puts, sell calls, bear call spreads</li>
+<li><strong>Neutral / Sideways:</strong> Iron condors, credit spreads, covered calls (collect premium while stock treads water)</li>
+<li><strong>Volatile (direction unknown):</strong> Straddles, strangles (profit from large moves in either direction)</li>
+</ul>
+<p>No other instrument class offers this breadth of directional neutrality.</p>
+
+<h3>Hedging Existing Positions</h3>
+<p>Long-term stock holders can buy protective puts to insure against a market crash. This is portfolio insurance: the puts appreciate as the market falls, offsetting stock losses. Costing 1–3% of portfolio value per year, it's often cheaper than selling positions and triggering capital gains.</p>
+
+<h3>Time Works for You as a Seller</h3>
+<p>Every day that passes, options lose time value (<strong>theta decay</strong> accelerates near expiration). Sellers benefit from this decay — the contract they sold becomes worth less each day, allowing them to buy it back for a profit or let it expire worthless. For a seller in a 45-day trade, roughly half the total time decay occurs in the final 21 days.</p>
+
+<hr />
+
+<h2>Part 3: Cons — The Risks and Costs</h2>
+
+<h3>Time Decay Works Against Buyers</h3>
+<p>The same theta that rewards sellers punishes buyers. If the underlying doesn't move in your direction within your timeframe, the option steadily loses value. Options are wasting assets: unlike stocks, they have a finite lifespan and expiration is final. The majority of long OTM options expire worthless — estimates range from 70–80%</p>
+
+<h3>Complexity — The Greeks</h3>
+<p>Options pricing depends on multiple variables beyond just stock price direction. The <strong>Greeks</strong> measure different risk dimensions:</p>
+<ul>
+<li><strong>Delta (Δ):</strong> How much the option price changes per $1 move in the underlying. ATM options have ~0.50 delta; deep ITM calls approach 1.00; deep OTM calls approach 0.</li>
+<li><strong>Gamma (Γ):</strong> The rate of change of delta. High gamma near expiration means delta can swing wildly with small stock moves. Gamma is highest for ATM options near expiration.</li>
+<li><strong>Theta (Θ):</strong> Time decay — how much value the option loses per day. ATM options lose roughly 1/DTE of their time premium daily, accelerating in the final weeks.</li>
+<li><strong>Vega (ν):</strong> Sensitivity to implied volatility (IV). In earnings or events, vega can swing option prices significantly. A high-IV environment inflates both premiums and risk.</li>
+</ul>
+<p><strong>⚠ For small accounts:</strong> You don't need to master every Greek, but delta and theta matter most. Keep positions at 30–45 DTE to balance theta decay (for sellers) or minimize it (for buyers). Avoid trading into events with unknown IV.</p>
+
+<h3>Liquidity Risk in Low-Volume Underlyings</h3>
+<p>Options on small-cap, low-volume, or high-IV stocks often have wide bid-ask spreads and thin open interest. A $0.30 spread on a $1.00 option is 30% slippage before you even begin. For a $5,000 account, that slippage can erase 2–3 trades' worth of profit on a single position. <strong>Stick to SPY, QQQ, AAPL, MSFT, AMD.</strong></p>
+
+<h3>Assignment Risk</h3>
+<p>If you sell an option that goes ITM, you may be assigned at any time (especially if deep ITM near expiration or if a dividend is involved). For a cash-secured put, assignment means buying 100 shares — which could consume more capital than expected if the stock has dropped significantly. For a covered call, assignment means having 100 shares called away, potentially at an unfavorable price. Most retail assignments happen at expiration, but early assignment is possible for dividend events on short calls.</p>
+
+<h3>Leverage Cuts Both Ways — You Can Lose 100%</h3>
+<p>Because options are leveraged instruments, a relatively small adverse move can cause a total loss. Buying a $100 OTM call that expires worthless loses 100% of the premium. Selling a naked call without a hedge has theoretically unlimited loss potential. Even defined-risk strategies (credit spreads) can lose the full amount risked if the underlying moves through both strikes.</p>
+
+<h3>Bid-Ask Spreads Eat Into Small Accounts</h3>
+<p>On liquid underlyings like SPY or QQQ, the bid-ask spread on ATM options is often $0.01–0.05, which is negligible. But on less active strikes or expirations, the spread can be $0.10–0.30 or more. For contracts trading at $1.00–2.00, that's 10–30% friction per round trip. In a $5,000 account, this quickly adds up and is one of the primary reasons small accounts bleed money.</p>
+
+<h3>Not Suitable for Everyone — Requires Active Management</h3>
+<p>Options are not a set-and-forget instrument. Positions must be monitored for delta changes, gamma risk near expiration, IV shifts, and assignment risk. A trader with a full-time job who can only check positions once a day needs wide strikes and longer DTE (30–45 days minimum). Options trading is incompatible with a completely passive approach, though the time commitment can be as low as 10–15 minutes per day with the right strategies and position sizing.</p>
+
+<hr />
+
+<h2>Part 4: 7 Options Strategies for a $5,000 Fund</h2>
+
+<p>With a $3,000–5,000 account, every dollar matters. Position size constraints are real: one bad trade can be 20% of your account. The strategies below are selected for capital efficiency, defined risk, and liquidity. <strong>Assumptions throughout:</strong> $4,000 working capital, 1–2 positions at a time, 30–45 DTE (no weeklies), liquid underlyings only (SPY, QQQ, AAPL, MSFT), 25–50% profit targets, stop loss at 1× credit received for sellers. No earnings plays. No margin.</p>
+
+<div class="callout">
+  <strong>⚡ Core Rules for the Small Account:</strong>
+  <ul>
+    <li>Risk no more than 5–10% of capital per trade ($200–400 max loss per position)</li>
+    <li>Trade 1–2 positions simultaneously; size up only after 20+ winning trades</li>
+    <li>Stick to 30–45 DTE; theta decay accelerates predictably in this window</li>
+    <li>Take profits at 25–50% of max gain — don't get greedy</li>
+    <li>Cut losses at 1× credit received on credit strategies</li>
+    <li>Only trade underlyings you'd be comfortable holding 100 shares of</li>
+  </ul>
+</div>
+
+<hr />
+
+<h3>Strategy 1: Cash-Secured Puts (CSP)</h3>
+<p><strong>Best for:</strong> Entering positions at a discount while collecting premium.</p>
+
+<h4>Mechanics</h4>
+<p>Sell one OTM put option on a stock or ETF you would be happy to own at a lower price. You collect premium upfront and set aside the cash needed to buy 100 shares if assigned. If the stock stays above your strike, the put expires worthless and you keep the premium. If it drops below the strike, you are assigned 100 shares — you "buy the dip" at your target price, net of the premium collected.</p>
+
+<h4>Capital Required</h4>
+<p>A CSP on a $50 stock at a $45 strike requires $4,500 in buying power (less premium collected). However, for a $5,000 account, target stocks priced $30–$60 so the cash-secured requirement stays manageable. Examples: QQQ ($47–50 strikes on a ~$490 underlying — too expensive for 100 shares). Better: F ($10–12), XLE ($80–90), BAC ($40–45). For SPY/QQQ, use the <strong>put credit spread</strong> instead (Strategy 3) to reduce capital requirements.</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> Premium collected (limited). Target ~1–3% return on cash secured over 30–45 days.</li>
+  <li><strong>Max loss:</strong> (Strike − Premium) × 100, if stock goes to $0. Realistic max loss: strike price minus premium times 100.</li>
+  <li><strong>Breakeven:</strong> Strike price minus premium received.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Stock:</strong> Ford (F) at $11.50</li>
+  <li><strong>Sell:</strong> 1 put, $11 strike, 42 DTE, $0.30 premium ($30 collected)</li>
+  <li><strong>Cash required:</strong> $1,100 (strike × 100)</li>
+  <li><strong>Return on cash:</strong> $30 / $1,100 = 2.7% over 42 days</li>
+  <li><strong>Scenario A:</strong> F stays above $11 — keep $30. Annualized return: ~23%</li>
+  <li><strong>Scenario B:</strong> F drops to $10 — assigned 100 shares at $11. Effective cost basis: $10.70 ($11 − $0.30 premium). You now own 100 shares of F at a discount. Sell covered calls (Strategy 2) next.</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>You must have the full cash amount to cover assignment. Don't sell a CSP on a $150 stock when you have $2,000 — one assignment and your account is 75% in a single position.</li>
+  <li>Early assignment is rare but possible. Always have enough cash to cover if the put goes deep ITM with a dividend ex-date approaching.</li>
+  <li>Stick to stocks with low/normal IV. High IV stocks (PLTR, COIN, TSLA) have tempting premium but huge downside risk.</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 2: Covered Calls</h3>
+<p><strong>Best for:</strong> Generating income from stocks you already own.</p>
+
+<h4>Mechanics</h4>
+<p>Own 100 shares of a stock. Sell one OTM call option against it (one call per 100 shares). You collect premium and keep the shares as long as the stock stays below the strike. If the stock rises above the strike at expiration, your shares are called away (sold) at the strike price. You keep the shares' price appreciation up to the strike plus the premium collected.</p>
+
+<h4>Capital Required</h4>
+<p>~$2,000–5,000 for 100 shares of a moderate-priced stock ($20–50 range). For a $5,000 account, use stocks priced $20–40: F (~$1,150 for 100 shares), BAC (~$4,000), XLE (~$8,500 — too high). Better fit: T (~$2,500 for 100 shares), PFE (~$2,800).</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> (Strike − purchase cost + premium) × 100. Capped at the strike price because shares get called away above it.</li>
+  <li><strong>Max loss:</strong> Full value of 100 shares if stock drops to $0 (same as stock ownership). The premium collected only slightly offsets the loss.</li>
+  <li><strong>Breakeven:</strong> Purchase price minus premium received.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Stock:</strong> AT&amp;T (T) at $25.00, buy 100 shares = $2,500 cost</li>
+  <li><strong>Sell:</strong> 1 call, $27 strike, 35 DTE, $0.40 premium ($40 collected)</li>
+  <li><strong>Scenario A:</strong> T stays below $27 — keep $40 premium, shares stay. Return: $40/$2,500 = 1.6% over 35 days. Can repeat monthly.</li>
+  <li><strong>Scenario B:</strong> T rallies to $28 — shares called away at $27. Gain: ($27 − $25) × 100 = $200 + $40 premium = $240 total. Return: 9.6% total.</li>
+  <li><strong>Scenario C:</strong> T drops to $22 — shares worth $2,200, down $300. Premium offsets $40, effective loss $260. You still own the shares and can keep selling calls to reduce cost basis.</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>Covered calls cap upside. If the stock moons (e.g., +20% suddenly), you miss most of the gain. Sell calls with strikes at least 5–10% above current price to avoid getting called away in normal moves.</li>
+  <li>Avoid selling calls on stocks you want to hold long-term at a price you'd regret selling at.</li>
+  <li>Assignment risk on call side: if the call goes ITM near expiration, expect assignment on Friday evening.</li>
+  <li>Be mindful of ex-dividend dates — calls may be exercised early to capture the dividend if the premium remaining is less than the dividend.</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 3: Bull Put Spread (Credit Spread)</h3>
+<p><strong>Best for:</strong> Bullish directional plays with defined risk on liquid ETFs.</p>
+
+<h4>Mechanics</h4>
+<p>Sell an OTM put at strike A, and buy a further OTM put at strike B (same expiration). You collect a net credit. The spread defines both your max profit (the credit) and max loss (width of strikes minus credit). This is a <strong>credit spread</strong> — you want the underlying to stay above strike A so both puts expire worthless.</p>
+
+<h4>Capital Required</h4>
+<p>~$200–500 risk per spread (the max loss). For a small account, use $3–5 wide strikes on SPY or QQQ. A $4-wide spread with a $0.50 credit has a max loss of $350 per spread. With $4,000 capital, run 1 spread at a time.</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> Net credit received (limited). Target: 25–50% of max risk.</li>
+  <li><strong>Max loss:</strong> (Strike width − credit) × 100. Example: $5 wide, $0.60 credit = ($5.00 − $0.60) × 100 = $440.</li>
+  <li><strong>Probability of profit:</strong> High when selling OTM puts (delta of short put ~0.20–0.30).</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Underlying:</strong> SPY at $540</li>
+  <li><strong>Sell:</strong> 1 SPY put, $535 strike (delta ~0.25)</li>
+  <li><strong>Buy:</strong> 1 SPY put, $530 strike (delta ~0.12)</li>
+  <li><strong>Net credit:</strong> $1.20 ($120 collected)</li>
+  <li><strong>Max loss:</strong> ($5.00 − $1.20) × 100 = $380</li>
+  <li><strong>Return on risk:</strong> $120 / $380 = 31.6% over 35 days</li>
+  <li><strong>Probability of profit:</strong> ~75% (the chance SPY stays above $535 at expiration)</li>
+  <li><strong>Management:</strong> Take profit at $30–60 credit remaining (25–50% of credit). Stop loss if credit doubles to $240 (SPY at ~$533 median).</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>SPY and QQQ have tight bid-ask spreads (~$0.01–0.05), making them ideal. Avoid individual stock credit spreads below $30 stock price (wider spreads eat returns).</li>
+  <li>Don't open spreads too close to ATM. Target short strike delta 0.20–0.30 for a reasonable risk/reward.</li>
+  <li>Wide strikes ($5+) require more buying power. For a $5,000 account, keep spreads at $3–5 width.</li>
+  <li>Close before expiration to avoid pin risk (stock settling exactly at a strike on Saturday).</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 4: Bear Call Spread (Credit Spread)</h3>
+<p><strong>Best for:</strong> Bearish directional plays with defined risk.</p>
+
+<h4>Mechanics</h4>
+<p>Sell an OTM call at strike A, buy a further OTM call at strike B. Net credit collected. You want the underlying to stay below strike A so both calls expire worthless. The mirror image of the bull put spread.</p>
+
+<h4>Capital Required</h4>
+<p>Same as bull put: $200–500 risk per spread on SPY/QQQ. $4–5k account can handle 1 spread comfortably.</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> Net credit received.</li>
+  <li><strong>Max loss:</strong> (Strike width − credit) × 100. Example: $5 wide, $0.50 credit = ($5.00 − $0.50) × 100 = $450.</li>
+  <li><strong>Probability of profit:</strong> High when selling OTM calls on an overextended market.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Underlying:</strong> QQQ at $490</li>
+  <li><strong>Sell:</strong> 1 QQQ call, $497 strike</li>
+  <li><strong>Buy:</strong> 1 QQQ call, $502 strike</li>
+  <li><strong>Net credit:</strong> $0.70 ($70 collected)</li>
+  <li><strong>Max loss:</strong> ($5.00 − $0.70) × 100 = $430</li>
+  <li><strong>Return on risk:</strong> $70 / $430 = 16.3% over 30 days</li>
+  <li><strong>Management:</strong> Take profit at $18–35 remaining credit. Stop loss at $140 debit to close (credit doubled to $140).</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>Bear call spreads are harder to profit from in a bull market (which has been the long-term trend). Only deploy when you have a clear bearish signal (overextended RSI, resistance level, bearish catalyst).</li>
+  <li>Use smaller position sizes than bull put spreads because bearish plays have lower historical win rates.</li>
+  <li>Avoid selling calls on high-momentum stocks that can gap up overnight (earnings, news).</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 5: Poor Man's Covered Call (PMCC)</h3>
+<p><strong>Best for:</strong> Mimicking covered calls on expensive stocks without buying 100 shares.</p>
+
+<h4>Mechanics</h4>
+<p>Buy a deep ITM long-term (LEAP) call option (delta ~0.75–0.90) with 6+ months to expiration. Then sell short-term (30–45 DTE) OTM calls against it. The LEAP acts as a "stock replacement" — it moves nearly dollar-for-dollar with the stock. Each short call sold generates premium income against the LEAP position.</p>
+
+<h4>Capital Required</h4>
+<p>~$800–2,000 for the LEAP on a $40–80 stock. For a $5,000 account, target stocks in the $50–80 range to keep the LEAP under $2,000. Examples: AAPL (~$190 — LEAP would be expensive). Better fit: AMD (~$140 — possibly tight). Even better: XLE (~$88 — LEAP could work at ~$1,500). SPY LEAP at $540 is manageable: a 540-strike LEAP 180 DTE might cost ~$2,500 (deep ITM).</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> The LEAP's appreciation + premium collected from short calls — potential loss if stock drops. No hard cap (unlike regular covered call) because LEAP could appreciate significantly if stock rallies.</li>
+  <li><strong>Max loss:</strong> The LEAP premium paid — if stock crashes below the LEAP's strike. This is defined risk (you can only lose what you paid for the LEAP).</li>
+  <li><strong>Breakeven:</strong> LEAP strike + LEAP premium paid.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Underlying:</strong> AMD at $140</li>
+  <li><strong>Buy:</strong> 1 AMD call, $110 strike, 180 DTE, $32.00 premium ($3,200 cost)</li>
+  <li><strong>Delta:</strong> ~0.80 (LEAP moves ~$0.80 per $1 change in AMD)</li>
+  <li><strong>Sell:</strong> 1 AMD call, $145 strike, 40 DTE, $3.50 premium ($350 collected)</li>
+  <li><strong>Net position cost:</strong> $3,200 − $350 = $2,850</li>
+  <li><strong>Scenario A (AMD stays at $140):</strong> Short call expires worthless, keep $350 premium. Net profit: $350 on $2,850 cost = 12.3% in 40 days. Repeat monthly.</li>
+  <li><strong>Scenario B (AMD rallies to $155):</strong> Short call ITM — shares would be "called away," but you don't own shares; you must close the LEAP/short call spread. Close both: sell LEAP (now worth more), buy back short call. Net profit smaller than if you owned shares, but still positive.</li>
+  <li><strong>Scenario C (AMD drops to $120):</strong> LEAP loses intrinsic value (~$10 × 100 = $1,000 loss). Short call OTM (expires worthless). LEAP still has time value remaining. Don't panic — LEAP has 140+ DTE left. You can still sell calls against it.</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>LEAPs are expensive. A $3,200 LEAP takes up 64% of a $5,000 account. With 1–2 PMCCs, you'd be fully deployed with no room for other trades. Use this strategy only when you have conviction and are willing to tie up capital.</li>
+  <li>LEAPs have vega exposure: if IV drops sharply, your LEAP loses value even if the stock stays flat. Prefer lower-IV environments or stocks with stable IV.</li>
+  <li>If assigned on the short call early, you must deliver shares you don't own. Close the short call before ex-dividend dates or when it's deep ITM to avoid assignment.</li>
+  <li>For small accounts, consider using SPY or QQQ for PMCC: LEAP costs are higher but liquidity is unmatched.</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 6: Credit Spread on Index ETFs (SPY / QQQ)</h3>
+<p><strong>Best for:</strong> Consistent income with high liquidity and tight bid-ask spreads.</p>
+
+<h4>Mechanics</h4>
+<p>Sell OTM put or call credit spreads (bull put or bear call) on the most liquid ETFs in the world: SPY and QQQ. The tight bid-ask spreads (~$0.01–0.05 on ATM) mean you get fair fills. You can trade these with confidence at any market open without worrying about slippage eating your edge.</p>
+
+<h4>Capital Required</h4>
+<p>$300–500 risk per spread. With $4,000, run 1 spread and keep $3,500 in reserve (or deploy in a second non-correlated spread). A $4-wide SPY spread with $0.60 credit risks $340. A $5-wide QQQ spread with $0.80 credit risks $420.</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> Net credit collected per spread — typically $60–150 per $300–500 risk.</li>
+  <li><strong>Max loss:</strong> Clearly defined: (width − credit) × 100.</li>
+  <li><strong>Win rate:</strong> With short strike delta 0.20–0.30, historical win rates are 70–85% on 30–45 DTE spreads.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Underlying:</strong> SPY at $540</li>
+  <li><strong>Sell:</strong> 1 SPY put, $533 strike, 35 DTE</li>
+  <li><strong>Buy:</strong> 1 SPY put, $528 strike, 35 DTE</li>
+  <li><strong>Net credit:</strong> $0.95 ($95 collected)</li>
+  <li><strong>Max loss:</strong> ($5.00 − $0.95) × 100 = $405</li>
+  <li><strong>Return on risk:</strong> $95 / $405 = 23.5% in 35 days</li>
+  <li><strong>Take profit at 50%:</strong> ~$48 remaining credit — close for $48 debit, net $47 profit. This takes ~15–20 days.</li>
+  <li><strong>Stop loss:</strong> Credit doubles to $190 — close for $190 debit, net loss $95 (1× original credit).</li>
+  <li><strong>Repeat:</strong> After closing, open a new spread with 35 DTE. Target: 1–2 trades per month.</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>SPY and QQQ options are cash-settled (no assignment risk of actual shares). This is a major advantage for small accounts — no risk of holding 100 shares of SPY at $54,000.</li>
+  <li>Index options settle on the last trading day's closing price. Avoid holding through expiration Friday afternoon (pin risk is minimal but exists).</li>
+  <li>SPY is preferred over QQQ for smaller accounts: SPY's lower volatility means tighter credit but also lower probability of breaching the short strike. QQQ offers higher premium with higher volatility.</li>
+  <li>Consider rotating between bull put and bear call depending on market regime. In a clear uptrend, run bull puts only.</li>
+</ul>
+
+<hr />
+
+<h3>Strategy 7: Small-Share Stock Replacement (1–2 Deep ITM Calls)</h3>
+<p><strong>Best for:</strong> Getting stock-like exposure cheaply on a $40–80 stock you want to own.</p>
+
+<h4>Mechanics</h4>
+<p>Buy a deep ITM call option with delta 0.80+ and 60–90 DTE as a stock substitute. This captures ~80%+ of the stock's upside movement for roughly 20–30% of the cost of buying 100 shares directly. The remaining cash stays in your account earning interest or deployed elsewhere. This is a <strong>buy-and-hold replacement</strong> — you hold the call as a long-term directional bet without selling premium against it.</p>
+
+<h4>Capital Required</h4>
+<p>~$400–1,500 per call depending on stock price and strike depth. For a $50 stock, a $40-strike deep ITM call 60 DTE might cost ~$12.00 ($1,200). For a $5,000 account, 2–3 such positions max.</p>
+
+<h4>Risk / Reward</h4>
+<ul>
+  <li><strong>Max profit:</strong> Unlimited (the call gains value as stock rises, minus the premium paid). 80%+ participation in upside.</li>
+  <li><strong>Max loss:</strong> The full premium paid for the call (defined risk).</li>
+  <li><strong>Breakeven:</strong> Strike price + premium paid.</li>
+</ul>
+
+<h4>Concrete Example</h4>
+<ul>
+  <li><strong>Stock:</strong> MSFT at $445</li>
+  <li><strong>Buy:</strong> 1 MSFT call, $400 strike, 90 DTE, $48.00 premium ($4,800 cost)</li>
+  <li><strong>Delta:</strong> ~0.82 (captures ~82% of MSFT moves)</li>
+  <li><strong>Compare to shares:</strong> Buying 100 MSFT shares = $44,500. Deep ITM call = $4,800. <strong>Capital savings: ~89%.</strong></li>
+  <li><strong>Scenario A (MSFT rallies to $470):</strong> Call gains ~$20.50 × 100 = $2,050 (82% of $25 × 100 = $2,500). ROIC: $2,050/$4,800 = 42.7% vs. 5.6% on shares. But leverage cuts both ways.</li>
+  <li><strong>Scenario B (MSFT drops to $420):</strong> Shares lose $2,500 (5.6%). Call loses ~$20 × 100 = $2,000 (41.7% loss). Magnified loss percentage due to leverage.</li>
+  <li><strong>Scenario C (MSFT drops to $390):</strong> Call goes OTM, loses all remaining time value. Total loss: $4,800 (100% loss). Shares: own 100 MSFT at $44,500 cost basis, now worth $39,000 — paper loss of $5,500 but still long-term ownership.</li>
+</ul>
+
+<h4>Gotchas for Small Accounts</h4>
+<ul>
+  <li>Deep ITM calls still have time premium. You lose money to theta each day. If the stock goes sideways for 60 days, the call loses significant value even if the stock price doesn't change.</li>
+  <li>This is NOT a short-term strategy. Use 60–90 DTE minimum and be prepared to roll the call before expiration to stay ITM.</li>
+  <li>The leverage effect means a -20% stock move could be a -80% option move. Define your stop loss before entering.</li>
+  <li>Don't use this as a permanent stock substitute. It's best for tactical plays (3–6 months) where you have high conviction in an upward move.</li>
+  <li>Dividends: deep ITM call holders don't collect dividends. If the stock pays a dividend before the call's expiration, factor that into your expected return.</li>
+</ul>
+
+<hr />
+
+<h2>Strategy Selection Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Capital Needed</th>
+<th>Max Risk per Trade</th>
+<th>Best Market</th>
+<th>Difficulty</th>
+<th>Income per 30d</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSP</td>
+<td>$1,000–4,500</td>
+<td>Full stock value</td>
+<td>Bullish / Neutral</td>
+<td>Low</td>
+<td>1–3%</td>
+</tr>
+<tr>
+<td>Covered Call</td>
+<td>$2,000–5,000</td>
+<td>Full stock value</td>
+<td>Neutral / Mild Bull</td>
+<td>Low</td>
+<td>1–2%</td>
+</tr>
+<tr>
+<td>Bull Put Spread</td>
+<td>$200–500</td>
+<td>$200–500</td>
+<td>Bullish</td>
+<td>Medium</td>
+<td>2–4%</td>
+</tr>
+<tr>
+<td>Bear Call Spread</td>
+<td>$200–500</td>
+<td>$200–500</td>
+<td>Bearish</td>
+<td>Medium</td>
+<td>1–3%</td>
+</tr>
+<tr>
+<td>PMCC</td>
+<td>$1,000–3,200</td>
+<td>LEAP cost</td>
+<td>Mild Bull</td>
+<td>High</td>
+<td>2–5%</td>
+</tr>
+<tr>
+<td>Index Credit Spreads</td>
+<td>$300–500</td>
+<td>$300–500</td>
+<td>Varies</td>
+<td>Low</td>
+<td>2–4%</td>
+</tr>
+<tr>
+<td>Deep ITM Stock Replacement</td>
+<td>$500–4,800</td>
+<td>Call premium</td>
+<td>Strong Bull</td>
+<td>Medium</td>
+<td>0% (capital appreciation)</td>
+</tr>
+</tbody>
+</table>
+
+<hr />
+
+<h2>Putting It All Together: A Sample $4,000 Allocation</h2>
+
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Amount</th>
+<th>Strategy</th>
+<th>Underlying</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Income</td>
+<td>$400</td>
+<td>Put Credit Spread</td>
+<td>SPY $533/$528</td>
+<td>$405</td>
+</tr>
+<tr>
+<td>Side Income</td>
+<td>$350</td>
+<td>Put Credit Spread</td>
+<td>QQQ $485/$480</td>
+<td>$350</td>
+</tr>
+<tr>
+<td>Cash Reserve</td>
+<td>$3,250</td>
+<td>Money Market / HYSA</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Monthly target:</strong> $80–150 premium collected on $750 risk (2 spreads). Monthly return on total capital: 2–3.75%. With a 50% win rate and disciplined loss cuts, realistic annual net return: 12–24%. <em>Doubling that would require more aggressive strikes, which also increases loss probability. This is a marathon, not a sprint.</em></p>
+
+<p>As the account grows to $5,000–7,500, add a third spread or a PMCC on AAPL/MSFT. At $10,000, consider a covered call on a dividend stock. Never rush to deploy all capital — having dry powder is a legitimate strategy.</p>
+
+<hr />
+
+<h2>Risk Management Cheat Sheet</h2>
+<ul>
+  <li><strong>Position size:</strong> Max 10% of account in any single trade's max loss ($400 on $4,000)</li>
+  <li><strong>Concentration:</strong> Max 2 positions at once; no more than 60% of account in total risk exposure</li>
+  <li><strong>DTE:</strong> 30–45 days minimum. No trades with less than 14 DTE (gamma risk spikes)</li>
+  <li><strong>Profit taking:</strong> Close at 25–50% of max gain. The remaining time premium is someone else's</li>
+  <li><strong>Stop loss:</strong> When credit costs 1× the original credit to close (sellers) or when contract loses 50% of original value (buyers)</li>
+  <li><strong>Underlying liquidity:</strong> SPY, QQQ, AAPL, MSFT only. Minimum daily options volume: 10,000 contracts</li>
+  <li><strong>No trading around:</strong> Earnings, Fed meetings, CPI/FOMC days, or any event with unknown IV. Close positions 3–5 days before known events</li>
+  <li><strong>Journal every trade:</strong> Date, underlying, strategy, strike, credit/debit, DTE, exit reason, P&amp;L, lesson learned</li>
+  <li><strong>Loss limits:</strong> After 3 consecutive losers, stop trading for 2 weeks. Review journal. Identify the pattern.</li>
+  <li><strong>Capital preservation:</strong> The primary goal for the first 6 months is not to lose money. Profitability follows.</li>
+</ul>
+
+<hr />
+
+<h2>References</h2>
+<ul>
+  <li>CBOE (Chicago Board Options Exchange) — Options Education: <a href="https://www.cboe.com/education/">cboe.com/education/</a></li>
+  <li>Options Clearing Corporation (OCC) — The Options Industry Council: <a href="https://www.optionseducation.org/">optionseducation.org/</a></li>
+  <li>Natenberg, S. (2015). <em>Option Volatility and Pricing: Advanced Trading Strategies and Techniques</em>. McGraw-Hill.</li>
+  <li>McMillan, L. G. (2012). <em>Options as a Strategic Investment</em> (5th ed.). Prentice Hall.</li>
+  <li>Hull, J. C. (2021). <em>Options, Futures, and Other Derivatives</em> (11th ed.). Pearson.</li>
+  <li>Tastytrade Research — Empirical options analysis and strategy backtesting: <a href="https://www.tastytrade.com/">tastytrade.com/</a></li>
+  <li>Project Option — Delta, theta, and IV historical data: <a href="https://www.projectoption.com/">projectoption.com/</a></li>
+  <li><em>"Probability of Expiring ITM"</em> — OIC (Options Industry Council): <a href="https://www.optionseducation.org/tools/historical-volatility">optionseducation.org/tools/historical-volatility</a></li>
+  <li>Barron's — Options trading guides and market analysis</li>
+  <li>Investopedia — Options: Calls and Puts: <a href="https://www.investopedia.com/options-basics-4689854">investopedia.com/options-basics-4689854</a></li>
+</ul>
+
+</div>
+</main>
+<footer>
+  <p>Updated July 4, 2026</p>
+  <p class="subtitle" style="margin-top: 0.25rem;">The Clawed Journal — Options Trading Overview</p>
+</footer>
+</body>
+</html>
